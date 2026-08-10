@@ -349,6 +349,7 @@ function normalizeDeck(input,name){
   return {...base,...input,id:input?.id||base.id,version:4,name:String(input?.name||base.name),zoom:Number(input?.zoom)||184,groups};
 }
 const boardItemTypes=['card','text','rect','ellipse','arrow'];
+const BOARD_WIDTH=7200,BOARD_HEIGHT=4800;
 const boardNumber=(value,fallback,min=-1000,max=6000)=>Math.max(min,Math.min(max,Number.isFinite(Number(value))?Number(value):fallback));
 function makeBoard(deckId,name='New Board'){const now=new Date().toISOString();return {id:`board-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,version:1,deckId:String(deckId),name:String(name),zoom:1,createdAt:now,updatedAt:now,items:[]}}
 function normalizeBoard(input){const board=makeBoard(input?.deckId||'',input?.name||'Board'),seen=new Set(),items=(Array.isArray(input?.items)?input.items:[]).filter(item=>boardItemTypes.includes(item?.type)&&(item.type!=='card'||byId.has(item.cardId))).map((item,index)=>{const type=item.type,id=String(item.id||`item-${Date.now()}-${index}`);if(seen.has(id))return null;seen.add(id);const width=boardNumber(item.w,type==='card'?180:type==='arrow'?190:220,36,BOARD_WIDTH),height=boardNumber(item.h,type==='card'?252:type==='arrow'?32:130,6,BOARD_HEIGHT);return {id,type,x:boardNumber(item.x,180,0,7000),y:boardNumber(item.y,160,0,4600),w:width,h:height,rotation:boardNumber(item.rotation,0,-360,360),z:boardNumber(item.z,index,0,9999),...(type==='card'?{cardId:String(item.cardId)}:{}),...(type==='text'?{text:String(item.text||'').slice(0,2000),fontSize:boardNumber(item.fontSize,17,10,48)}:{}),...(['rect','ellipse','arrow','text'].includes(type)?{color:/^#[0-9a-f]{6}$/i.test(item.color||'')?item.color:'#b58a24'}:{})}}).filter(Boolean);return {...board,...input,id:String(input?.id||board.id),version:1,deckId:String(input?.deckId||''),name:String(input?.name||board.name),zoom:boardNumber(input?.zoom,1,.1,2.5),items}}
@@ -358,7 +359,7 @@ function loadStore(){
     const saved=JSON.parse(localStorage.getItem(STORE_KEY));
     if(Array.isArray(saved?.decks)){
       saved.decks=saved.decks.map(deck=>normalizeDeck(deck));
-      saved.boards=(Array.isArray(saved.boards)?saved.boards:[]).map(normalizeBoard).filter(board=>saved.decks.some(deck=>deck.id===board.deckId));
+      saved.boards=(Array.isArray(saved.boards)?saved.boards:[]).map(normalizeBoard).filter(board=>!board.deckId||saved.decks.some(deck=>deck.id===board.deckId));
       const cleanupDone=Boolean(saved.settings?.emptyLandingMigrationDone);if(!cleanupDone)saved.decks=saved.decks.filter(deck=>!isLegacyPlaceholderDeck(deck));
       saved.settings={language:['fr','en','it'].includes(saved.settings?.language)?saved.settings.language:'fr',theme:themes.includes(saved.settings?.theme)?saved.settings.theme:'cream',librarySize:Number(saved.settings?.librarySize)||230,libraryWidth:Number(saved.settings?.libraryWidth)||360,drawSize:Number(saved.settings?.drawSize)||230,deckDisplay:'cards',advancedFiltersCollapsed:Boolean(saved.settings?.advancedFiltersCollapsed),mobileAdvancedSeen:Boolean(saved.settings?.mobileAdvancedSeen),libraryControlsCollapsed:Boolean(saved.settings?.libraryControlsCollapsed),emptyLandingMigrationDone:true};
       if(!saved.decks.some(deck=>deck.id===saved.activeId))saved.activeId=saved.decks[0]?.id||null;
@@ -567,7 +568,6 @@ function openSharedCard(id){
 }
 function applySort(mode){mobileArrangeMode=false;sortMode=['manual','number','color','power','cost'].includes(mode)?mode:'manual';view='table';render()}
 function bindCoverLogoMotion(){const hero=$('.cover-hero'),logo=$('.cover-logo');if(!hero||!logo||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;hero.onpointermove=event=>{const rect=hero.getBoundingClientRect?.();if(!rect)return;const x=(event.clientX-rect.left)/rect.width-.5,y=(event.clientY-rect.top)/rect.height-.5;logo.style.setProperty('--logo-shift-x',`${(x*14).toFixed(1)}px`);logo.style.setProperty('--logo-shift-y',`${(y*10).toFixed(1)}px`);logo.style.setProperty('--logo-tilt',`${(x*1.4).toFixed(2)}deg`)};hero.onpointerleave=()=>{logo.style.setProperty('--logo-shift-x','0px');logo.style.setProperty('--logo-shift-y','0px');logo.style.setProperty('--logo-tilt','0deg')}}
-const BOARD_WIDTH=7200,BOARD_HEIGHT=4800;
 const scheduleBoardSave=debounce(board=>saveBoard(board||currentBoard()),260);
 function boardDeck(board=currentBoard()){return store.decks.find(deck=>deck.id===board?.deckId)||null}
 function boardCenter(width=180,height=180){const viewport=$('#boardViewport'),board=currentBoard(),zoom=board?.zoom||1;if(!viewport)return {x:220,y:180};return {x:Math.max(20,Math.min(BOARD_WIDTH-width-20,(viewport.scrollLeft+viewport.clientWidth/2)/zoom-width/2)),y:Math.max(20,Math.min(BOARD_HEIGHT-height-20,(viewport.scrollTop+viewport.clientHeight/2)/zoom-height/2))}}
