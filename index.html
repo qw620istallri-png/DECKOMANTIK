@@ -104,6 +104,7 @@
       --gold:#e0b84c;--gold-deep:#9e7722;--atelier-shadow:6px 7px 0 #0008;--atelier-shadow-small:3px 4px 0 #0006
     }
     body{background-color:var(--paper);background-image:radial-gradient(circle at 18% 12%,color-mix(in srgb,var(--gold) 7%,transparent),transparent 31%),radial-gradient(circle at 82% 76%,color-mix(in srgb,var(--ritual) 5%,transparent),transparent 34%)}
+    html,body{scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}
     body::before{content:"";position:fixed;z-index:10000;inset:0;pointer-events:none;opacity:.17;background-image:repeating-radial-gradient(circle at 17% 23%,#2c211710 0 1px,transparent 1px 4px);background-size:7px 9px;mix-blend-mode:multiply}
     html[data-theme="dark"] body::before{opacity:.09;mix-blend-mode:screen}
     .workspace{background-color:var(--paper);background-image:linear-gradient(color-mix(in srgb,var(--grid) 68%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--grid) 38%,transparent) 1px,transparent 1px),radial-gradient(circle at 15% 10%,color-mix(in srgb,var(--gold) 7%,transparent),transparent 28%);background-size:32px 32px,32px 32px,auto}
@@ -219,7 +220,7 @@
     #boardToolbarShell{display:none}body.board-view #boardToolbarShell,body.shared-view #boardToolbarShell{display:block}
     body.board-view #boardBtn,body.board-view #decksBtn,body.board-view #importBtn,body.board-view #exportBtn,body.board-view #shareBtn{display:none}
     body:not(.board-view) #boardBack{display:none}
-    body.board-view .workspace,body.shared-view .workspace{height:100%;padding:0;overflow:hidden}
+    body.board-view .workspace,body.shared-view .workspace:has(.board-area){height:100%;padding:0;overflow:hidden}
     .board-tools-end{margin-left:auto}
     .board-deck-link{color:var(--muted);font-size:12px;padding:0 4px;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .board-zoom strong{min-width:44px;text-align:center;font-size:13px;font-weight:800;color:var(--ink)}
