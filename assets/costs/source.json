@@ -1,0 +1,14 @@
+{
+  "source": "User-supplied Kartomantik cost assets; Transcendent retained from https://www.kartomantik.com/en/codex",
+  "updated": "2026-09-01",
+  "format": "webp",
+  "files": {
+    "phlegmatic": "kk_cost_vert.webp",
+    "vitreous": "kk_cost_bleu.webp",
+    "melancholic": "kk_cost_violet.webp",
+    "capricious": "kk_cost_jaune.webp",
+    "choleric": "kk_cost_rouge.webp",
+    "hollow": "kk_cost_noir.webp",
+    "transcendent": "official codex asset retained"
+  }
+}
