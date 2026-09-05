@@ -1,0 +1,9 @@
+Cosmos nebula textures (cosmos-bottom.png, cosmos-middle-trans.png, cosmos-top-trans.png)
+
+Source: https://github.com/simeydotme/pokemon-cards-css
+Copyright (C) Simon Goellner (@simeydotme)
+License: GNU General Public License v3.0 (see GPLv3-PokemonCardsCSS.txt in this folder)
+
+Used for the "Galaxy" rarity effect in DeckomantiK. Because this build
+incorporates GPLv3-licensed assets, the portions of DeckomantiK that use
+them are likewise covered by the GPLv3 terms in this folder.
