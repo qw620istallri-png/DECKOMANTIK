@@ -717,3 +717,49 @@
 @media(max-width:760px){.booster-soul-footer{flex-direction:column}.soul-gazing-shell{padding:14px}.soul-gazing-head{grid-template-columns:1fr auto}.soul-gazing-head .dust-balance{grid-column:1/-1;grid-row:2}.soul-card-grid{grid-template-columns:1fr}.soul-card{grid-template-columns:92px minmax(0,1fr)}.soul-card-art{width:92px}.soul-craft-options{grid-template-columns:1fr}.soul-economy-note{text-align:left}}
 @media(max-width:760px){.soul-search-row{grid-template-columns:1fr}.soul-filters-toggle{justify-self:end}.soul-filters{grid-template-columns:1fr}.soul-craft-preview{padding:9px}.soul-craft-preview-panel{padding:13px}.soul-craft-preview-body{grid-template-columns:1fr;gap:14px}.soul-preview-card{width:min(225px,62vw);margin:auto}.soul-craft-preview-copy h4{font-size:22px}.soul-preview-actions{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.dust-balance.gaining,.dust-balance.gaining .dust-gain,.dust-balance.gaining .dust-sparkles i{animation:none!important}}
+
+/* Compact home lists keep the creation card and two most-recent items prominent. */
+.home-collapsed-list{display:grid;gap:8px;margin:12px 6px 0}
+.home-compact-entry{min-width:0;border:1px solid var(--line);border-left:5px solid var(--gold-deep);border-radius:3px;background:var(--surface);box-shadow:3px 4px 0 #00000016;overflow:hidden}
+.home-compact-entry>summary{min-height:58px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 14px;cursor:pointer;list-style:none;background:linear-gradient(100deg,color-mix(in srgb,var(--gold) 9%,var(--surface-2)),var(--surface));color:var(--ink)}
+.home-compact-entry>summary::-webkit-details-marker{display:none}
+.home-compact-entry>summary>span{min-width:0;display:grid;gap:3px}
+.home-compact-entry>summary strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:800 18px/1.2 Georgia,"Times New Roman",serif}
+.home-compact-entry>summary small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:13px!important;font-weight:800;text-transform:uppercase;letter-spacing:.055em}
+.home-compact-entry>summary>b{flex:0 0 34px;width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--gold-deep);border-radius:50%;background:var(--carbon);color:var(--gold-pale);font-size:18px;transition:transform .18s ease}
+.home-compact-entry[open]{border-left-color:var(--gold);box-shadow:5px 7px 0 color-mix(in srgb,var(--gold) 18%,transparent)}
+.home-compact-entry[open]>summary{border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--gold) 15%,var(--surface))}
+.home-compact-entry[open]>summary>b{transform:rotate(180deg);background:var(--gold);color:var(--carbon)}
+.home-compact-entry>.deck-tile,.home-compact-entry>.board-tile{width:min(420px,calc(100% - 24px));margin:12px}
+.home-compact-entry>.deck-tile{min-height:245px}
+.home-compact-entry>.board-tile{min-height:235px}
+
+/* Official KartomantiK destinations: black/purple shell with a restrained gold glow. */
+.home-kartomantik-wrap{position:relative}
+#homeKartomantik{position:relative;isolation:isolate;min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:8px 12px;border:1px solid #a482d1;border-radius:3px;background:linear-gradient(135deg,#09070c,#24112f 58%,#100b16);color:#f0cf73;box-shadow:inset 0 0 0 1px #e9c95c26,0 0 16px #8e43ca55,3px 4px 0 #0004;font-size:14px!important;font-weight:950}
+#homeKartomantik::before{content:"";position:absolute;z-index:-1;inset:3px;border:1px solid #d3a9424a;pointer-events:none}
+#homeKartomantik:hover,#homeKartomantik:focus-visible,#homeKartomantik[aria-expanded="true"]{transform:translateY(-1px);border-color:#d7b6ff;background:linear-gradient(135deg,#120b19,#3b1650 58%,#17101e);color:#ffe39a;box-shadow:inset 0 0 0 1px #f0cf7355,0 0 25px #9c4ce28c,0 0 10px #d3a94266,4px 5px 0 #0004}
+.home-kartomantik-mark{color:#d8a7ff;text-shadow:0 0 9px #b45cff,0 0 15px #d3a942}
+.home-kartomantik-menu{position:absolute;z-index:30;top:calc(100% + 9px);left:0;width:min(285px,calc(100vw - 28px));padding:7px;border:1px solid #9d70cf;border-top-color:#d3a942;border-radius:3px;background:linear-gradient(145deg,#0d0911,#211329);box-shadow:0 0 28px #7d32bd66,7px 9px 0 #0005;text-align:left}
+.home-kartomantik-menu[hidden]{display:none}
+.home-kartomantik-menu a{display:grid;gap:3px;padding:11px 12px;border-left:3px solid transparent;color:#f6e7b5;text-decoration:none}
+.home-kartomantik-menu a+a{border-top:1px solid #d3a94235}
+.home-kartomantik-menu a:hover,.home-kartomantik-menu a:focus-visible{border-left-color:#d3a942;background:#9b52d52b}
+.home-kartomantik-menu strong{font-size:14px}
+.home-kartomantik-menu span{color:#c1a6cc;font-size:13px}
+
+/* Collection import/export and foil preferences live with advanced search controls. */
+.library-collection-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:7px;margin-top:2px;padding:10px 12px 12px;border-top:1px solid var(--line)}
+.library-collection-actions button{min-width:0;min-height:44px;display:flex;align-items:center;justify-content:flex-start;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--field);color:var(--ink);text-align:left}
+.library-collection-actions button>span{flex:0 0 28px;width:28px;height:28px;display:grid;place-items:center;border-radius:50%;background:var(--carbon);color:var(--gold-pale);font-size:17px}
+.library-collection-actions button>b{min-width:0;font-size:12px;line-height:1.2}
+.library-collection-actions button:hover,.library-collection-actions button:focus-visible{border-color:var(--gold-deep);background:color-mix(in srgb,var(--gold) 14%,var(--surface))}
+.library-collection-actions #effectsToggleBtn.active{border-color:#85641d;background:color-mix(in srgb,var(--gold) 22%,var(--surface))}
+
+@media(max-width:850px){
+  .home-quick-links-right{justify-content:center;flex-wrap:wrap}
+  .home-kartomantik-menu{position:fixed;z-index:140;top:72px;right:10px;left:auto}
+  .home-compact-entry>.deck-tile,.home-compact-entry>.board-tile{width:calc(100% - 18px);margin:9px}
+  .library-collection-actions{grid-template-columns:repeat(2,minmax(0,1fr));padding-bottom:14px}
+  .library-collection-actions #effectsToggleBtn{grid-column:1/-1}
+}
