@@ -189,7 +189,40 @@ const temperamentIconMarkup=(item,className='')=>item?.icon?`<img class="tempera
 const characteristicIconMarkup=(item,className='',useCost=false)=>{const src=useCost?(item?.costIcon||item?.icon):temperamentAssetUrl(item);return src?`<img class="temperament-icon ${useCost?'cost-symbol-icon':'temperament-symbol-icon'} ${esc(className)}" src="${esc(src)}" alt="" aria-hidden="true" decoding="async">`:''};
 function cardTemperamentIcons(card,className='',mode='identity'){const useCost=mode==='cost'||(mode==='card'&&isWillCard(card)),markup=(card?.temperaments||[]).map(key=>{const item=temperamentDefs.find(entry=>entry.id===key);return item?`<span data-temp="${item.id}" data-icon-kind="${useCost?'cost':'temperament'}" title="${esc(temperamentLabel(item))}">${characteristicIconMarkup(item,className,useCost)}</span>`:''}).join('');return markup?`<span class="card-temperament-icons ${useCost?'card-cost-icons':'card-identity-icons'}">${markup}</span>`:''}
 function cardTitleWithTemperaments(card,className='temperament-icon-inline'){return `<strong class="card-title-with-temperaments">${cardTemperamentIcons(card,className,'card')}<span>${esc(cardName(card))}</span></strong>`}
-function persist(){try{localStorage.setItem(STORE_KEY,JSON.stringify(store))}catch{}}
+Object.assign(ui.fr,{"storageFailed":"Sauvegarde impossible. Certaines modifications ne sont pas enregistrées. Réessayez ou exportez une copie avant de quitter.","retrySave":"Réessayer la sauvegarde","exportBackup":"Exporter une copie","loadingCards":"Chargement des cartes…","imagesRetry":"Les images n’ont pas pu être chargées. Réessayez.","packSaveRetry":"Gain non enregistré. Réessayez la sauvegarde, puis touchez le paquet.","craftSaveRetry":"Fabrication non enregistrée : aucune poussière dépensée. Réessayez."});
+Object.assign(ui.en,{"storageFailed":"Saving failed. Some changes have not been saved. Retry or export a backup before leaving.","retrySave":"Retry saving","exportBackup":"Export a backup","loadingCards":"Loading cards…","imagesRetry":"The images could not be loaded. Please retry.","packSaveRetry":"Reward not saved. Retry saving, then tap the pack.","craftSaveRetry":"Craft not saved: no dust was spent. Please retry."});
+Object.assign(ui.it,{"storageFailed":"Salvataggio non riuscito. Alcune modifiche non sono salvate. Riprova o esporta una copia prima di uscire.","retrySave":"Riprova il salvataggio","exportBackup":"Esporta una copia","loadingCards":"Caricamento delle carte…","imagesRetry":"Impossibile caricare le immagini. Riprova.","packSaveRetry":"Ricompensa non salvata. Riprova a salvare, poi tocca la busta.","craftSaveRetry":"Creazione non salvata: nessuna polvere spesa. Riprova."});
+let persistenceFailed=false,storageWarning=null;
+function syncStorageWarning(){
+  if(!persistenceFailed){storageWarning?.remove();return}
+  if(!storageWarning){
+    storageWarning=document.createElement('aside');storageWarning.id='storageWarning';storageWarning.className='storage-warning';storageWarning.setAttribute('role','alert');
+    storageWarning.innerHTML='<p></p><div><button type="button" data-storage-retry></button><button type="button" data-storage-export></button></div>';
+    storageWarning.querySelector('[data-storage-retry]').onclick=()=>persist();
+    storageWarning.querySelector('[data-storage-export]').onclick=exportRecoveryBackup;
+  }
+  storageWarning.querySelector('p').textContent=t('storageFailed');
+  storageWarning.querySelector('[data-storage-retry]').textContent=t('retrySave');
+  storageWarning.querySelector('[data-storage-export]').textContent=t('exportBackup');
+  const host=[...document.querySelectorAll('dialog[open]')].at(-1)||document.body;
+  if(storageWarning.parentElement!==host)host.append(storageWarning);
+}
+function exportRecoveryBackup(){
+  const url=URL.createObjectURL(new Blob([JSON.stringify(store,null,2)],{type:'application/json'})),link=document.createElement('a');
+  link.href=url;link.download='deckomantik-backup.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function persist(){
+  try{localStorage.setItem(STORE_KEY,JSON.stringify(store));persistenceFailed=false;syncStorageWarning();return true}
+  catch{persistenceFailed=true;syncStorageWarning();return false}
+}
+// Roll back economic actions on a failed write, retaining unrelated edits in memory.
+function commitCollectionChange(change){
+  const before={collection:structuredClone(store.collection),collectionDisplay:{...store.collectionDisplay},pityStreak:store.pityStreak,sephirothDust:store.sephirothDust};
+  change();if(persist())return true;
+  Object.assign(store,before);dustAnimationToken++;setDustDisplays();return false;
+}
+new MutationObserver(syncStorageWarning).observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
+document.addEventListener('close',syncStorageWarning,true);
 const RARITY_TIERS=[{id:'common',weight:55.7},{id:'foil',weight:25},{id:'silver',weight:12},{id:'gold',weight:5},{id:'galaxy',weight:1.8},{id:'void',weight:0.5}];
 const RARITY_ORDER=RARITY_TIERS.map(tier=>tier.id);
 const GLITTER_RARITIES=['common-glitter','foil-glitter','silver-glitter','gold-glitter'];
@@ -225,9 +258,9 @@ function rarityClassAttr(id){if(!id)return '';const base=rarityBase(id);return `
 function glitterLayerMarkup(id){return id&&id.endsWith('-glitter')?'<i class="rarity-glitter-layer" aria-hidden="true"></i>':''}
 function boosterGlitterVfxMarkup(id){if(!id||!id.endsWith('-glitter'))return '';return `<div class="booster-vfx-glitter-particles" aria-hidden="true">${Array.from({length:84},(_,index)=>{const angle=(index*137.5)%360,distance=260+(index%11)*44,delay=(index%14)*.025,size=2+(index%4);return `<i style="--glitter-angle:${angle.toFixed(1)}deg;--glitter-distance:${distance}px;--glitter-delay:${delay.toFixed(3)}s;--glitter-size:${size}px"></i>`}).join('')}</div>`}
 function setDisplayRarity(cardId,rarityId){if(rarityId!=='common'&&!ownedRarities(cardId).includes(rarityId))return;store.collectionDisplay[cardId]=rarityId;persist()}
-function save(){if(!state)return;state.updatedAt=new Date().toISOString();const index=store.decks.findIndex(deck=>deck.id===state.id);if(index<0)store.decks.push(state);else store.decks[index]=state;store.activeId=state.id;persist()}
+function save(){if(!state)return;state.updatedAt=new Date().toISOString();const index=store.decks.findIndex(deck=>deck.id===state.id);if(index<0)store.decks.push(state);else store.decks[index]=state;store.activeId=state.id;return persist()}
 function currentBoard(){return store.boards.find(board=>board.id===activeBoardId)||null}
-function saveBoard(board=currentBoard()){if(!board)return;board.updatedAt=new Date().toISOString();const index=store.boards.findIndex(item=>item.id===board.id);if(index<0)store.boards.push(board);else store.boards[index]=board;persist()}
+function saveBoard(board=currentBoard()){if(!board)return;board.updatedAt=new Date().toISOString();const index=store.boards.findIndex(item=>item.id===board.id);if(index<0)store.boards.push(board);else store.boards[index]=board;return persist()}
 function debounce(callback,delay){let timer=null,lastArgs=[];const wrapped=(...args)=>{lastArgs=args;clearTimeout(timer);timer=setTimeout(()=>{timer=null;callback(...lastArgs)},delay)};wrapped.flush=()=>{if(timer!==null){clearTimeout(timer);timer=null;callback(...lastArgs)}};wrapped.cancel=()=>{clearTimeout(timer);timer=null};return wrapped}
 const scheduleDeckSave=debounce(save,320);
 function ids(deck=state){return deck?.groups?.flatMap(group=>group.cardIds)||[]}
@@ -635,16 +668,94 @@ function boosterVolumeMarkup(){const value=Math.round(normalizeSfxVolume(store.s
 function bindBoosterVolume(){const input=$('#boosterVolume'),output=$('#boosterVolumeValue');if(!input)return;const update=()=>{const percent=Math.max(0,Math.min(100,Number(input.value)||0));store.settings.sfxVolume=percent/100;boosterAudio?.setVolume(store.settings.sfxVolume);input.setAttribute('aria-valuetext',`${percent}%`);if(output)output.value=`${percent}%`};input.oninput=update;input.onchange=()=>{update();persist()}}
 function renderBoosterPackFace(){return `<div class="booster-pack" id="boosterPack"><img class="booster-pack-art" src="assets/booster-pack-cover.png" alt="KartomantiK"><div class="booster-pack-flash" aria-hidden="true"></div><div class="booster-tear-tab" id="boosterTearTab" aria-hidden="true"></div></div><p class="booster-hint">${esc(t('boosterTearHint'))}</p>`}
 function summonHomeBooster(){const title=$('.cover-title');if(!title||title.classList.contains('booster-summoning'))return;if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){openBoosterPack();return}title.classList.add('booster-summoning');let opened=false,timer=null;const reveal=()=>{if(opened)return;opened=true;clearTimeout(timer);title.removeEventListener('animationend',onEnd);title.classList.remove('booster-summoning');openBoosterPack()},onEnd=event=>{if(event.animationName==='home-title-summon'&&!event.pseudoElement)reveal()};title.addEventListener('animationend',onEnd);timer=setTimeout(reveal,850)}
-function openBoosterPack(){const dialog=$('#boosterDialog');const mobile=isMobileLayout();boosterAudio?.setVolume(mobile?.75:normalizeSfxVolume(store.settings.sfxVolume));boosterAudio?.preload();dialog.classList.remove('prelude-galaxy','prelude-void');dialog.innerHTML=`<div class="booster-prelude" aria-hidden="true">${Array.from({length:6},()=>'<i></i>').join('')}</div><div class="booster-stage" id="boosterStage"><div class="booster-glow"></div><div class="booster-sparkles">${Array.from({length:8},()=>'<i></i>').join('')}</div><div class="booster-slot" id="boosterSlot">${renderBoosterPackFace()}</div><div class="booster-soul-footer"><button type="button" id="soulGazingBtn">✦ ${esc(t('soulGazing'))}</button>${dustBalanceMarkup('booster-dust-balance')}</div></div><button class="close booster-close" id="boosterClose" aria-label="${esc(t('close'))}">×</button>${mobile?'':boosterVolumeMarkup()}`;const close=()=>dialog.open&&dialog.close();$('#boosterClose').onclick=close;$('#soulGazingBtn').onclick=openSoulGazing;dialog.oncancel=event=>{event.preventDefault();close()};dialog.onclick=event=>{if(event.target===dialog)close()};dialog.onclose=()=>boosterAudio?.fadeAll(140);bindBoosterTear();bindBoosterVolume();bindCardSpotlight($('#boosterPack'));if(!dialog.open)dialog.showModal()}
-function bindBoosterTear(){const pack=$('#boosterPack');if(!pack)return;let dragging=false;const openIfNeeded=()=>{if($('#boosterPack'))openBoosterStack()};pack.onclick=()=>{if(!dragging)openIfNeeded()};pack.onpointerdown=event=>{dragging=false;const startY=event.clientY;const move=moveEvent=>{if(startY-moveEvent.clientY>50){dragging=true;window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);openIfNeeded()}};const up=()=>{window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up)};window.addEventListener('pointermove',move);window.addEventListener('pointerup',up)}}
-function waitForBoosterImage(image){return new Promise(resolve=>{let settled=false,decoding=false,timer=null;const finish=()=>{if(settled)return;settled=true;clearTimeout(timer);image.removeEventListener('load',decode);image.removeEventListener('error',finish);resolve()},decode=()=>{if(settled||decoding)return;decoding=true;if(typeof image.decode==='function')image.decode().catch(()=>{}).finally(finish);else finish()};image.addEventListener('load',decode,{once:true});image.addEventListener('error',finish,{once:true});timer=setTimeout(finish,1800);if(image.complete)decode()})}
-async function createDecodedBoosterStack(pulls){const holder=document.createElement('div');holder.innerHTML=renderBoosterStack(pulls);const stack=holder.firstElementChild;await Promise.all([...stack.querySelectorAll('img')].map(waitForBoosterImage));return stack}
-function openBoosterStack(){
-  const slot=$('#boosterSlot'),pack=$('#boosterPack');if(!slot||!pack||pack.classList.contains('tearing-open'))return;
+function openBoosterPack(){const dialog=$('#boosterDialog');startRevealSession(dialog);const mobile=isMobileLayout();boosterAudio?.setVolume(mobile?.75:normalizeSfxVolume(store.settings.sfxVolume));boosterAudio?.preload();dialog.classList.remove('prelude-galaxy','prelude-void');dialog.innerHTML=`<div class="booster-prelude" aria-hidden="true">${Array.from({length:6},()=>'<i></i>').join('')}</div><div class="booster-stage" id="boosterStage"><div class="booster-glow"></div><div class="booster-sparkles">${Array.from({length:8},()=>'<i></i>').join('')}</div><div class="booster-slot" id="boosterSlot">${renderBoosterPackFace()}</div><div class="booster-soul-footer"><button type="button" id="soulGazingBtn">✦ ${esc(t('soulGazing'))}</button>${dustBalanceMarkup('booster-dust-balance')}</div></div><button class="close booster-close" id="boosterClose" aria-label="${esc(t('close'))}">×</button>${mobile?'':boosterVolumeMarkup()}`;const close=()=>{cancelRevealSession(dialog);if(dialog.open)dialog.close()};$('#boosterClose').onclick=close;$('#soulGazingBtn').onclick=openSoulGazing;dialog.oncancel=event=>{event.preventDefault();close()};dialog.onclick=event=>{if(event.target===dialog)close()};bindBoosterTear();bindBoosterVolume();bindCardSpotlight($('#boosterPack'));if(!dialog.open)dialog.showModal();syncStorageWarning()}
+function bindBoosterTear(){
+  const pack=$('#boosterPack'),session=revealSessions.get(pack?.closest('dialog'));if(!pack||!session)return;let dragging=false,release=()=>{};
+  pack.onclick=()=>{if(!dragging)openBoosterStack()};
+  pack.onpointerdown=event=>{
+    if(session.opening)return;release();dragging=false;const startY=event.clientY;
+    const move=event=>{if(startY-event.clientY>50){dragging=true;release();openBoosterStack()}};
+    release=()=>{window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',release);window.removeEventListener('pointercancel',release)};
+    window.addEventListener('pointermove',move);window.addEventListener('pointerup',release);window.addEventListener('pointercancel',release);
+  };
+  session.signal.addEventListener('abort',()=>release(),{once:true});
+}
+
+const revealSessions=new WeakMap();
+function cancelRevealSession(dialog){
+  const session=revealSessions.get(dialog);if(!session)return;
+  revealSessions.delete(dialog);session.controller.abort();session.timers.forEach(clearTimeout);session.timers.clear();
+  if(dialog.id==='soulGazingDialog')soulCrafting=false;
+  stopDeviceTilt();boosterAudio?.fadeAll(140);
+}
+function startRevealSession(dialog){
+  cancelRevealSession(dialog);
+  const controller=new AbortController(),session={dialog,controller,signal:controller.signal,timers:new Set(),opening:false,pulls:null,loadingCraft:false};
+  revealSessions.set(dialog,session);
+  // A queued close event from the previous opening must not cancel a reopened dialog.
+  dialog.onclose=()=>{if(!dialog.open)cancelRevealSession(dialog)};
+  return session;
+}
+function activeRevealSession(session){return Boolean(session&&!session.signal.aborted&&session.dialog.open&&revealSessions.get(session.dialog)===session)}
+function revealDelay(session,ms){
+  return new Promise((resolve,reject)=>{
+    if(session.signal.aborted){reject(new DOMException('Cancelled','AbortError'));return}
+    const abort=()=>{clearTimeout(timer);session.timers.delete(timer);reject(new DOMException('Cancelled','AbortError'))};
+    const timer=setTimeout(()=>{session.timers.delete(timer);session.signal.removeEventListener('abort',abort);resolve()},ms);
+    session.timers.add(timer);session.signal.addEventListener('abort',abort,{once:true});
+  });
+}
+function queueRevealTask(session,callback,ms){
+  const timer=setTimeout(()=>{session.timers.delete(timer);if(activeRevealSession(session))callback()},ms);session.timers.add(timer);return timer;
+}
+function waitForBoosterImage(image,{signal,timeoutMs=15000}={}){
+  return new Promise((resolve,reject)=>{
+    let settled=false,decoding=false,timer;
+    const finish=error=>{if(settled)return;settled=true;clearTimeout(timer);image.removeEventListener('load',decode);image.removeEventListener('error',failed);signal?.removeEventListener('abort',abort);error?reject(error):resolve()};
+    const failed=()=>finish(new Error('Image could not be loaded'));
+    const abort=()=>finish(new DOMException('Cancelled','AbortError'));
+    const decode=()=>{
+      if(settled||decoding)return;
+      if(!image.complete||!image.naturalWidth){failed();return}
+      decoding=true;
+      const ready=()=>image.complete&&image.naturalWidth?finish():failed();
+      if(typeof image.decode==='function')image.decode().then(ready,failed);else ready();
+    };
+    if(signal?.aborted){abort();return}
+    image.addEventListener('load',decode,{once:true});image.addEventListener('error',failed,{once:true});signal?.addEventListener('abort',abort,{once:true});
+    timer=setTimeout(()=>finish(new Error('Image loading timed out')),timeoutMs);
+    if(image.complete)decode();
+  });
+}
+async function createDecodedBoosterStack(pulls,{signal}={}){
+  const holder=document.createElement('div');holder.innerHTML=renderBoosterStack(pulls);const stack=holder.firstElementChild,controller=new AbortController(),abort=()=>controller.abort();
+  signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
+  try{await Promise.all([...stack.querySelectorAll('img')].map(image=>waitForBoosterImage(image,{signal:controller.signal})));return stack}
+  finally{signal?.removeEventListener('abort',abort);controller.abort()}
+}
+async function openBoosterStack(){
+  const slot=$('#boosterSlot'),pack=$('#boosterPack'),session=revealSessions.get($('#boosterDialog'));
+  if(!slot||!pack||!activeRevealSession(session)||session.opening)return;
+  session.opening=true;pack.setAttribute('aria-busy','true');const hint=slot.querySelector('.booster-hint');if(hint)hint.textContent=t('loadingCards');
   boosterAudio?.playOpening();
-  const isFirstEverPack=!Object.keys(store.collection).length,cardsInPack=shuffledCards(cards).slice(0,5),rarities=pickPackRarities(cardsInPack.length,isFirstEverPack?'galaxy':'silver',pityBoost()),goldIndex=RARITY_ORDER.indexOf('gold'),finalRarities=rarities.map(r=>(r==='common'||r==='foil'||r==='silver'||r==='gold')&&Math.random()<GLITTER_CHANCE?r+'-glitter':r),preparedPulls=cardsInPack.map((card,i)=>({card,rarity:finalRarities[i]}));
-  const stackReady=createDecodedBoosterStack(preparedPulls),reveal=async()=>{const stack=await stackReady;if(!pack.isConnected)return;store.pityStreak=rarities.some(r=>RARITY_ORDER.indexOf(r)>=goldIndex)?0:store.pityStreak+1;store.sephirothDust=sephirothDust()+SEPHIROTH_PACK_DUST;persist();boosterPulls=preparedPulls;boosterRevealIndex=0;slot.replaceChildren(stack);bindBoosterStackMotion();bindBoosterStackClicks();animateDustGain(SEPHIROTH_PACK_DUST)};
-  if(!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){pack.classList.add('tearing-open');setTimeout(reveal,480)}else reveal()
+  if(!session.pulls){
+    const first=!Object.keys(store.collection).length,selected=shuffledCards(cards).slice(0,5),rarities=pickPackRarities(selected.length,first?'galaxy':'silver',pityBoost());
+    session.pulls=selected.map((card,i)=>({card,rarity:['common','foil','silver','gold'].includes(rarities[i])&&Math.random()<GLITTER_CHANCE?rarities[i]+'-glitter':rarities[i]}));
+  }
+  try{
+    const stack=await createDecodedBoosterStack(session.pulls,{signal:session.signal});
+    if(!activeRevealSession(session)||!pack.isConnected)return;
+    if(!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){pack.classList.add('tearing-open');await revealDelay(session,480)}
+    if(!activeRevealSession(session)||!pack.isConnected)return;
+    if(!commitCollectionChange(()=>{store.pityStreak=session.pulls.some(p=>RARITY_ORDER.indexOf(rarityBase(p.rarity))>=RARITY_ORDER.indexOf('gold'))?0:store.pityStreak+1;store.sephirothDust=sephirothDust()+SEPHIROTH_PACK_DUST})){
+      if(hint)hint.textContent=t('packSaveRetry');return;
+    }
+    boosterPulls=session.pulls;boosterRevealIndex=0;slot.replaceChildren(stack);bindBoosterStackMotion();bindBoosterStackClicks();animateDustGain(SEPHIROTH_PACK_DUST);
+  }catch(error){
+    if(error.name!=='AbortError'&&activeRevealSession(session)){if(hint)hint.textContent=t('imagesRetry');boosterAudio?.fadeAll(140)}
+  }finally{
+    session.opening=false;pack.removeAttribute('aria-busy');pack.classList.remove('tearing-open');
+  }
 }
 function renderBoosterStack(pulls=boosterPulls){return `<div class="booster-stack" id="boosterStack">${pulls.map((pull,index)=>boosterCardMarkup(pull,index)).join('')}</div>`}
 const DEFAULT_BOOSTER_VFX_COUNTS={back:8,front:12,impact:12};
@@ -656,15 +767,41 @@ function createMotionSpring(){return{cur:{},vel:{},targets:{},raf:null}}
 function springTo(state,targets,onFrame){Object.assign(state.targets,targets);if(state.raf)return;const tick=()=>{let settled=true;for(const k in state.targets){const t=state.targets[k],c=state.cur[k]??t,v=state.vel[k]??0,force=(t-c)*.22,nv=(v+force)*.55,nc=c+nv;state.cur[k]=nc;state.vel[k]=nv;if(Math.abs(t-nc)>.02||Math.abs(nv)>.02)settled=false}onFrame(state.cur);state.raf=settled?null:requestAnimationFrame(tick)};state.raf=requestAnimationFrame(tick)}
 // Device-tilt fallback for touch devices, where pointermove/hover never fires -- feeds the same springs as the mouse. Calibrates off whatever angle the phone is held at when it first reads (so there's no fixed "neutral" angle to guess), then reports relative tilt clamped to [-1,1]. Only one listener is ever active (only one dialog can be open at a time), and it's torn down on the next bind or on dialog close.
 let deviceTiltHandler=null;
-function stopDeviceTilt(){if(deviceTiltHandler){window.removeEventListener('deviceorientation',deviceTiltHandler);deviceTiltHandler=null}}
-function bindDeviceTilt(onTilt){stopDeviceTilt();if(!window.DeviceOrientationEvent||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;let base=null;const handler=event=>{if(event.beta===null||event.gamma===null)return;if(!base)base={beta:event.beta,gamma:event.gamma};onTilt(Math.max(-1,Math.min(1,(event.gamma-base.gamma)/22)),Math.max(-1,Math.min(1,(event.beta-base.beta)/22)))};const attach=()=>{deviceTiltHandler=handler;window.addEventListener('deviceorientation',handler)};if(typeof DeviceOrientationEvent.requestPermission==='function')DeviceOrientationEvent.requestPermission().then(state=>{if(state==='granted')attach()}).catch(()=>{});else attach()}
-function bindBoosterStackMotion(){const stack=$('#boosterStack');if(!stack||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;const spring=createMotionSpring();spring.cur={tiltX:0,tiltY:0,shiftX:0,shiftY:0};spring.targets={...spring.cur};const apply=cur=>{stack.style.setProperty('--stack-tilt-x',`${cur.tiltX.toFixed(2)}deg`);stack.style.setProperty('--stack-tilt-y',`${cur.tiltY.toFixed(2)}deg`);stack.style.setProperty('--stack-shift-x',`${cur.shiftX.toFixed(1)}px`);stack.style.setProperty('--stack-shift-y',`${cur.shiftY.toFixed(1)}px`);if(cur.spotX===undefined)return;const activeCard=stack.querySelector('.booster-card.active');if(activeCard){activeCard.style.setProperty('--spot-x',`${cur.spotX.toFixed(1)}%`);activeCard.style.setProperty('--spot-y',`${cur.spotY.toFixed(1)}%`)}};stack.onpointermove=event=>{const rect=stack.getBoundingClientRect();const x=(event.clientX-rect.left)/rect.width-.5,y=(event.clientY-rect.top)/rect.height-.5;const activeCard=stack.querySelector('.booster-card.active'),isGalaxy=Boolean(activeCard?.querySelector('.rarity-galaxy'));const targets=isGalaxy?{tiltX:x*20,tiltY:y*-20,shiftX:x*25.2,shiftY:y*-22.4}:{tiltX:x*32,tiltY:y*-26,shiftX:x*16,shiftY:y*-13};if(activeCard){const cardRect=activeCard.getBoundingClientRect();targets.spotX=(event.clientX-cardRect.left)/cardRect.width*100;targets.spotY=(event.clientY-cardRect.top)/cardRect.height*100}springTo(spring,targets,apply)};stack.onpointerleave=()=>springTo(spring,{tiltX:0,tiltY:0,shiftX:0,shiftY:0},apply);bindDeviceTilt((gx,gy)=>{const activeCard=stack.querySelector('.booster-card.active'),isGalaxy=Boolean(activeCard?.querySelector('.rarity-galaxy'));const targets=isGalaxy?{tiltX:gx*10,tiltY:gy*-10,shiftX:gx*12.6,shiftY:gy*-11.2}:{tiltX:gx*18,tiltY:gy*-16,shiftX:gx*9,shiftY:gy*-8};if(activeCard){targets.spotX=50+gx*35;targets.spotY=50+gy*35}springTo(spring,targets,apply)});const dialog=stack.closest('dialog');if(dialog)dialog.onclose=stopDeviceTilt}
+let deviceTiltGeneration=0;
+function handleMotionDialogClose(event){if(!event.currentTarget.open)stopDeviceTilt()}
+function stopDeviceTilt(){deviceTiltGeneration++;if(deviceTiltHandler){window.removeEventListener('deviceorientation',deviceTiltHandler);deviceTiltHandler=null}}
+function bindDeviceTilt(onTilt){stopDeviceTilt();const generation=deviceTiltGeneration;if(!window.DeviceOrientationEvent||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;let base=null;const handler=event=>{if(event.beta===null||event.gamma===null)return;if(!base)base={beta:event.beta,gamma:event.gamma};onTilt(Math.max(-1,Math.min(1,(event.gamma-base.gamma)/22)),Math.max(-1,Math.min(1,(event.beta-base.beta)/22)))};const attach=()=>{if(generation!==deviceTiltGeneration)return;deviceTiltHandler=handler;window.addEventListener('deviceorientation',handler)};if(typeof DeviceOrientationEvent.requestPermission==='function')DeviceOrientationEvent.requestPermission().then(state=>{if(state==='granted')attach()}).catch(()=>{});else attach()}
+function bindBoosterStackMotion(){const stack=$('#boosterStack');if(!stack||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;const spring=createMotionSpring();spring.cur={tiltX:0,tiltY:0,shiftX:0,shiftY:0};spring.targets={...spring.cur};const apply=cur=>{stack.style.setProperty('--stack-tilt-x',`${cur.tiltX.toFixed(2)}deg`);stack.style.setProperty('--stack-tilt-y',`${cur.tiltY.toFixed(2)}deg`);stack.style.setProperty('--stack-shift-x',`${cur.shiftX.toFixed(1)}px`);stack.style.setProperty('--stack-shift-y',`${cur.shiftY.toFixed(1)}px`);if(cur.spotX===undefined)return;const activeCard=stack.querySelector('.booster-card.active');if(activeCard){activeCard.style.setProperty('--spot-x',`${cur.spotX.toFixed(1)}%`);activeCard.style.setProperty('--spot-y',`${cur.spotY.toFixed(1)}%`)}};stack.onpointermove=event=>{const rect=stack.getBoundingClientRect();const x=(event.clientX-rect.left)/rect.width-.5,y=(event.clientY-rect.top)/rect.height-.5;const activeCard=stack.querySelector('.booster-card.active'),isGalaxy=Boolean(activeCard?.querySelector('.rarity-galaxy'));const targets=isGalaxy?{tiltX:x*20,tiltY:y*-20,shiftX:x*25.2,shiftY:y*-22.4}:{tiltX:x*32,tiltY:y*-26,shiftX:x*16,shiftY:y*-13};if(activeCard){const cardRect=activeCard.getBoundingClientRect();targets.spotX=(event.clientX-cardRect.left)/cardRect.width*100;targets.spotY=(event.clientY-cardRect.top)/cardRect.height*100}springTo(spring,targets,apply)};stack.onpointerleave=()=>springTo(spring,{tiltX:0,tiltY:0,shiftX:0,shiftY:0},apply);bindDeviceTilt((gx,gy)=>{const activeCard=stack.querySelector('.booster-card.active'),isGalaxy=Boolean(activeCard?.querySelector('.rarity-galaxy'));const targets=isGalaxy?{tiltX:gx*10,tiltY:gy*-10,shiftX:gx*12.6,shiftY:gy*-11.2}:{tiltX:gx*18,tiltY:gy*-16,shiftX:gx*9,shiftY:gy*-8};if(activeCard){targets.spotX=50+gx*35;targets.spotY=50+gy*35}springTo(spring,targets,apply)});const dialog=stack.closest('dialog');if(dialog)dialog.addEventListener('close',handleMotionDialogClose)}
 // Reusable for static (non-stack) cards -- the library grid and the card preview dialog -- so their holo effects also track the cursor, just per-element instead of dialog-wide.
-function bindCardSpotlight(el){if(!el||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;const isGalaxy=el.matches?.('.rarity-galaxy')||Boolean(el.querySelector?.('.rarity-galaxy')),spring=createMotionSpring();spring.cur={spotX:50,spotY:50,tiltX:0,tiltY:0,shiftX:0,shiftY:0};spring.targets={...spring.cur};const apply=cur=>{el.style.setProperty('--spot-x',`${cur.spotX.toFixed(1)}%`);el.style.setProperty('--spot-y',`${cur.spotY.toFixed(1)}%`);el.style.setProperty('--tilt-x',`${cur.tiltX.toFixed(2)}deg`);el.style.setProperty('--tilt-y',`${cur.tiltY.toFixed(2)}deg`);el.style.setProperty('--stack-shift-x',`${cur.shiftX.toFixed(1)}px`);el.style.setProperty('--stack-shift-y',`${cur.shiftY.toFixed(1)}px`)};el.onpointermove=event=>{const rect=el.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width-.5,y=(event.clientY-rect.top)/rect.height-.5;springTo(spring,isGalaxy?{spotX:(x+.5)*100,spotY:(y+.5)*100,tiltX:x*20,tiltY:y*-20,shiftX:x*25.2,shiftY:y*-22.4}:{spotX:(x+.5)*100,spotY:(y+.5)*100,tiltX:x*18,tiltY:y*-14,shiftX:x*10,shiftY:y*-8},apply)};el.onpointerleave=()=>springTo(spring,{spotX:50,spotY:50,tiltX:0,tiltY:0,shiftX:0,shiftY:0},apply);bindDeviceTilt((gx,gy)=>springTo(spring,isGalaxy?{spotX:50+gx*40,spotY:50+gy*40,tiltX:gx*10,tiltY:gy*-10,shiftX:gx*12.6,shiftY:gy*-11.2}:{spotX:50+gx*40,spotY:50+gy*40,tiltX:gx*18,tiltY:gy*-14,shiftX:gx*10,shiftY:gy*-8},apply));const dialog=el.closest('dialog');if(dialog)dialog.onclose=stopDeviceTilt}
+function bindCardSpotlight(el){if(!el||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;const isGalaxy=el.matches?.('.rarity-galaxy')||Boolean(el.querySelector?.('.rarity-galaxy')),spring=createMotionSpring();spring.cur={spotX:50,spotY:50,tiltX:0,tiltY:0,shiftX:0,shiftY:0};spring.targets={...spring.cur};const apply=cur=>{el.style.setProperty('--spot-x',`${cur.spotX.toFixed(1)}%`);el.style.setProperty('--spot-y',`${cur.spotY.toFixed(1)}%`);el.style.setProperty('--tilt-x',`${cur.tiltX.toFixed(2)}deg`);el.style.setProperty('--tilt-y',`${cur.tiltY.toFixed(2)}deg`);el.style.setProperty('--stack-shift-x',`${cur.shiftX.toFixed(1)}px`);el.style.setProperty('--stack-shift-y',`${cur.shiftY.toFixed(1)}px`)};el.onpointermove=event=>{const rect=el.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width-.5,y=(event.clientY-rect.top)/rect.height-.5;springTo(spring,isGalaxy?{spotX:(x+.5)*100,spotY:(y+.5)*100,tiltX:x*20,tiltY:y*-20,shiftX:x*25.2,shiftY:y*-22.4}:{spotX:(x+.5)*100,spotY:(y+.5)*100,tiltX:x*18,tiltY:y*-14,shiftX:x*10,shiftY:y*-8},apply)};el.onpointerleave=()=>springTo(spring,{spotX:50,spotY:50,tiltX:0,tiltY:0,shiftX:0,shiftY:0},apply);bindDeviceTilt((gx,gy)=>springTo(spring,isGalaxy?{spotX:50+gx*40,spotY:50+gy*40,tiltX:gx*10,tiltY:gy*-10,shiftX:gx*12.6,shiftY:gy*-11.2}:{spotX:50+gx*40,spotY:50+gy*40,tiltX:gx*18,tiltY:gy*-14,shiftX:gx*10,shiftY:gy*-8},apply));const dialog=el.closest('dialog');if(dialog)dialog.addEventListener('close',handleMotionDialogClose)}
 function ownsCardRarity(cardId,rarityId){const owned=ownedRarities(cardId);return rarityId==='common'?owned.length>0:owned.includes(rarityId)}
-function finishBoosterCardReveal(cardEl,pull){if(!cardEl.isConnected)return;const alreadyOwned=ownsCardRarity(pull.card.id,pull.rarity);cardEl.classList.add('revealed');unlockCardRarity(pull.card.id,pull.rarity);const dustGained=alreadyOwned?grantSephirothDust(pull.rarity):0;persist();libraryRenderKey='';if(dustGained)animateDustGain(dustGained)}
-function beginBoosterCardReveal(cardEl,pull){boosterAudio?.playRarity(pull.rarity);const rarity=rarityBase(pull.rarity),fallbackDuration={galaxy:5800,void:3000}[rarity]||0,dialog=$('#boosterDialog');if(!fallbackDuration||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){finishBoosterCardReveal(cardEl,pull);return}cardEl.classList.add('post-flip-revealing');if(dialog){dialog.classList.remove('prelude-galaxy','prelude-void');void dialog.offsetWidth;dialog.classList.add(`prelude-${rarity}`)}finishBoosterCardReveal(cardEl,pull);let timer=null,cleaned=false;const cleanup=()=>{if(cleaned)return;cleaned=true;clearTimeout(timer);cardEl.classList.remove('post-flip-revealing');dialog?.classList.remove('prelude-galaxy','prelude-void')};timer=setTimeout(cleanup,fallbackDuration);const finalRay=dialog?.querySelector('.booster-prelude i:last-child');finalRay?.addEventListener('animationend',event=>{if(event.animationName==='booster-corner-beam')dialog?.classList.remove('prelude-galaxy','prelude-void')},{once:true});dialog?.addEventListener('close',cleanup,{once:true})}
-function bindBoosterStackClicks(){const stack=$('#boosterStack');stack.onclick=event=>{const cardEl=event.target.closest('.booster-card');if(!cardEl||cardEl.classList.contains('post-flip-revealing')||Number(cardEl.dataset.boosterIndex)!==boosterRevealIndex)return;const pull=boosterPulls[boosterRevealIndex];if(!cardEl.classList.contains('revealed')){beginBoosterCardReveal(cardEl,pull);return}cardEl.classList.remove('active');cardEl.classList.add('dismissed');boosterRevealIndex++;if(boosterRevealIndex<boosterPulls.length)stack.querySelector(`[data-booster-index="${boosterRevealIndex}"]`)?.classList.add('active');else{toast(t('boosterDone'));setTimeout(()=>{const dialog=$('#boosterDialog');if(dialog?.open)dialog.close()},1200)}}}
+function finishBoosterCardReveal(cardEl,pull){
+  if(!cardEl.isConnected||cardEl.classList.contains('revealed')||!cardEl.closest('dialog')?.open)return false;
+  const alreadyOwned=ownsCardRarity(pull.card.id,pull.rarity);let dustGained=0;
+  if(!commitCollectionChange(()=>{unlockCardRarity(pull.card.id,pull.rarity);if(alreadyOwned)dustGained=grantSephirothDust(pull.rarity)}))return false;
+  cardEl.classList.add('revealed');libraryRenderKey='';if(dustGained)animateDustGain(dustGained);return true;
+}
+function beginBoosterCardReveal(cardEl,pull){
+  if(!finishBoosterCardReveal(cardEl,pull))return;
+  boosterAudio?.playRarity(pull.rarity);
+  const rarity=rarityBase(pull.rarity),duration={galaxy:5800,void:3000}[rarity]||0,dialog=cardEl.closest('dialog'),session=revealSessions.get(dialog);
+  if(!duration||!activeRevealSession(session)||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+  cardEl.classList.add('post-flip-revealing');dialog.classList.remove('prelude-galaxy','prelude-void');void dialog.offsetWidth;dialog.classList.add(`prelude-${rarity}`);
+  const cleanup=()=>{cardEl.classList.remove('post-flip-revealing');dialog.classList.remove('prelude-galaxy','prelude-void');session.signal.removeEventListener('abort',cleanup);finalRay?.removeEventListener('animationend',onRayEnd)};
+  const onRayEnd=event=>{if(event.animationName==='booster-corner-beam'&&activeRevealSession(session))dialog.classList.remove('prelude-galaxy','prelude-void')};
+  const finalRay=dialog.querySelector('.booster-prelude i:last-child');finalRay?.addEventListener('animationend',onRayEnd,{once:true});session.signal.addEventListener('abort',cleanup,{once:true});queueRevealTask(session,cleanup,duration);
+}
+function bindBoosterStackClicks(){
+  const stack=$('#boosterStack'),session=revealSessions.get(stack?.closest('dialog'));if(!stack)return;
+  stack.onclick=event=>{
+    if(!activeRevealSession(session))return;
+    const cardEl=event.target.closest('.booster-card');if(!cardEl||cardEl.classList.contains('post-flip-revealing')||Number(cardEl.dataset.boosterIndex)!==boosterRevealIndex)return;
+    const pull=boosterPulls[boosterRevealIndex];if(!cardEl.classList.contains('revealed')){beginBoosterCardReveal(cardEl,pull);return}
+    cardEl.classList.remove('active');cardEl.classList.add('dismissed');boosterRevealIndex++;
+    if(boosterRevealIndex<boosterPulls.length)stack.querySelector(`[data-booster-index="${boosterRevealIndex}"]`)?.classList.add('active');
+    else{toast(t('boosterDone'));queueRevealTask(session,()=>{if(stack.isConnected&&stack===session.dialog.querySelector('#boosterStack'))session.dialog.close()},1200)}
+  };
+}
 let soulGazingQuery='',soulCrafting=false,soulRarityFilter='all',soulColorFilter='all',soulTypeFilter='all';
 function soulMatchesType(card){if(soulTypeFilter==='all')return true;if(soulTypeFilter==='manifestation')return card.type==='manifestation';return String(card.type||'').includes('will')}
 function soulCardFullyCrafted(cardId){return SOUL_CRAFT_RARITIES.every(rarityId=>ownsCardRarity(cardId,rarityId))}
@@ -687,11 +824,42 @@ function openSoulCraftPreview(cardId,rarityId){
   if(soulCrafting||!SOUL_CRAFT_RARITIES.includes(rarityId))return;const card=byId.get(cardId),cost=SOUL_CRAFT_COSTS[rarityId];if(!card||ownsCardRarity(cardId,rarityId))return;closeSoulCraftPreview();const affordable=sephirothDust()>=cost,dialog=$('#soulGazingDialog');dialog.insertAdjacentHTML('beforeend',`<div class="soul-craft-preview" id="soulCraftPreview" role="dialog" aria-modal="true" aria-label="${esc(t('craftPreview'))}"><section class="soul-craft-preview-panel"><header><div><span class="eyebrow">${esc(t('craftPreview'))}</span><h3>${cardNumber(card)} · ${esc(cardName(card))}</h3></div><button class="close" data-soul-preview-close aria-label="${esc(t('soulBack'))}">×</button></header><div class="soul-craft-preview-body"><div class="soul-preview-card${rarityClassAttr(rarityId)}" style="${cosmosOffset(card.id)}"><img src="${esc(cardImage(card))}" alt="${esc(cardName(card))}" decoding="async"><div class="booster-vfx-spotlight" aria-hidden="true"></div></div><div class="soul-craft-preview-copy"><span class="soul-preview-rarity">${esc(t('rarity_'+rarityId))}</span><h4>${esc(cardName(card))}</h4><div class="soul-preview-balance">${dustBalanceMarkup('soul-preview-dust')}<p><span>${esc(t('craftCost'))}</span><strong>${cost} ✦</strong></p></div>${affordable?'':`<p class="soul-preview-warning">${esc(t('notEnoughDust'))}</p>`}<div class="soul-preview-actions"><button type="button" data-soul-preview-close>${esc(t('soulBack'))}</button><button type="button" class="primary" id="soulCraftConfirm" ${affordable?'':'disabled'}>${esc(t('gazeIntoSoul'))}</button></div></div></div></section></div>`);const preview=$('#soulCraftPreview');preview.querySelectorAll('[data-soul-preview-close]').forEach(button=>button.onclick=closeSoulCraftPreview);preview.onclick=event=>{if(event.target===preview)closeSoulCraftPreview()};$('#soulCraftConfirm').onclick=()=>craftSoulRarity(cardId,rarityId);bindCardSpotlight(preview.querySelector('.soul-preview-card'));setDustDisplays()
 }
 function openSoulGazing(){
-  const dialog=$('#soulGazingDialog');soulGazingQuery='';soulRarityFilter='all';soulColorFilter='all';soulTypeFilter='all';soulCrafting=false;dialog.classList.remove('prelude-galaxy','prelude-void','crafting');dialog.innerHTML=`<div class="soul-gazing-shell"><header class="soul-gazing-head"><div><span class="eyebrow">DeckomantiK</span><h2>${esc(t('soulGazing'))}</h2><p>${esc(t('soulGazingIntro'))}</p></div>${dustBalanceMarkup('soul-dust-balance')}<button class="close soul-close" id="soulClose" aria-label="${esc(t('close'))}">×</button></header><div class="soul-economy-note">${esc(t('dustRewardSummary'))}</div><div class="soul-search-row"><label class="soul-search"><input id="soulSearch" type="search" placeholder="${esc(t('soulSearch'))}"><span id="soulResult"></span></label><button type="button" class="soul-filters-toggle" id="soulFiltersToggle" aria-expanded="false" aria-controls="soulFilters"><i aria-hidden="true">⌄</i><span>${esc(t('advancedSearch'))}</span></button></div>${soulFilterMarkup()}<div class="soul-card-grid" id="soulCardGrid"></div></div>`;const close=()=>{if(soulCrafting)return;if($('#soulCraftPreview')){closeSoulCraftPreview();return}dialog.open&&dialog.close()};$('#soulClose').onclick=close;dialog.oncancel=event=>{event.preventDefault();close()};dialog.onclick=event=>{if(event.target===dialog)close()};$('#soulSearch').oninput=event=>{soulGazingQuery=event.target.value;renderSoulGazingCards()};$('#soulFiltersToggle').onclick=event=>{const button=event.currentTarget,expanded=button.getAttribute('aria-expanded')!=='true';button.setAttribute('aria-expanded',String(expanded));$('#soulFilters').hidden=!expanded};$('#soulRarityFilter').onchange=event=>{soulRarityFilter=event.target.value;renderSoulGazingCards()};$('#soulTypeFilter').onchange=event=>{soulTypeFilter=event.target.value;renderSoulGazingCards()};$$('[data-soul-color]').forEach(button=>button.onclick=()=>{soulColorFilter=button.dataset.soulColor;$$('[data-soul-color]').forEach(option=>{const active=option.dataset.soulColor===soulColorFilter;option.classList.toggle('active',active);option.setAttribute('aria-pressed',String(active))});renderSoulGazingCards()});renderSoulGazingCards();if(!dialog.open)dialog.showModal()
+  const dialog=$('#soulGazingDialog'),session=startRevealSession(dialog);soulGazingQuery='';soulRarityFilter='all';soulColorFilter='all';soulTypeFilter='all';soulCrafting=false;dialog.classList.remove('prelude-galaxy','prelude-void','crafting');dialog.innerHTML=`<div class="soul-gazing-shell"><header class="soul-gazing-head"><div><span class="eyebrow">DeckomantiK</span><h2>${esc(t('soulGazing'))}</h2><p>${esc(t('soulGazingIntro'))}</p></div>${dustBalanceMarkup('soul-dust-balance')}<button class="close soul-close" id="soulClose" aria-label="${esc(t('close'))}">×</button></header><div class="soul-economy-note">${esc(t('dustRewardSummary'))}</div><div class="soul-search-row"><label class="soul-search"><input id="soulSearch" type="search" placeholder="${esc(t('soulSearch'))}"><span id="soulResult"></span></label><button type="button" class="soul-filters-toggle" id="soulFiltersToggle" aria-expanded="false" aria-controls="soulFilters"><i aria-hidden="true">⌄</i><span>${esc(t('advancedSearch'))}</span></button></div>${soulFilterMarkup()}<div class="soul-card-grid" id="soulCardGrid"></div></div>`;const close=()=>{if(soulCrafting&&!session.loadingCraft)return;if($('#soulCraftPreview')){closeSoulCraftPreview();return}cancelRevealSession(dialog);if(dialog.open)dialog.close()};$('#soulClose').onclick=close;dialog.oncancel=event=>{event.preventDefault();close()};dialog.onclick=event=>{if(event.target===dialog)close()};$('#soulSearch').oninput=event=>{soulGazingQuery=event.target.value;renderSoulGazingCards()};$('#soulFiltersToggle').onclick=event=>{const button=event.currentTarget,expanded=button.getAttribute('aria-expanded')!=='true';button.setAttribute('aria-expanded',String(expanded));$('#soulFilters').hidden=!expanded};$('#soulRarityFilter').onchange=event=>{soulRarityFilter=event.target.value;renderSoulGazingCards()};$('#soulTypeFilter').onchange=event=>{soulTypeFilter=event.target.value;renderSoulGazingCards()};$$('[data-soul-color]').forEach(button=>button.onclick=()=>{soulColorFilter=button.dataset.soulColor;$$('[data-soul-color]').forEach(option=>{const active=option.dataset.soulColor===soulColorFilter;option.classList.toggle('active',active);option.setAttribute('aria-pressed',String(active))});renderSoulGazingCards()});renderSoulGazingCards();if(!dialog.open)dialog.showModal();syncStorageWarning()
 }
 async function craftSoulRarity(cardId,rarityId){
-  if(soulCrafting||!SOUL_CRAFT_RARITIES.includes(rarityId))return;const card=byId.get(cardId),cost=SOUL_CRAFT_COSTS[rarityId];if(!card||ownsCardRarity(cardId,rarityId))return;if(sephirothDust()<cost){toast(t('notEnoughDust'));return}
-  closeSoulCraftPreview();soulCrafting=true;store.sephirothDust=sephirothDust()-cost;unlockCardRarity(cardId,rarityId);store.collectionDisplay[cardId]=rarityId;persist();setDustDisplays();const dialog=$('#soulGazingDialog'),reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,duration=reduced?350:{foil:1800,silver:2100,gold:2700,galaxy:4500}[rarityId];const markup=boosterCardMarkup({card,rarity:rarityId},0).replace('booster-card active','booster-card active soul-craft-card');dialog.classList.add('crafting');if(rarityId==='galaxy')dialog.classList.add('prelude-galaxy');dialog.insertAdjacentHTML('beforeend',`<div class="soul-craft-overlay" id="soulCraftOverlay" aria-live="polite"><div class="booster-prelude" aria-hidden="true">${Array.from({length:6},()=>'<i></i>').join('')}</div><div class="soul-craft-stack">${markup}</div><strong class="soul-craft-caption">${esc(t('craftingRarity'))} · ${esc(t('rarity_'+rarityId))}</strong></div>`);const crafted=$('#soulCraftOverlay .soul-craft-card');boosterAudio?.playRarity(rarityId);nextFrame(()=>setTimeout(()=>crafted?.classList.add('revealed'),reduced?0:140));await new Promise(resolve=>setTimeout(resolve,duration));dialog.classList.remove('prelude-galaxy','crafting');const overlay=$('#soulCraftOverlay');if(!overlay){soulCrafting=false;return}overlay.classList.add('craft-complete');overlay.setAttribute('role','button');overlay.setAttribute('tabindex','0');overlay.setAttribute('aria-label',t('craftTapToClose'));const caption=overlay.querySelector('.soul-craft-caption');if(caption)caption.textContent=`${t('craftSuccess')} · ${t('craftTapToClose')}`;const dismiss=()=>{if(!overlay.isConnected)return;overlay.remove();soulCrafting=false;renderSoulGazingCards();setDustDisplays();toast(`${t('craftSuccess')} · ${t('rarity_'+rarityId)}`)};overlay.onclick=dismiss;overlay.onkeydown=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();dismiss()}};nextFrame(()=>overlay.focus({preventScroll:true}))
+  const dialog=$('#soulGazingDialog'),session=revealSessions.get(dialog);
+  if(!activeRevealSession(session)||soulCrafting||!SOUL_CRAFT_RARITIES.includes(rarityId))return;
+  const card=byId.get(cardId),cost=SOUL_CRAFT_COSTS[rarityId];if(!card||ownsCardRarity(cardId,rarityId))return;
+  if(sephirothDust()<cost){toast(t('notEnoughDust'));return}
+  closeSoulCraftPreview();soulCrafting=true;session.loadingCraft=true;dialog.classList.add('crafting');
+  dialog.insertAdjacentHTML('beforeend',`<div class="soul-craft-overlay" id="soulCraftOverlay" aria-live="polite" aria-busy="true"><div class="booster-prelude" aria-hidden="true">${Array.from({length:6},()=>'<i></i>').join('')}</div><div class="soul-craft-stack"></div><strong class="soul-craft-caption">${esc(t('loadingCards'))}</strong><button type="button" data-craft-cancel>${esc(t('close'))}</button></div>`);
+  const overlay=$('#soulCraftOverlay');overlay.querySelector('[data-craft-cancel]').onclick=()=>dialog.close();let failureMessage=t('imagesRetry');
+  try{
+    const decoded=await createDecodedBoosterStack([{card,rarity:rarityId}],{signal:session.signal});
+    if(!activeRevealSession(session)||!overlay.isConnected)return;
+    // Balance/ownership may have changed in another tab while the image was loading.
+    if(ownsCardRarity(cardId,rarityId)||sephirothDust()<cost){failureMessage=t('notEnoughDust');throw new Error('Collection changed')}
+    if(!commitCollectionChange(()=>{store.sephirothDust=sephirothDust()-cost;unlockCardRarity(cardId,rarityId);store.collectionDisplay[cardId]=rarityId})){failureMessage=t('craftSaveRetry');throw new Error('Save failed')}
+    session.loadingCraft=false;dustAnimationToken++;setDustDisplays();libraryRenderKey='';
+    const crafted=decoded.firstElementChild;crafted.classList.add('soul-craft-card');overlay.querySelector('.soul-craft-stack').append(crafted);overlay.querySelector('[data-craft-cancel]').remove();overlay.removeAttribute('aria-busy');
+    if(rarityId==='galaxy')dialog.classList.add('prelude-galaxy');
+    const caption=overlay.querySelector('.soul-craft-caption');caption.textContent=`${t('craftingRarity')} · ${t('rarity_'+rarityId)}`;
+    boosterAudio?.playRarity(rarityId);
+    const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,duration=reduced?350:{foil:1800,silver:2100,gold:2700,galaxy:4500}[rarityId];
+    nextFrame(()=>{if(activeRevealSession(session))queueRevealTask(session,()=>crafted.classList.add('revealed'),reduced?0:140)});
+    await revealDelay(session,duration);if(!activeRevealSession(session)||!overlay.isConnected)return;
+    dialog.classList.remove('prelude-galaxy','crafting');overlay.classList.add('craft-complete');overlay.setAttribute('role','button');overlay.setAttribute('tabindex','0');overlay.setAttribute('aria-label',t('craftTapToClose'));caption.textContent=`${t('craftSuccess')} · ${t('craftTapToClose')}`;
+    const dismiss=()=>{if(!overlay.isConnected||!activeRevealSession(session))return;overlay.remove();soulCrafting=false;renderSoulGazingCards();setDustDisplays();toast(`${t('craftSuccess')} · ${t('rarity_'+rarityId)}`)};
+    overlay.onclick=dismiss;overlay.onkeydown=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();dismiss()}};nextFrame(()=>{if(overlay.isConnected&&activeRevealSession(session))overlay.focus({preventScroll:true})});
+  }catch(error){
+    if(!activeRevealSession(session))return;
+    overlay.remove();dialog.classList.remove('prelude-galaxy','crafting');session.loadingCraft=false;soulCrafting=false;boosterAudio?.fadeAll(140);
+    if(error.name!=='AbortError'){
+      openSoulCraftPreview(cardId,rarityId);const copy=$('#soulCraftPreview .soul-craft-preview-copy');
+      if(copy){const message=document.createElement('p');message.className='soul-preview-warning';message.setAttribute('role','alert');message.textContent=failureMessage;copy.prepend(message)}
+    }
+    syncStorageWarning();
+  }
 }
 
 function deckHomeTileMarkup(deck){
@@ -736,7 +904,7 @@ function render(){
   if(decksView||boardView||sharedView||rulesView)mobileArrangeMode=false;document.body.classList.toggle('cover-view',decksView);document.body.classList.toggle('board-view',boardView);document.body.classList.toggle('shared-view',sharedView);document.body.classList.toggle('rules-view',rulesView);document.body.classList.remove('stacked-deck');document.body.classList.toggle('touch-arranging',mobileArrangeMode&&!decksView&&!boardView&&!sharedView&&!rulesView);$('#layout').classList.toggle('decks-view',decksView||rulesView);$('#library').classList.toggle('page-hidden',decksView||sharedView||rulesView);$('#tableBtn').classList.toggle('active',view==='table');$('#analysisBtn').classList.toggle('active',view==='analysis');$('#mobileTable').classList.toggle('active',view==='table');$('#mobileAnalysis').classList.toggle('active',view==='analysis');[['#mobileTable',view==='table'],['#mobileAnalysis',view==='analysis']].forEach(([selector,active])=>{const button=$(selector);if(active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current')});
   if(decksView){renderDecksPage();bindDecksPageExtras();renderHomeBoards()}else if(sharedView)renderSharedPage();else if(boardView)renderBoard();else if(rulesView)renderRules();else{view==='analysis'?renderAnalysis():renderTable();renderTemperamentFilters();renderLibrary()}
 }
-function explicitSave(){if(!state)return;scheduleDeckSave.cancel();scheduleBoardSave.cancel();if(view==='board')saveBoard();else save();[$('#saveBtn'),$('#mobileSave')].forEach(button=>{button.textContent=`✓ ${t('saved')}`;button.classList.add('saved')});toast(t('saved'));setTimeout(()=>[$('#saveBtn'),$('#mobileSave')].forEach(button=>{button.classList.remove('saved');button.textContent=t('save')}),1400)}
+function explicitSave(){if(!state)return;scheduleDeckSave.cancel();scheduleBoardSave.cancel();if(!(view==='board'?saveBoard():save()))return;[$('#saveBtn'),$('#mobileSave')].forEach(button=>{button.textContent=`✓ ${t('saved')}`;button.classList.add('saved')});toast(t('saved'));setTimeout(()=>[$('#saveBtn'),$('#mobileSave')].forEach(button=>{button.classList.remove('saved');button.textContent=t('save')}),1400)}
 function exportDeck(){if(!state)return;const blob=new Blob([JSON.stringify({app:'DeckomantiK',...state},null,2)],{type:'application/json'}),link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=(state.name||'deckomantik-deck').replace(/[^a-z0-9]+/gi,'-').toLowerCase()+'.json';link.click();URL.revokeObjectURL(link.href);toast(t('exported'))}
 function kkoDeckPayload(){const cardRarities={};ids(state).forEach(cardId=>{const rarity=selectedOwnedRarity(cardId);if(rarity&&rarity!=='common')cardRarities[cardId]=rarity});return {app:'DeckomantiK',type:'kko-deck',formatVersion:1,name:state.name,groups:state.groups.map(group=>({id:group.id,name:group.name,kind:group.kind||inferGroupKind(group),cardIds:[...group.cardIds]})),cardRarities}}
 async function exportDeckForKko(){if(!state)return;await copyTextValue(JSON.stringify(kkoDeckPayload(),null,2));toast(t('kkoExported'))}
@@ -848,13 +1016,14 @@ document.addEventListener('click',event=>{const more=$('#boardMore');if(more?.op
 $('#mobileTable').onclick=()=>switchView('table');$('#mobileAnalysis').onclick=()=>switchView('analysis');$('#mobileLibrary').onclick=toggleLibrary;$('#mobileDraw').onclick=()=>{setMobileMore(false);startDrawSession()};$('#mobileMoreBtn').onclick=()=>setMobileMore($('#mobileMore').hidden);$('#mobileMoreClose').onclick=$('#mobileMoreBackdrop').onclick=()=>setMobileMore(false);$('#mobileSave').onclick=()=>{setMobileMore(false);explicitSave()};$('#mobileDecks').onclick=()=>{setMobileMore(false);showDeckManager()};$('#mobileRules').onclick=()=>{setMobileMore(false);openRules()};$('#mobileListImport').onclick=()=>{setMobileMore(false);openListImport('current')};$('#mobileImportJson').onclick=()=>{setMobileMore(false);$('#fileInput').click()};$('#mobileExport').onclick=()=>{setMobileMore(false);exportDeck()};$('#mobileExportKko').onclick=()=>{setMobileMore(false);exportDeckForKko()};$('#mobileCopy').onclick=()=>{setMobileMore(false);copyList()};$('#mobileArrange').onclick=toggleMobileArrange;$('#mobileSort').onchange=event=>{setMobileMore(false);applySort(event.target.value)};$('#mobileStack').onclick=()=>{setMobileMore(false);toggleDeckDisplay()};$('#mobileZoom').oninput=event=>setDeckZoom(event.target.value);$('#mobileUndo').onclick=undo;$('#mobileRedo').onclick=redo;$('#mobileMore').addEventListener('keydown',event=>trapFocus($('#mobileMore'),event));$('#library').addEventListener('keydown',event=>{if(isMobileLayout()&&$('#library').classList.contains('mobile-visible'))trapFocus($('#library'),event)});
 document.addEventListener('keydown',handleKeyboardShortcuts);
 function flushPendingSaves(){scheduleLibrarySearch.flush();scheduleDeckSave.flush();scheduleBoardSave.flush()}
-window.addEventListener('beforeunload',flushPendingSaves);
+window.addEventListener('beforeunload',event=>{flushPendingSaves();if(persistenceFailed){event.preventDefault();event.returnValue=''}});
 window.addEventListener('pagehide',flushPendingSaves);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushPendingSaves()});
 document.addEventListener('keydown',event=>{if(event.code==='Space'&&view==='board'&&!boardSpaceHeld&&!isEditingTarget(event.target)){boardSpaceHeld=true;event.preventDefault();$('#boardViewport')?.classList.add('space-pan')}});
 document.addEventListener('keyup',event=>{if(event.code==='Space'){boardSpaceHeld=false;$('#boardViewport')?.classList.remove('space-pan')}});
 let pendingRemoteSync=false;
 function applyRemoteSync(){
+  if(persistenceFailed)return;
   pendingRemoteSync=false;
   store=loadStore();
   store.boards=Array.isArray(store.boards)?store.boards:[];

@@ -782,4 +782,13 @@
 .booster-volume input{width:100%;margin:0;accent-color:var(--gold);cursor:pointer}
 .booster-volume output{min-width:42px;color:var(--gold-pale);font-size:12px;font-weight:900;text-align:right;font-variant-numeric:tabular-nums}
 @media(max-width:850px){.booster-volume{display:none}}
-@media(max-width:850px){.booster-stack .booster-card .booster-card-back,.booster-stack .booster-card .booster-card-front,.soul-craft-card .booster-card-back,.soul-craft-card .booster-card-front{transition:opacity 0s linear .25s,visibility 0s linear .25s}.booster-stack .booster-card:not(.revealed) .booster-card-front,.soul-craft-card:not(.revealed) .booster-card-front{visibility:hidden;opacity:0}.booster-stack .booster-card.revealed .booster-card-back,.soul-craft-card.revealed .booster-card-back{visibility:hidden;opacity:0}.booster-stack .booster-card.revealed .booster-card-front,.soul-craft-card.revealed .booster-card-front{visibility:visible;opacity:1}.booster-stack .booster-card.revealed .booster-card-inner,.soul-craft-card.revealed .booster-card-inner{animation:booster-reveal-mobile-stable .5s cubic-bezier(.2,.72,.2,1) both!important}}
+/* Keep face visibility tied to the 3D rotation; a timed opacity switch can hide both faces. */
+@media(max-width:850px) and (prefers-reduced-motion:no-preference){
+  .booster-stack .booster-card.revealed .booster-card-inner,.soul-craft-card.revealed .booster-card-inner{animation:booster-reveal-mobile-stable .5s cubic-bezier(.2,.72,.2,1) both!important}
+}
+
+/* Persistent recovery controls remain reachable inside an open modal. */
+.storage-warning{position:fixed;z-index:10000;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(580px,calc(100vw - 28px));max-height:45dvh;overflow:auto;padding:14px 16px;border:2px solid #ac6616;border-radius:12px;background:#fff4d6;color:#38220c;box-shadow:0 8px 30px #0006;font:14px/1.4 system-ui,sans-serif;text-align:left;pointer-events:auto}
+.storage-warning p{margin:0 0 10px}.storage-warning>div{display:flex;gap:8px;flex-wrap:wrap}.storage-warning button{background:#fff;color:#38220c;border:1px solid #ac6616;min-height:44px}
+.booster-pack[aria-busy="true"]{cursor:progress}
+.soul-craft-overlay[aria-busy="true"] .soul-craft-stack{display:none}
