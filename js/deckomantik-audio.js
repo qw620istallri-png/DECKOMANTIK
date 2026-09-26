@@ -1,12 +1,14 @@
 (() => {
   'use strict';
 
+  const innerDesertsEnabled = Boolean(globalThis.DECKOMANTIK_RELEASE?.extensions?.['inner-deserts']);
   const CUES = Object.freeze({
     opening: { src: 'assets/sounds/sound_booster_opening.mp3', group: 'opening', gain: .72, cooldown: 250 },
     common: { src: 'assets/sounds/son_normal.mp3', group: 'rarity', gain: .48, cooldown: 80 },
     foil: { src: 'assets/sounds/son_foil.mp3', group: 'rarity', gain: .54, cooldown: 80 },
     silver: { src: 'assets/sounds/son_silver.mp3', group: 'rarity', gain: .56, cooldown: 90 },
     gold: { src: 'assets/sounds/son_gold.mp3', group: 'rarity', gain: .60, cooldown: 100 },
+    ...(innerDesertsEnabled ? { desert: { src: 'assets/Desert/son_desert.mp3', group: 'rarity', gain: .62, cooldown: 120 } } : {}),
     galaxy: { src: 'assets/sounds/son_galaxy.mp3', group: 'rarity', gain: .64, cooldown: 140 },
     void: { src: 'assets/sounds/son_void.mp3', group: 'rarity', gain: .68, cooldown: 160 },
     glitter: { src: 'assets/sounds/son_glitter.mp3', group: 'glitter', gain: .30, cooldown: 90 }

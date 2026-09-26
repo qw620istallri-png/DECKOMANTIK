@@ -1,0 +1,99 @@
+/* DeckomantiK — révélations : lumières posées sur la carte, par rareté.
+   Les particules sont sur une seule toile (js/reveal-fx.js). Ici, que des calques pré-dessinés qui n'animent que l'opacité
+   et la transformation : aucun filtre ni ombre animés, pour que le retournement reste net sur mobile.
+   --impact-delay vient de booster-fx.css (0,5 s ; Galaxie 2,08 s ; Néant 2,28 s). */
+.rfx-canvas{position:fixed;inset:0;z-index:60;width:100vw;height:100vh;pointer-events:none}
+.rfx-veil{position:fixed;inset:0;z-index:44;pointer-events:none;opacity:0;background:radial-gradient(circle at var(--x,50%) var(--y,50%),transparent 0 calc(var(--r,600px) * .5),rgb(7 3 16 / .8) calc(var(--r,600px) * .95),rgb(3 1 8 / .96) calc(var(--r,600px) * 1.9))}
+
+.rfx-back,.rfx-over,.rfx-edge,.rfx-rim{position:absolute;inset:0;pointer-events:none}
+.rfx-back{z-index:0}
+.rfx-over{z-index:5}
+.rfx-face{position:absolute;inset:0;z-index:4;overflow:hidden;border-radius:inherit;pointer-events:none}
+:is(.rfx-back,.rfx-over,.rfx-face)::before,:is(.rfx-back,.rfx-over,.rfx-face)::after{content:"";position:absolute;pointer-events:none;opacity:0}
+
+/* ----- balayages sur la face (sous le pointeur de la carte, découpés par elle) ----- */
+.rfx-face::before{inset:-10% -150%}
+.booster-card.revealed:has(.rarity-foil) .rfx-face::before{background:linear-gradient(104deg,transparent 40%,rgb(85 221 255 / .6) 44.5%,rgb(255 114 221 / .62) 48%,rgb(255 227 107 / .55) 51.5%,rgb(125 255 178 / .5) 55%,transparent 59.5%);mix-blend-mode:screen;animation:rfx-sweep .95s cubic-bezier(.3,.6,.25,1) var(--impact-delay) both}
+.booster-card.revealed:has(.rarity-silver) .rfx-face::before{background:linear-gradient(110deg,transparent 46.5%,rgb(255 255 255 / .75) 49.2%,#fff 50%,rgb(255 255 255 / .75) 50.8%,transparent 53.5%);mix-blend-mode:screen;animation:rfx-glint 1.25s cubic-bezier(.45,.05,.3,1) var(--impact-delay) both}
+.booster-card.revealed:has(.rarity-silver) .rfx-face::after{inset:0;background:linear-gradient(160deg,rgb(214 236 255 / .72),rgb(255 255 255 / .08) 55%,rgb(160 190 220 / .55));mix-blend-mode:screen;animation:rfx-fade .9s ease-out var(--impact-delay) both}
+.booster-card.revealed:has(:is(.rarity-gold,.rarity-desert)) .rfx-face::before{background:linear-gradient(104deg,transparent 42%,rgb(255 236 170 / .55) 47%,rgb(255 255 240 / .8) 50%,rgb(255 200 90 / .5) 53%,transparent 58%);mix-blend-mode:screen;animation:rfx-sweep 1.1s cubic-bezier(.3,.6,.25,1) calc(var(--impact-delay) + .06s) both}
+.booster-card.revealed:has(.rarity-galaxy) .rfx-face::before{background:linear-gradient(104deg,transparent 42%,rgb(170 115 255 / .5) 47%,rgb(230 220 255 / .7) 50%,rgb(72 232 255 / .45) 53%,transparent 58%);mix-blend-mode:screen;animation:rfx-sweep 1.3s cubic-bezier(.3,.6,.25,1) calc(var(--impact-delay) + .1s) both}
+/* Néant : l'ombre et l'éclat du retournement sont deux voiles d'opacité, et non plus un filtre de luminosité repeint à chaque image */
+.booster-card.revealed:has(.rarity-void) .rfx-face::before{inset:0;background:#040208;animation:rfx-shade .5s cubic-bezier(.1,.72,.12,1) both}
+.booster-card.revealed:has(.rarity-void) .rfx-face::after{inset:0;background:#fff;animation:rfx-bright .5s cubic-bezier(.1,.72,.12,1) both}
+.booster-card.revealed:has(.rarity-void) .booster-card-back::before{content:"";position:absolute;inset:0;z-index:2;border-radius:inherit;background:#040208;pointer-events:none;animation:rfx-shade .5s cubic-bezier(.1,.72,.12,1) both}
+
+/* ----- derrière la carte ----- */
+.booster-card.revealed:has(.rarity-gold) .rfx-back::before{inset:-38%;border-radius:50%;background:radial-gradient(closest-side,rgb(255 232 150 / .8),rgb(255 176 60 / .32) 52%,transparent);animation:rfx-bloom 1.9s cubic-bezier(.2,.7,.3,1) var(--impact-delay) both}
+.booster-card.revealed:has(.rarity-foil) .rfx-back::before{inset:-30%;border-radius:50%;background:radial-gradient(closest-side,rgb(120 225 255 / .5),rgb(255 120 220 / .22) 55%,transparent);animation:rfx-bloom 1.3s cubic-bezier(.2,.7,.3,1) var(--impact-delay) both}
+.booster-card.revealed:has(.rarity-silver) .rfx-back::before{inset:-30%;border-radius:50%;background:radial-gradient(closest-side,rgb(236 247 255 / .78),rgb(160 190 220 / .3) 55%,transparent);animation:rfx-bloom 1.5s cubic-bezier(.2,.7,.3,1) var(--impact-delay) both}
+/* Désert : un soleil se lève derrière la carte, l'air tremble au-dessus du sable */
+.booster-card.revealed:has(.rarity-desert) .rfx-back::before{left:50%;bottom:-8%;width:170%;aspect-ratio:1;margin-left:-85%;border-radius:50%;background:radial-gradient(circle,#FFF7DC 0 7%,#FFD27A 13%,rgb(242 150 60 / .62) 25%,rgb(200 92 40 / .22) 44%,transparent 66%);animation:rfx-sun 3.4s cubic-bezier(.2,.65,.25,1) calc(var(--impact-delay) - .15s) both}
+.booster-card.revealed:has(.rarity-desert) .rfx-back::after{inset:-16% -22% 30%;background:linear-gradient(transparent 8%,rgb(255 214 150 / .16) 12%,transparent 16%,transparent 34%,rgb(255 214 150 / .12) 38%,transparent 42%,transparent 60%,rgb(255 214 150 / .1) 64%,transparent 68%);-webkit-mask-image:linear-gradient(transparent,#000 30% 70%,transparent);mask-image:linear-gradient(transparent,#000 30% 70%,transparent);animation:rfx-heat-rise 1.1s linear var(--impact-delay) 3,rfx-heat 3.2s ease var(--impact-delay) both}
+.booster-card.revealed:has(.rarity-galaxy) .rfx-back::before{inset:-48%;border-radius:50%;background:radial-gradient(closest-side,rgb(200 160 255 / .7),rgb(120 70 230 / .34) 38%,rgb(72 232 255 / .16) 60%,transparent);animation:rfx-nebula 5.4s cubic-bezier(.2,.7,.3,1) var(--impact-delay) both}
+/* Néant : un trou noir se creuse sous la carte pendant l'attente, puis se déchire à l'impact */
+.booster-card.revealed:has(.rarity-void) .rfx-back::before{inset:-34%;border-radius:50%;background:radial-gradient(closest-side,#000 0 56%,rgb(34 10 64 / .92) 64%,rgb(120 70 255 / .36) 73%,rgb(72 232 255 / .12) 80%,transparent 88%);animation:rfx-hole 2.9s cubic-bezier(.3,.1,.2,1) both}
+
+/* ----- devant la carte ----- */
+/* Normale : une bouffée de trame, comme un coup de rouleau */
+.booster-card.revealed:has(.rarity-common) .rfx-over::before{inset:-16%;background:radial-gradient(circle,rgb(232 228 218 / .55) 1.3px,transparent 1.8px) 0 0/9px 9px;-webkit-mask-image:radial-gradient(closest-side,transparent 58%,#000 74%,transparent);mask-image:radial-gradient(closest-side,transparent 58%,#000 74%,transparent);animation:rfx-puff .75s cubic-bezier(.2,.7,.3,1) calc(var(--impact-delay) - .06s) both}
+/* anneaux : froid pour l'Argent, prisme pour le Foil, sable pour le Désert, nova pour la Galaxie */
+.booster-card.revealed:has(:is(.rarity-foil,.rarity-silver,.rarity-desert,.rarity-galaxy)) .rfx-over::before{inset:-1%;border-radius:14px;border:2px solid #E4F4FF;box-shadow:0 0 16px 2px rgb(191 231 255 / .7),inset 0 0 12px rgb(191 231 255 / .45);animation:rfx-ring .9s cubic-bezier(.1,.7,.2,1) var(--impact-delay) both}
+.booster-card.revealed:has(:is(.rarity-silver,.rarity-galaxy)) .rfx-over::after{inset:-1%;border-radius:14px;border:1px solid #fff;box-shadow:0 0 10px rgb(255 255 255 / .6);animation:rfx-ring 1.1s cubic-bezier(.1,.7,.2,1) calc(var(--impact-delay) + .12s) both}
+.booster-card.revealed:has(.rarity-foil) .rfx-over::before{border-color:#FFB3EE;box-shadow:0 0 14px 2px rgb(85 221 255 / .7),inset 0 0 12px rgb(255 114 221 / .45)}
+.booster-card.revealed:has(.rarity-desert) .rfx-over::before{border-color:#FFD27A;box-shadow:0 0 18px 3px rgb(245 189 99 / .7),inset 0 0 12px rgb(255 240 180 / .4);animation-duration:1.3s}
+.booster-card.revealed:has(.rarity-galaxy) .rfx-over::before{border-color:#D9C2FF;box-shadow:0 0 20px 4px rgb(170 115 255 / .8),inset 0 0 14px rgb(72 232 255 / .5);animation-duration:1.2s}
+.booster-card.revealed:has(.rarity-galaxy) .rfx-over::after{border-color:#48E8FF;box-shadow:0 0 14px rgb(72 232 255 / .7)}
+/* Or : l'éclair blanc de l'impact */
+.booster-card.revealed:has(.rarity-gold) .rfx-over::after{inset:0;border-radius:9px;background:radial-gradient(closest-side,#FFFDF2,rgb(255 236 170 / .7) 70%,rgb(255 210 92 / .4));animation:rfx-flash .5s ease-out var(--impact-delay) both}
+
+/* Or : une lumière court le long du bord, au doigt qui appuie, puis au retournement */
+.rfx-edge{inset:-4px;z-index:6;overflow:hidden;border-radius:12px;padding:3px;opacity:0;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.rfx-edge::before{content:"";position:absolute;left:50%;top:50%;width:190%;aspect-ratio:1;translate:-50% -50%;background:conic-gradient(transparent 0 58%,rgb(255 210 92 / .2) 66%,#FFD25C 80%,#FFF6CF 88%,#FFD25C 92%,transparent 97%)}
+.booster-card.active:not(.revealed) .rfx-edge{opacity:.28;transition:opacity .4s}
+.booster-card.active:not(.revealed) .rfx-edge::before{animation:rfx-spin 2.6s linear infinite}
+.booster-card.is-charging:not(.revealed) .rfx-edge{opacity:1}
+.booster-card.is-charging:not(.revealed) .rfx-edge::before{animation-duration:.9s}
+.booster-card.revealed .rfx-edge{animation:rfx-edge-flip 1.4s ease-out both}
+.booster-card.revealed .rfx-edge::before{animation:rfx-spin .6s linear 3 both}
+
+/* Néant : l'horizon du trou noir, imprimé deux fois en cyan et violet, légèrement hors repérage */
+.rfx-rim{inset:-12px;z-index:6;opacity:0}
+.rfx-rim::before,.rfx-rim::after{content:"";position:absolute;inset:0;border-radius:18px;border:2px solid #72EFFF;box-shadow:0 0 16px rgb(114 239 255 / .7),inset 0 0 12px rgb(114 239 255 / .4);mix-blend-mode:screen;translate:-2px -1px}
+.rfx-rim::after{border-color:#A871FF;box-shadow:0 0 18px rgb(168 113 255 / .75),inset 0 0 12px rgb(168 113 255 / .4);translate:2px 1.5px}
+.booster-card.revealed .rfx-rim{animation:rfx-rim var(--rim-total,2.9s) cubic-bezier(.3,.1,.2,1) both}
+.booster-card.revealed .rfx-rim::before{animation:rfx-rim-pulse .46s ease-in-out .4s 4 alternate both}
+.booster-card.revealed .rfx-rim::after{animation:rfx-rim-pulse .46s ease-in-out .52s 4 alternate both}
+
+/* à l'arrêt sur image de l'impact, les lumières se figent avec les particules */
+.booster-dialog .booster-card.is-hitstop :is(.rfx-back,.rfx-over,.rfx-face,.rfx-edge,.rfx-rim),.booster-dialog .booster-card.is-hitstop :is(.rfx-back,.rfx-over,.rfx-face,.rfx-edge,.rfx-rim)::before,.booster-dialog .booster-card.is-hitstop :is(.rfx-back,.rfx-over,.rfx-face,.rfx-edge,.rfx-rim)::after{animation-play-state:paused!important}
+/* écartée ou encore dans la pile : rien ne tourne */
+.booster-card.dismissed :is(.rfx-edge,.rfx-rim),.booster-card:not(.active):not(.revealed) .rfx-edge{display:none}
+
+@keyframes rfx-sweep{0%{opacity:0;transform:translateX(-38%)}14%,82%{opacity:1}100%{opacity:0;transform:translateX(38%)}}
+@keyframes rfx-glint{0%{opacity:0;transform:translateX(-38%)}10%{opacity:1}44%{opacity:1;transform:translateX(38%)}45%{opacity:0;transform:translateX(-38%)}55%{opacity:.8}100%{opacity:0;transform:translateX(38%)}}
+@keyframes rfx-fade{0%{opacity:.9}100%{opacity:0}}
+@keyframes rfx-flash{0%{opacity:.92}100%{opacity:0}}
+@keyframes rfx-bloom{0%{opacity:0;transform:scale(.6)}14%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.3)}}
+@keyframes rfx-ring{0%{opacity:0;transform:scale(.96)}12%{opacity:1}100%{opacity:0;transform:scale(1.55,1.4)}}
+@keyframes rfx-puff{0%{opacity:0;transform:scale(.82)}25%{opacity:1}100%{opacity:0;transform:scale(1.28)}}
+@keyframes rfx-sun{0%{opacity:0;transform:translateY(38%) scale(.62)}22%{opacity:1}55%{opacity:.95;transform:translateY(-16%) scale(1)}100%{opacity:0;transform:translateY(-22%) scale(1.06)}}
+@keyframes rfx-heat{0%{opacity:0}20%,70%{opacity:1}100%{opacity:0}}
+@keyframes rfx-heat-rise{0%{transform:translateY(0) scaleX(1)}50%{transform:translateY(-12px) scaleX(1.02)}100%{transform:translateY(-24px) scaleX(1)}}
+@keyframes rfx-nebula{0%{opacity:0;transform:scale(.5) rotate(0deg)}12%{opacity:1;transform:scale(1) rotate(8deg)}60%{opacity:.6}100%{opacity:0;transform:scale(1.18) rotate(38deg)}}
+@keyframes rfx-hole{0%,10%{opacity:0;transform:scale(.7)}40%{opacity:1;transform:scale(1)}76%{opacity:1;transform:scale(.94)}79%{opacity:1;transform:scale(1.02)}100%{opacity:0;transform:scale(1.9)}}
+@keyframes rfx-shade{0%{opacity:0}18%{opacity:.35}48%{opacity:.75}64%{opacity:.08}100%{opacity:0}}
+@keyframes rfx-bright{0%,56%{opacity:0}72%{opacity:.55}86%{opacity:.18}100%{opacity:0}}
+@keyframes rfx-spin{to{rotate:360deg}}
+@keyframes rfx-edge-flip{0%{opacity:1}10%{opacity:0}34%{opacity:0}42%{opacity:1}100%{opacity:0}}
+@keyframes rfx-rim{0%,12%{opacity:0;transform:scale(1.12)}28%{opacity:1;transform:scale(1)}77%{opacity:1;transform:scale(.97)}100%{opacity:0;transform:scale(1.9)}}
+@keyframes rfx-rim-pulse{from{scale:1}to{scale:1.035}}
+
+/* mouvement réduit : pas de particules ni de trajet, seulement un fondu teinté de la rareté */
+@media (prefers-reduced-motion:reduce){
+  :is(.rfx-back,.rfx-face)::before,:is(.rfx-back,.rfx-face)::after,.rfx-over::before{animation:none!important;opacity:0!important}
+  .rfx-edge,.rfx-rim,.rfx-veil,.rfx-canvas{display:none!important}
+  .booster-card.revealed .rfx-over::after{inset:0;border-radius:9px;background:var(--impact-color,#fff);animation:rfx-tint .7s ease-out both!important;mix-blend-mode:screen}
+  .booster-card.revealed:has(.rarity-void) .booster-card-back::before{animation:none;opacity:0}
+}
+@keyframes rfx-tint{0%{opacity:.45}100%{opacity:0}}
