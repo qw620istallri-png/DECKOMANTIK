@@ -512,6 +512,28 @@ html[data-scene="waves"] .booster-dialog::after{opacity:.54;background:radial-gr
 .soul-craft-caption{position:relative;z-index:55;max-width:40ch;font:750 17px/1.3 var(--display);font-stretch:88%;letter-spacing:.04em;text-align:center;text-shadow:0 0 14px rgb(var(--glow) / .8)}
 .soul-craft-overlay [data-craft-cancel]{position:relative;z-index:55}
 .soul-craft-overlay[aria-busy="true"] .soul-craft-stack{display:none}
+/* Zen : les sept tempéraments tournent, convergent, puis composent la carte au point d'impact du son Galaxie. */
+.is-zen-craft .soul-craft-stack{isolation:isolate}
+.zen-craft-fusion{--zen-orbit-x:clamp(138px,27vw,270px);--zen-orbit-y:clamp(190px,34vh,300px);position:absolute;z-index:4;inset:0;pointer-events:none;animation:zen-craft-wheel 1.68s cubic-bezier(.42,0,.18,1) both}
+.zen-craft-fusion>i{position:absolute;left:50%;top:50%;width:clamp(42px,8vw,72px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fff 0 8%,color-mix(in srgb,var(--zen-color) 88%,#fff) 18%,var(--zen-color) 42%,color-mix(in srgb,var(--zen-color) 34%,transparent) 62%,transparent 74%);box-shadow:0 0 22px color-mix(in srgb,var(--zen-color) 90%,transparent),0 0 54px color-mix(in srgb,var(--zen-color) 58%,transparent);mix-blend-mode:screen;filter:saturate(1.28);animation:zen-craft-orb-fuse 2.18s cubic-bezier(.52,.02,.16,1) both;will-change:transform,opacity,filter}
+.zen-craft-fusion>i:nth-child(1){--zen-x:0;--zen-y:-1}
+.zen-craft-fusion>i:nth-child(2){--zen-x:.782;--zen-y:-.623}
+.zen-craft-fusion>i:nth-child(3){--zen-x:.975;--zen-y:.223}
+.zen-craft-fusion>i:nth-child(4){--zen-x:.434;--zen-y:.901}
+.zen-craft-fusion>i:nth-child(5){--zen-x:-.434;--zen-y:.901}
+.zen-craft-fusion>i:nth-child(6){--zen-x:-.975;--zen-y:.223}
+.zen-craft-fusion>i:nth-child(7){--zen-x:-.782;--zen-y:-.623}
+.zen-craft-fusion>b{position:absolute;left:50%;top:50%;width:clamp(70px,14vw,130px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fff 0 10%,#fffde8 22%,rgb(220 239 255 / .72) 40%,rgb(255 255 255 / .16) 62%,transparent 74%);mix-blend-mode:screen;animation:zen-craft-core 2.32s cubic-bezier(.2,.72,.14,1) both;will-change:transform,opacity,filter}
+.is-zen-craft .soul-craft-card{z-index:2;opacity:0}
+.is-zen-craft .soul-craft-card .booster-card-inner{transform:rotateY(180deg)!important;transition:none!important}
+.is-zen-craft .soul-craft-card.revealed{animation:zen-craft-card-form .94s cubic-bezier(.16,1,.3,1) both}
+@keyframes zen-craft-wheel{0%{transform:rotate(-16deg)}68%,100%{transform:rotate(58deg)}}
+@keyframes zen-craft-orb-fuse{0%{opacity:0;transform:translate(-50%,-50%) translate(calc(var(--zen-x) * var(--zen-orbit-x)),calc(var(--zen-y) * var(--zen-orbit-y))) scale(.18);filter:blur(9px) saturate(1.3)}12%{opacity:1;transform:translate(-50%,-50%) translate(calc(var(--zen-x) * var(--zen-orbit-x)),calc(var(--zen-y) * var(--zen-orbit-y))) scale(.88);filter:blur(0) saturate(1.3)}52%{opacity:1;transform:translate(-50%,-50%) translate(calc(var(--zen-x) * var(--zen-orbit-x)),calc(var(--zen-y) * var(--zen-orbit-y))) scale(1)}76%{opacity:1;transform:translate(-50%,-50%) translate(calc(var(--zen-x) * 34px),calc(var(--zen-y) * 34px)) scale(.58);filter:blur(1px) brightness(1.35) saturate(1.4)}84%{opacity:1;transform:translate(-50%,-50%) scale(1.18);filter:blur(2px) brightness(2) saturate(.6)}100%{opacity:0;transform:translate(-50%,-50%) scale(.05);filter:blur(8px) brightness(2.4) saturate(0)}}
+@keyframes zen-craft-core{0%,60%{opacity:0;transform:translate(-50%,-50%) scale(.08);filter:blur(10px)}72%{opacity:.72;transform:translate(-50%,-50%) scale(.38);filter:blur(4px)}84%{opacity:1;transform:translate(-50%,-50%) scale(2.6);filter:blur(0) brightness(1.8)}100%{opacity:0;transform:translate(-50%,-50%) scale(5.4);filter:blur(12px) brightness(2.2)}}
+@keyframes zen-craft-card-form{0%{opacity:0;clip-path:circle(0 at 50% 50%);transform:scale(.78);filter:blur(10px) brightness(4.2) saturate(0)}34%{opacity:1;clip-path:circle(20% at 50% 50%);transform:scale(.9);filter:blur(4px) brightness(2.7) saturate(.35)}72%{clip-path:circle(72% at 50% 50%);transform:scale(1.025);filter:blur(0) brightness(1.38) saturate(1.15)}100%{opacity:1;clip-path:circle(100% at 50% 50%);transform:scale(1);filter:none}}
+@keyframes zen-craft-card-form-reduced{from{opacity:.2;filter:brightness(1.7)}to{opacity:1;filter:none}}
+@media(max-width:600px){.zen-craft-fusion{--zen-orbit-x:34vw;--zen-orbit-y:34vw}.zen-craft-fusion>i{width:clamp(38px,12vw,52px)}}
+@media(prefers-reduced-motion:reduce){.is-zen-craft .zen-craft-fusion{display:none}.is-zen-craft .soul-craft-card.revealed{animation:zen-craft-card-form-reduced .3s ease-out both}}
 
 @media (max-width:850px){
   .booster-dialog{--stack-w:clamp(170px,min(76vw,(100dvh - 350px) * .715),400px)}

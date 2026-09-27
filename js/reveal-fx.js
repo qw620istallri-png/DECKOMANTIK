@@ -60,9 +60,9 @@ function radial(fx,{count,kind,colors,speed,size,life,drag=.9,g=0,spin=0,spread=
   }
 }
 // From behind the card, a spray from its centre outwards, hidden by the card until it clears the edges; the rarer, the denser (as in the first version)
-const BACK_SPRAY={common:[8,['#E8E4DA','#B9BCC4']],foil:[16,['#55DDFF','#FF72DD','#FFE36B','#7DFFB2']],silver:[22,['#FFFFFF','#D9ECFF','#B8C7D9']],gold:[30,['#FFF3B0','#FFD25C','#FFB13B']],desert:[36,['#F5BD63','#FFF0B4','#FF9E4A']],galaxy:[44,['#AA73FF','#48E8FF','#FFFFFF','#FF8FE0']],void:[50,['#72EFFF','#A871FF','#FFFFFF']]};
+const BACK_SPRAY={common:[8,['#E8E4DA','#B9BCC4']],foil:[16,['#55DDFF','#FF72DD','#FFE36B','#7DFFB2']],silver:[22,['#FFFFFF','#D9ECFF','#B8C7D9']],gold:[30,['#FFF3B0','#FFD25C','#FFB13B']],desert:[36,['#F5BD63','#FFF0B4','#FF9E4A']],galaxy:[44,['#AA73FF','#48E8FF','#FFFFFF','#FF8FE0']],zen:[49,['#79A77F','#64A9D5','#8B67A5','#D8BA45','#D85C51','#DD9EA9','#777A7C']],void:[50,['#72EFFF','#A871FF','#FFFFFF']]};
 function backSpray(fx,I,base,glitter){
-  const [count,colors]=BACK_SPRAY[base]||BACK_SPRAY.common,n=budget(count+(glitter?12:0)),far=base==='galaxy'||base==='void'?1.35:1;
+  const [count,colors]=BACK_SPRAY[base]||BACK_SPRAY.common,n=budget(count+(glitter?12:0)),far=['galaxy','zen','void'].includes(base)?1.35:1;
   fx.at(I,()=>{
     radial(fx,{count:Math.ceil(n*.55),kind:'streak',colors,speed:[950*far,1750*far],size:[34,52],life:[900,1400],drag:.955,spread:.08,align:true,stretch:.0011,fin:.02,fout:.45,delay:[0,140],behind:true});
     radial(fx,{count:Math.floor(n*.45),kind:'glow',colors,speed:[820*far,1500*far],size:[12,22],life:[1100,1700],drag:.96,spread:.08,fin:.02,fout:.55,tw:base==='common'?0:5,delay:[0,220],behind:true});
@@ -126,6 +126,14 @@ const PRESETS={
       radial(fx,{count:budget(20),kind:'star',colors,speed:[380,900],size:[14,24],life:[1300,2000],drag:.91,spread:.2,tw:6});
     });
     fx.at(I+140,()=>{orbit(fx,{count:budget(18),rx:.8,ry:.22,tilt:-.32,spin:1.6,colors,size:[12,18],life:3400,eject:520});orbit(fx,{count:budget(14),rx:.66,ry:.3,tilt:.42,spin:-1.15,colors:['#48E8FF','#FFFFFF'],size:[10,16],life:3200,delay:220,eject:520})});
+  },
+  zen(fx,I){
+    const colors=['#79A77F','#64A9D5','#8B67A5','#D8BA45','#D85C51','#DD9EA9','#777A7C'];
+    fx.at(I,()=>{
+      fx.add({kind:'flare',color:'#FFFFFF',life:820,s0:.65*fx.w,s1:3.2*fx.w,add:true,fin:.025,fout:.92});
+      radial(fx,{count:budget(35),kind:'star',colors,speed:[420,940],size:[14,25],life:[1100,1700],drag:.91,spread:.12,tw:7,delay:[0,180]});
+      radial(fx,{count:budget(28),kind:'glow',colors,speed:[520,1180],size:[11,22],life:[1250,1900],drag:.9,spread:.16,delay:[0,220]});
+    });
   },
   void(fx,I,lite){
     const colors=['#72EFFF','#A871FF','#FFFFFF'];
