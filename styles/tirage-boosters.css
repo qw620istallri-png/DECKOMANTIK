@@ -162,6 +162,9 @@
 @keyframes bx-ember-desert{0%{opacity:0;transform:translate(-22px,16px) rotate(calc(var(--er) * .035)) scaleX(.55)}18%,62%{opacity:.9}100%{opacity:0;transform:translate(calc(56px + var(--edx)),calc(-28px + var(--edy) * .18)) rotate(calc(var(--er) * .035)) scaleX(1.35)}}
 @keyframes bx-ember-galaxy{0%,100%{opacity:.16;transform:translate(0,0) rotate(0) scale(.35)}28%{opacity:1;transform:translate(calc(var(--edx) * -.18),calc(var(--edy) * -.12)) rotate(45deg) scale(1.4)}62%{opacity:.52;transform:translate(calc(var(--edx) * .22),calc(var(--edy) * .18)) rotate(90deg) scale(.7)}82%{opacity:1;transform:translate(calc(var(--edx) * .36),calc(var(--edy) * .25)) rotate(135deg) scale(1.12)}}
 @keyframes bx-ember-void{0%{opacity:0;transform:translate(calc(var(--edx) * -.45),calc(var(--edy) * -.45)) scale(1.45)}22%{opacity:.9}72%{opacity:.46;transform:translate(calc(var(--edx) * .55),calc(var(--edy) * .55)) scale(.55)}100%{opacity:0;transform:translate(var(--edx),var(--edy)) scale(.08)}}
+/* Scintillante : un reflet rare traverse le dos sans ajouter de particules ni annoncer la rareté de base. */
+.booster-card.active:not(.revealed):not(.is-charging):has(.rarity-glitter-fx) .booster-card-back::before{content:"";position:absolute;inset:-24% -62%;z-index:2;border-radius:inherit;pointer-events:none;opacity:0;background:linear-gradient(112deg,transparent 45%,rgb(120 233 255 / .04) 47.5%,rgb(255 255 255 / .42) 49.5%,rgb(255 242 170 / .18) 50.8%,rgb(255 130 223 / .05) 52%,transparent 55%);mix-blend-mode:screen;transform:translate3d(-55%,0,0);animation:bx-glitter-whisper 5.2s cubic-bezier(.16,1,.3,1) -1.3s infinite}
+@keyframes bx-glitter-whisper{0%,68%{opacity:0;transform:translate3d(-55%,0,0)}72%{opacity:.06}80%{opacity:.5}88%{opacity:.1}94%,100%{opacity:0;transform:translate3d(55%,0,0)}}
 /* appuyer charge la carte : elle s'enfonce, son halo s'intensifie, les hautes raretés aspirent leurs particules ; relâcher la retourne */
 .booster-dialog .booster-stack .booster-card-inner{transition:transform .6s cubic-bezier(.3,.6,.3,1),scale .45s cubic-bezier(.2,.8,.3,1)}
 .booster-dialog .booster-stack .booster-card.is-charging:not(.revealed) .booster-card-inner{scale:.94;transition:transform .6s cubic-bezier(.3,.6,.3,1),scale .9s cubic-bezier(.2,.7,.2,1)}
@@ -196,6 +199,7 @@
   .bx-rays,.bx-embers,.bx-cut{display:none}
   .booster-dialog .booster-stack .booster-card{animation:none!important}
   .booster-dialog .booster-stack .booster-card.active:not(.revealed)::after{animation:none;opacity:calc(var(--halo-k) * .7)}
+  .booster-card.active:not(.revealed):not(.is-charging):has(.rarity-glitter-fx) .booster-card-back::before{animation:none;opacity:.16;transform:translate3d(0,0,0)}
   .booster-dialog .booster-stack .booster-card-inner{scale:none!important}
   .bx-deck.is-shaking{animation:none}
 }
