@@ -52,6 +52,7 @@
 [data-rarity="desert"]{--rc:linear-gradient(135deg,#FFE1A0,#A8672C)}
 [data-rarity="galaxy"]{--rc:linear-gradient(135deg,#B63FB7,#6632C7 50%,#358DC6)}
 [data-rarity="void"]{--rc:radial-gradient(circle,#FFFFFF 30%,#9BEFFF 70%,#B884FF)}
+[data-rarity="zen"]{--rc:linear-gradient(135deg,#F7FBFF,#9FC9C5 38%,#D8B9CD 68%,#FFFFFF)}
 [data-rarity="common"]{--rc:#F1EFE8}
 /* emplacement « Ajouter » : trame de points, pastille d'encre */
 .card-row>.drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:var(--size);aspect-ratio:.715;min-height:0;padding:0;border:1px dashed var(--ink);border-radius:calc(var(--size) * .045);background:radial-gradient(circle,var(--dot) 1.1px,transparent 1.55px) 0 0/9px 9px;color:var(--ink);font:700 14px/1 var(--display);transition:background-size .5s var(--ease)}

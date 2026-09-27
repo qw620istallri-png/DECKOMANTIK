@@ -4,6 +4,9 @@ Source: https://github.com/simeydotme/pokemon-cards-css
 Copyright (C) Simon Goellner (@simeydotme)
 License: GNU General Public License v3.0 (see GPLv3-PokemonCardsCSS.txt in this folder)
 
-Used for the "Galaxy" rarity effect in DeckomantiK. Because this build
-incorporates GPLv3-licensed assets, the portions of DeckomantiK that use
-them are likewise covered by the GPLv3 terms in this folder.
+Used for the "Galaxy" rarity effect in DeckomantiK. The Regular Holo
+vertical-beam and Secret Rare Gold glitter structures from the same project
+are also adapted for the craft-only "Zen" rarity. Because this build
+incorporates GPLv3-licensed assets and adapted code, the portions of
+DeckomantiK that use them are likewise covered by the GPLv3 terms in this
+folder.
