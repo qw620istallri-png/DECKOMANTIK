@@ -1816,9 +1816,10 @@ const BOOSTER_HIGH_RARITIES=new Set(['gold','desert','galaxy','void']);
 // Only the embers that rise before the flip are DOM; they are poured in when the card reaches the top of the pile and emptied once it has been set aside.
 // The reveal particles themselves are drawn on one shared canvas (js/reveal-fx.js), and the lights laid on the card are in reveal-fx.css.
 function boosterCardMarkup(pull,index){const base=rarityBase(pull.rarity),high=BOOSTER_HIGH_RARITIES.has(base);return `<div class="booster-card${index===0?' active':''}" data-booster-index="${index}" style="--depth:${index}" role="button" tabindex="${index===0?0:-1}">${high?'<div class="bx-rays" aria-hidden="true"></div>':''}<div class="rfx-back" aria-hidden="true"></div><div class="booster-card-inner"><div class="booster-card-back"><img src="assets/booster-card-back.png" alt="" loading="eager" decoding="sync"></div><div class="booster-card-front${rarityClassAttr(pull.rarity)}" style="${cosmosOffset(pull.card.id)}"><img src="${esc(cardImage(pull.card))}" alt="${esc(cardName(pull.card))}" loading="eager" decoding="sync">${glitterLayerMarkup(pull.rarity)}<div class="booster-vfx-spotlight" aria-hidden="true"></div><i class="rfx-face" aria-hidden="true"></i></div></div><div class="rfx-over" aria-hidden="true"></div>${base==='gold'?'<div class="rfx-edge" aria-hidden="true"></div>':base==='void'?'<div class="rfx-rim" aria-hidden="true"></div>':''}${high?'<div class="bx-embers" aria-hidden="true"></div>':''}<div class="booster-vfx-card-flash" aria-hidden="true"></div><span class="bx-dup" aria-hidden="true"></span></div>`}
-const boosterEmbersMarkup=()=>Array.from({length:14},(_,index)=>`<i style="--ex:${(index*37)%100}%;--ed:${(index*.23%2.4).toFixed(2)}s;--edx:${((index*53)%40)-20}px;--es:${2+index%3}px"></i>`).join('');
+const BOOSTER_IDLE_PARTICLE_COUNTS={gold:14,desert:20,galaxy:26,void:30};
+const boosterEmbersMarkup=rarity=>{const base=rarityBase(rarity),count=BOOSTER_IDLE_PARTICLE_COUNTS[base]||0;return Array.from({length:count},(_,index)=>{const x=(index*37+11)%100,y=(index*61+7)%94,dx=Math.round((50-x)*1.45),dy=Math.round((50-y)*2.05);return `<i style="--ex:${x}%;--ey:${y}%;--ed:-${(index*.19%2.8).toFixed(2)}s;--edx:${dx}px;--edy:${dy}px;--es:${2+index%4}px;--er:${(index*47)%360}deg"></i>`}).join('')};
 function fillBoosterCardVfx(cardEl,pull){
-  if(!cardEl||!pull||cardEl.dataset.vfx)return;cardEl.dataset.vfx='on';const embers=cardEl.querySelector(':scope>.bx-embers');if(embers&&!embers.childElementCount)embers.innerHTML=boosterEmbersMarkup();
+  if(!cardEl||!pull||cardEl.dataset.vfx)return;cardEl.dataset.vfx='on';const embers=cardEl.querySelector(':scope>.bx-embers');if(embers&&!embers.childElementCount)embers.innerHTML=boosterEmbersMarkup(pull.rarity);
 }
 function clearBoosterCardVfx(cardEl){if(!cardEl?.dataset.vfx)return;delete cardEl.dataset.vfx;cardEl.querySelector(':scope>.bx-embers')?.replaceChildren()}
 // Small spring simulation (semi-implicit Euler) so pointer/gyro-driven CSS vars ease toward their target instead of snapping every frame -- shared by the booster stack and the static card spotlight.
@@ -1929,11 +1930,19 @@ function bindBoosterStackClicks(){
   };
   stack.onclick=event=>{if(performance.now()<ignoreClickUntil)return;activate(event.target.closest('.booster-card'))};
   stack.onkeydown=event=>{if(event.key!=='Enter'&&event.key!==' ')return;const cardEl=event.target.closest?.('.booster-card');if(!cardEl)return;event.preventDefault();activate(cardEl)};
-  // Pressing a face-down card charges it (it sinks, its halo swells, high rarities draw their particles in); releasing flips it.
+  // Pressing a face-down card charges it (it sinks, its halo swells, high rarities draw their particles in). A touch long-press flips at the threshold instead of waiting for the browser's fragile synthetic click.
   // A revealed card follows the finger and flies off in the direction and at the speed of the throw; a simple tap still moves on.
+  stack.oncontextmenu=event=>{if(event.target.closest?.('.booster-card.active'))event.preventDefault()};
   stack.addEventListener('pointerdown',event=>{
     const cardEl=event.target.closest('.booster-card.active');if(!cardEl||!activeRevealSession(session)||event.button>0||cardEl.classList.contains('post-flip-revealing'))return;
-    if(!cardEl.classList.contains('revealed')){cardEl.classList.add('is-charging');window.RevealFx?.charge(cardEl,boosterPulls[Number(cardEl.dataset.boosterIndex)]?.rarity);const stop=()=>{cardEl.classList.remove('is-charging');window.removeEventListener('pointerup',stop,true);window.removeEventListener('pointercancel',stop,true)};window.addEventListener('pointerup',stop,true);window.addEventListener('pointercancel',stop,true);return}
+    if(!cardEl.classList.contains('revealed')){
+      const pointer=event.pointerId,origin={x:event.clientX,y:event.clientY},touchHold=event.pointerType!=='mouse';let holdTimer=0;
+      const cleanup=()=>{clearTimeout(holdTimer);holdTimer=0;window.removeEventListener('pointermove',move,true);window.removeEventListener('pointerup',stop,true);window.removeEventListener('pointercancel',stop,true)};
+      const stop=e=>{if(e?.pointerId!==undefined&&e.pointerId!==pointer)return;cleanup();cardEl.classList.remove('is-charging')};
+      const move=e=>{if(e.pointerId===pointer&&Math.hypot(e.clientX-origin.x,e.clientY-origin.y)>12)stop(e)};
+      const revealHeld=()=>{holdTimer=0;cleanup();cardEl.classList.remove('is-charging');if(!activeRevealSession(session)||cardEl.classList.contains('revealed'))return;ignoreClickUntil=performance.now()+700;try{navigator.vibrate?.(12)}catch{}activate(cardEl)};
+      cardEl.classList.add('is-charging');window.RevealFx?.charge(cardEl,boosterPulls[Number(cardEl.dataset.boosterIndex)]?.rarity);window.addEventListener('pointermove',move,true);window.addEventListener('pointerup',stop,true);window.addEventListener('pointercancel',stop,true);if(touchHold)holdTimer=setTimeout(revealHeld,480);return
+    }
     if(boosterReducedMotion())return;
     const pointer=event.pointerId,origin={x:event.clientX,y:event.clientY},trail=[{x:origin.x,y:origin.y,t:event.timeStamp}];let moved=false;
     const move=e=>{if(e.pointerId!==pointer)return;const dx=e.clientX-origin.x,dy=e.clientY-origin.y;if(!moved){if(Math.hypot(dx,dy)<9)return;moved=true;cardEl.classList.add('is-dragging');stack.classList.add('is-dragging')}trail.push({x:e.clientX,y:e.clientY,t:e.timeStamp});if(trail.length>6)trail.shift();cardEl.style.translate=`${dx.toFixed(1)}px ${dy.toFixed(1)}px`;cardEl.style.rotate=`${(dx*.05).toFixed(2)}deg`};
