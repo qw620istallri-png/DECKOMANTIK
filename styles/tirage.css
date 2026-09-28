@@ -290,6 +290,9 @@ body.cover-view .top,body.cover-view .toolbar{display:none}
 body.deck-manager-view .top,body.deck-manager-view .toolbar,body.deck-manager-view .mobile-nav{display:none}
 body.cover-view .layout{min-height:100vh}
 body.board-view{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);height:100vh;min-height:0;overflow:hidden}
+body.board-view .top{z-index:240}
+body.shared-view:has(.board-area){display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);height:100vh;min-height:0;overflow:hidden}
+body.shared-view:has(.board-area) .layout{height:100%!important;min-height:0}
 body.board-view .toolbar,body.shared-view .toolbar{display:none}
 #boardToolbarShell{display:none}
 body.board-view #boardToolbarShell,body.shared-view #boardToolbarShell{display:block}
