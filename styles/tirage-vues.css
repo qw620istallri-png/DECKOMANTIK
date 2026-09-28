@@ -237,8 +237,18 @@ html[data-theme="dark"] .card-lightbox{background:rgb(0 0 0 / .66)}
 html[data-stamp-ink="gold"] .stamp:not(.is-blank){--stamp-ink:#9A6B0B}
 html[data-stamp-ink="violet"] .stamp:not(.is-blank){--stamp-ink:#6B3FA0}
 html[data-stamp-ink="black"] .stamp:not(.is-blank){--stamp-ink:var(--ink)}
+html[data-stamp-ink="seven"] .stamp:not(.is-blank){--stamp-ink:#9A6B0B}
+html[data-stamp-ink="seven"] .stamp.is-boosters:not(.is-blank){--stamp-ink:#2C748E}
+html[data-stamp-ink="seven"] .stamp.is-collection:not(.is-blank){--stamp-ink:#6B3FA0}
+html[data-stamp-ink="seven"] .stamp.is-construction:not(.is-blank){--stamp-ink:#A43B36}
+html[data-stamp-ink="seven"] .stamp.is-rituals:not(.is-blank){--stamp-ink:#4F7454}
 html[data-theme="dark"][data-stamp-ink="gold"] .stamp:not(.is-blank),html[data-stamp-ink="gold"] .booster-dialog .stamp:not(.is-blank){--stamp-ink:#E8B84A}
 html[data-theme="dark"][data-stamp-ink="violet"] .stamp:not(.is-blank),html[data-stamp-ink="violet"] .booster-dialog .stamp:not(.is-blank){--stamp-ink:#B89BFF}
+html[data-theme="dark"][data-stamp-ink="seven"] .stamp:not(.is-blank),html[data-stamp-ink="seven"] .booster-dialog .stamp:not(.is-blank){--stamp-ink:#E8B84A}
+html[data-theme="dark"][data-stamp-ink="seven"] .stamp.is-boosters:not(.is-blank),html[data-stamp-ink="seven"] .booster-dialog .stamp.is-boosters:not(.is-blank){--stamp-ink:#64A9D5}
+html[data-theme="dark"][data-stamp-ink="seven"] .stamp.is-collection:not(.is-blank),html[data-stamp-ink="seven"] .booster-dialog .stamp.is-collection:not(.is-blank){--stamp-ink:#B89BFF}
+html[data-theme="dark"][data-stamp-ink="seven"] .stamp.is-construction:not(.is-blank),html[data-stamp-ink="seven"] .booster-dialog .stamp.is-construction:not(.is-blank){--stamp-ink:#F07C73}
+html[data-theme="dark"][data-stamp-ink="seven"] .stamp.is-rituals:not(.is-blank),html[data-stamp-ink="seven"] .booster-dialog .stamp.is-rituals:not(.is-blank){--stamp-ink:#9BC5A0}
 /* le coup de tampon : il s'imprime d'un coup sec, puis une ligne de texte ; toucher le congédie. Sur ordinateur, en haut à droite, hors du chemin */
 .stamp-strike{position:fixed;z-index:120;left:50%;top:calc(68px + env(safe-area-inset-top));display:flex;align-items:center;gap:16px;width:max-content;max-width:min(470px,calc(100vw - 24px));padding:12px 20px 12px 14px;border:1px solid var(--ink);background:var(--sheet);color:var(--ink);box-shadow:0 18px 44px rgb(0 0 0 / .28);translate:-50% 0;cursor:pointer;animation:stamp-card-in .32s cubic-bezier(.2,.8,.3,1) both}
 @media (min-width:851px){.stamp-strike{left:auto;right:24px;top:96px;translate:none}}
@@ -326,10 +336,14 @@ html[data-theme="dark"] .book-rank .book-premium .i{color:#F2C14E}
 .cosmetic-swatch.is-sleeve[data-swatch="nacre"]{--edge:#F3E9F7}
 .cosmetic-swatch.is-sleeve[data-swatch="violet"]{--edge:#8B5CF6}
 .cosmetic-swatch.is-sleeve[data-swatch="void"]{--edge:#C9FBFF}
+.cosmetic-swatch.is-sleeve[data-swatch="seven"]{--edge:#F4FCFF;background:conic-gradient(from 25deg,#79A77F,#64A9D5,#8B67A5,#D8BA45,#D85C51,#DD9EA9,#777A7C,#79A77F)}
 .cosmetic-swatch.is-scene[data-swatch="dots"]{background:radial-gradient(circle,rgb(255 79 163 / .6) 1px,transparent 1.5px) 0 0/6px 6px,#0E0D10}
 .cosmetic-swatch.is-scene[data-swatch="lines"]{background:repeating-linear-gradient(135deg,rgb(255 79 163 / .55) 0 1px,transparent 1px 5px),#0E0D10}
 .cosmetic-swatch.is-scene[data-swatch="stars"]{background:radial-gradient(1px 1px at 22% 30%,#fff,transparent),radial-gradient(1px 1px at 72% 58%,#fff,transparent),radial-gradient(1.4px 1.4px at 46% 78%,#fff,transparent),radial-gradient(1px 1px at 84% 18%,#fff,transparent),#0E0D10}
 .cosmetic-swatch.is-scene[data-swatch="waves"]{background:repeating-radial-gradient(circle at 50% 130%,rgb(255 79 163 / .55) 0 1px,transparent 1px 5px),#0E0D10}
+.cosmetic-swatch.is-scene[data-swatch="aurora"]{background:linear-gradient(112deg,transparent 12%,rgb(52 193 186 / .78) 31%,transparent 45%),linear-gradient(68deg,transparent 45%,rgb(172 92 202 / .78) 63%,transparent 82%),#070914}
+.cosmetic-swatch.is-scene[data-swatch="glass"]{background:linear-gradient(123deg,transparent 19%,rgb(133 220 238 / .72) 20% 22%,transparent 23% 58%,rgb(151 119 220 / .62) 59% 61%,transparent 62%),linear-gradient(52deg,transparent 36%,rgb(255 255 255 / .28) 37% 38%,transparent 39%),#070B12}
+.cosmetic-swatch.is-scene[data-swatch="zenith"]{background:radial-gradient(circle at 18% 20%,#79A77F,transparent 34%),radial-gradient(circle at 82% 24%,#64A9D5,transparent 34%),radial-gradient(circle at 70% 82%,#D85C51,transparent 36%),radial-gradient(circle at 25% 78%,#8B67A5,transparent 36%),#050509}
 .cosmetic-swatch.is-accent i{inset:8px 6px 8px 14px;border-radius:50%;background:#7C4DFF;box-shadow:-8px 0 0 #18B5C9}
 .cosmetic-swatch.is-accent[data-swatch="heritage"]{background:#F0EFE7}
 .cosmetic-swatch.is-accent[data-swatch="heritage"] i{background:#D3A942;box-shadow:-8px 0 0 #17140F}
@@ -338,11 +352,14 @@ html[data-theme="dark"] .book-rank .book-premium .i{color:#F2C14E}
 .cosmetic-swatch.is-title[data-swatch="gold"]{--fx:#F2C14E}
 .cosmetic-swatch.is-title[data-swatch="aurora"]{--fx:#4FE0B0}
 .cosmetic-swatch.is-title[data-swatch="void"]{--fx:#9BEFFF}
+.cosmetic-swatch.is-title[data-swatch="serenity"]{--fx:#D8BA45;background:radial-gradient(circle at 22% 25%,rgb(121 167 127 / .5),transparent 32%),radial-gradient(circle at 78% 72%,rgb(139 103 165 / .5),transparent 34%),var(--sheet)}
 .cosmetic-swatch.is-ink{background:var(--sheet)}
 .cosmetic-swatch.is-ink i{inset:6px;border:3px double var(--fx,var(--pink-ink));border-radius:50%}
 .cosmetic-swatch.is-ink[data-swatch="gold"]{--fx:#9A6B0B}
 .cosmetic-swatch.is-ink[data-swatch="violet"]{--fx:#6B3FA0}
 .cosmetic-swatch.is-ink[data-swatch="black"]{--fx:var(--ink)}
+.cosmetic-swatch.is-ink[data-swatch="seven"]{background:linear-gradient(135deg,rgb(100 169 213 / .22),rgb(216 186 69 / .24),rgb(216 92 81 / .22)),var(--sheet)}
+.cosmetic-swatch.is-ink[data-swatch="seven"] i{border-color:#6B3FA0;box-shadow:inset 0 0 0 2px #D8BA45,0 0 0 1px #64A9D5}
 .book-backup p{margin:0 0 12px;color:var(--ink-2);font:500 14.5px/1.4 var(--text)}
 #decksDialog:has(.board-create-dialog){width:min(560px,calc(100vw - 28px))}
 .board-create-dialog{width:auto}
