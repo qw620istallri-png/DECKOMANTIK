@@ -556,7 +556,7 @@ body.deck-manager-view .workspace{padding:0;background:var(--paper)}
 .dm-sort{position:relative}.dm-sort select{width:100%;height:44px;padding-right:34px}.dm-sort>.i{position:absolute;right:10px;top:12px;pointer-events:none}
 .deck-manager-summary{display:flex;justify-content:space-between;gap:18px;padding:12px 0;color:var(--muted);font:650 13.5px/1.35 var(--display);font-stretch:92%}
 .deck-manager-results{border-top:1px solid var(--ink)}
-.deck-manager-row{display:grid;grid-template-columns:104px minmax(240px,1fr) auto;align-items:center;gap:20px;min-height:112px;padding:14px 0;border-bottom:1px solid var(--rule);transition:background-color .16s var(--ease)}
+.deck-manager-row{display:grid;grid-template-columns:104px minmax(240px,1fr) auto;align-items:center;gap:20px;min-height:112px;padding:14px 0;border-bottom:1px solid var(--rule);content-visibility:auto;contain-intrinsic-size:auto 140px;transition:background-color .16s var(--ease)}
 .deck-manager-row:hover,.deck-manager-row:focus-within{background:var(--pink-screen)}
 .deck-manager-row.is-archived{color:var(--muted)}
 .dm-fan{position:relative;width:92px;height:76px;margin-left:8px}

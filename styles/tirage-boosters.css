@@ -479,7 +479,8 @@ html[data-scene="zenith"] .booster-dialog::after{inset:-25%;opacity:.82;filter:n
 .soul-color-option:hover:not(:disabled){border-color:var(--temp);background:var(--sheet-2);color:var(--ink)}
 .soul-color-option.active{border-color:var(--temp);background:color-mix(in srgb,var(--temp) 18%,var(--paper));box-shadow:inset 0 -3px 0 var(--temp)}
 .soul-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr));align-content:start;gap:14px;margin-top:18px}
-.soul-card{display:grid;grid-template-columns:112px minmax(0,1fr);gap:14px;padding:12px;border:1px solid var(--rule);background:var(--sheet)}
+.soul-card{display:grid;grid-template-columns:112px minmax(0,1fr);gap:14px;padding:12px;border:1px solid var(--rule);background:var(--sheet);content-visibility:auto;contain-intrinsic-size:auto 186px}
+.soul-card:not(.is-visible) .soul-card-art,.soul-card:not(.is-visible) .soul-card-art *,.soul-card:not(.is-visible) .soul-card-art::before,.soul-card:not(.is-visible) .soul-card-art::after,.soul-card:not(.is-visible) .soul-card-art *::before,.soul-card:not(.is-visible) .soul-card-art *::after{animation-play-state:paused!important}
 .soul-card-art{position:relative;width:112px;aspect-ratio:.715;overflow:hidden;border-radius:4.5%/3.2%;background:#222;box-shadow:0 10px 24px rgb(0 0 0 / .55);transform:perspective(700px) rotateX(var(--tilt-y,0deg)) rotateY(var(--tilt-x,0deg));transition:transform .12s ease-out;container-type:inline-size}
 .soul-card-art>img{width:100%;height:100%;object-fit:cover}
 .soul-card-info{display:flex;flex-direction:column;gap:6px;min-width:0}

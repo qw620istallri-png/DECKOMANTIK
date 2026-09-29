@@ -11,7 +11,7 @@
     Object.freeze({
       id: 'beta',
       name: 'Beta',
-      image: 'assets/booster-pack-cover.png',
+      image: 'assets/booster-pack-cover.webp',
       slots: Object.freeze([Object.freeze({ setId: 'beta', count: 5 })]),
       desertChance: 0,
       guarantee: 'silver'
