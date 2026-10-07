@@ -1,0 +1,8 @@
+/* Shared coordinates keep dune texture, reflections and storm masks aligned. */
+@property --desert-wind-drift{syntax:"<length>";inherits:true;initial-value:0px}
+@keyframes desert-sand-drift{from{--desert-wind-drift:0px}to{--desert-wind-drift:190px}}
+@property --desert-foil-sweep{syntax:"<percentage>";inherits:true;initial-value:0%}
+@keyframes desert-foil-sweep{from{--desert-foil-sweep:-45%}to{--desert-foil-sweep:45%}}
+@property --desert-storm-x{syntax:"<percentage>";inherits:true;initial-value:-65%}
+@property --desert-storm-strength{syntax:"<number>";inherits:true;initial-value:0}
+@keyframes desert-storm-pass{0%,35%{--desert-storm-x:-65%;--desert-storm-strength:0}45%{--desert-storm-x:-15%;--desert-storm-strength:.7}60%{--desert-storm-x:60%;--desert-storm-strength:1}75%{--desert-storm-x:135%;--desert-storm-strength:.7}85%,100%{--desert-storm-x:180%;--desert-storm-strength:0}}

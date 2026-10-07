@@ -173,6 +173,9 @@ html[data-theme="dark"] .card-lightbox{background:rgb(0 0 0 / .66)}
 .preview-block.duplicates{--preview-ink:var(--warn)}
 .preview-block.unknown{--preview-ink:var(--bad)}
 .preview-block.suggestions,.preview-block.categories{--preview-ink:var(--pink)}
+.preview-block.validation.valid{--preview-ink:var(--ok);border-color:color-mix(in srgb,var(--ok) 42%,var(--rule))}
+.preview-block.validation.invalid{--preview-ink:var(--bad);border-color:color-mix(in srgb,var(--bad) 42%,var(--rule))}
+.preview-block.validation strong{color:var(--preview-ink)}
 .import-actions{align-items:center}
 
 /* ==========================================================
