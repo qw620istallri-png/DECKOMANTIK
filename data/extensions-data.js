@@ -34,7 +34,7 @@
 
   globalThis.DECKOMANTIK_INNER_DESERTS_CARDS = Object.freeze(innerDesertsCards.map(card => Object.freeze({
     ...card,
-    image: missingImage,
+    image: `assets/Desert/cards/${card.id}.webp`,
     temperaments: Object.freeze(card.temperaments),
     translations: Object.freeze({
       it: Object.freeze(card.translations.it),

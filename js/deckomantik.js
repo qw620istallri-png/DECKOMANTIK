@@ -326,7 +326,7 @@ const cardNumber=card=>card.collectorCode||`#${String(card.collectionNumber).pad
 const cardField=(card,field)=>card.translations?.[language]?.[field]??card.i18n?.[language]?.[field]??card[field];
 const cardName=card=>cardField(card,'name');
 const cardImage=card=>cardField(card,'image')||card.image||'assets/booster-card-back.webp';
-const cardThumbnail=card=>{const source=cardImage(card);if(source.startsWith('cards/'))return `cards-thumb/${source.slice(6)}`;if(source.startsWith('cards-it/'))return `cards-it-thumb/${source.slice(9)}`;return source};
+const cardThumbnail=card=>{const source=cardImage(card);if(source.startsWith('cards/'))return `cards-thumb/${source.slice(6)}`;if(source.startsWith('cards-it/'))return `cards-it-thumb/${source.slice(9)}`;if(source.startsWith('assets/Desert/cards/'))return `assets/Desert/cards-thumb/${source.slice(20)}`;return source};
 const cardThumbAttrs=(card,sizes='112px')=>{const source=cardImage(card),thumbnail=cardThumbnail(card);return thumbnail===source?`src="${esc(source)}"`:`src="${esc(thumbnail)}" srcset="${esc(thumbnail)} 224w, ${esc(source)} 500w" sizes="${esc(sizes)}"`};
 const localizedRuleForms=term=>term?.forms?.[language]?.length?term.forms[language]:term?.forms?.en||[];
 function localizedTermLabelWithEnglish(term){const localized=localizedRuleForms(term)[0]||term.id.replace(/_/g,' ');if(language==='en')return localized;const english=term?.forms?.en?.[0]||term.id.replace(/_/g,' ');return english&&english!==localized?`${localized} (${english})`:localized}

@@ -1,12 +1,12 @@
 (() => {
   'use strict';
 
-  // GitHub Pages release switch. Inner Deserts is already bundled for a
-  // one-line launch, but stays absent from every public view while false.
+  // GitHub Pages release switch. Inner Deserts is live; changing this flag
+  // back to false provides an immediate, data-preserving rollback.
   globalThis.DECKOMANTIK_RELEASE = Object.freeze({
-    version: '2026.09-beta',
+    version: '2026.10-inner-deserts',
     extensions: Object.freeze({
-      'inner-deserts': false
+      'inner-deserts': true
     })
   });
 })();
