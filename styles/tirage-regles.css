@@ -4,7 +4,7 @@
 
 /* ---------- Mise en page : sommaire | colonne de lecture | glossaire ---------- */
 /* deux marges de même largeur : la colonne de lecture tombe au milieu de l'écran ; elle est large (780 px), comme la version de base */
-.lv-page{--run-h:46px;--toc-w:280px;--gloss-w:280px;--gut:clamp(24px,3vw,44px);--read:17px;--measure:780px;--hl:color-mix(in srgb,var(--pink) 36%,transparent);--lv-ground:color-mix(in srgb,var(--ink) 3%,color-mix(in srgb,var(--plate) 9%,var(--sheet-2)))}
+.lv-page{--run-h:46px;--toc-w:280px;--gloss-w:280px;--gut:clamp(24px,3vw,44px);--read:17px;--measure:780px;--hl:color-mix(in srgb,var(--pink) 36%,transparent);--lv-ground:color-mix(in srgb,var(--ink) 3%,color-mix(in srgb,var(--plate) 9%,var(--sheet-2)));overflow-x:hidden}
 html[data-theme="dark"] .lv-page{--hl:color-mix(in srgb,var(--pink) 42%,transparent);--lv-ground:color-mix(in srgb,#000 32%,var(--paper))}
 .lv-bar{position:sticky;top:0;z-index:70;gap:12px;padding-right:20px}
 .lv-back{gap:8px;margin-right:auto}
@@ -109,6 +109,30 @@ html[data-theme="dark"] .lv-page{--hl:color-mix(in srgb,var(--pink) 42%,transpar
 .lv-phases li{position:relative;padding:.75em 0 .75em 3em;border-top:1px solid var(--rule);counter-increment:ph}
 .lv-phases li:last-child{border-bottom:1px solid var(--rule)}
 .lv-phases li::before{content:counter(ph);position:absolute;left:0;top:.42em;color:var(--pink-ink);font:800 34px/1 var(--display);font-stretch:76%;font-variant-numeric:tabular-nums;text-shadow:var(--mis) 0 var(--plate-screen)}
+.lv-phase-chart{width:100%;min-width:0;max-width:100%;margin:1em 0 1.6em;contain:inline-size}
+.lv-phase-chart figcaption{margin:0 0 .65em;font:800 20px/1.2 var(--display);font-stretch:84%;text-wrap:balance}
+.lv-phase-chart-scroll{width:100%;min-width:0;max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain;contain:inline-size paint;border:1px solid var(--ink);background:var(--sheet);scrollbar-color:var(--plate) var(--paper)}
+.lv-phase-chart-scroll:focus-visible{outline:3px solid var(--pink);outline-offset:3px}
+.lv-phase-chart table{width:100%;min-width:1480px;border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:14px;line-height:1.3}
+.lv-phase-chart th,.lv-phase-chart td{border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);vertical-align:top}
+.lv-phase-chart tr>*:last-child{border-right:0}
+.lv-phase-chart tbody tr:last-child>*{border-bottom:0}
+.lv-phase-chart thead th{text-align:center}
+.lv-phase-chart thead tr:first-child th:not(.lv-pc-corner){padding:12px 8px;font:800 17px/1.08 var(--display);font-stretch:82%}
+.lv-phase-chart thead tr:nth-child(2) th{padding:7px 6px;font:750 14px/1.1 var(--display)}
+.lv-phase-chart .lv-pc-step{padding:8px 7px 10px;font-weight:400}
+.lv-phase-chart .lv-pc-step strong{display:block;margin-bottom:6px;font:800 14px/1 var(--display);text-transform:uppercase}
+.lv-phase-chart .lv-pc-step span{display:block}
+.lv-pc-corner,.lv-phase-chart tbody th{position:sticky;left:0;z-index:2;width:260px;background:var(--sheet);text-align:left}
+.lv-pc-corner{z-index:3;padding:12px;font:750 14px/1.2 var(--display)}
+.lv-phase-chart tbody th{padding:10px 12px;font:700 14px/1.25 var(--display)}
+.lv-phase-chart tbody td{height:42px;text-align:center;vertical-align:middle}
+.lv-phase-chart tbody td.is-allowed span[aria-hidden]{display:inline-grid;width:27px;height:27px;place-items:center;border-radius:50%;background:var(--ink);color:var(--paper);font:900 18px/1 var(--display)}
+.lv-pc-recovery{background:color-mix(in srgb,#d9c655 24%,var(--sheet))}
+.lv-pc-confrontation{background:color-mix(in srgb,#df8d4e 22%,var(--sheet))}
+.lv-pc-resolution{background:color-mix(in srgb,#d66f55 19%,var(--sheet))}
+.lv-pc-end{background:color-mix(in srgb,#7f9da0 20%,var(--sheet))}
+.lv-phase-chart th.is-empty{color:transparent}
 .lv-deckrules{margin:.6em 0 1.3em;padding:0;list-style:none;border:1px solid var(--ink);background:var(--sheet)}
 .lv-deckrules li{display:grid;grid-template-columns:22px minmax(0,1fr);align-items:start;gap:12px;padding:12px 16px}
 .lv-deckrules li+li{border-top:1px solid var(--rule)}
@@ -338,6 +362,7 @@ html[data-theme="dark"] .lv-page{--hl:color-mix(in srgb,var(--pink) 42%,transpar
   .lv-meta{font-size:14px}
   .lv-gloss-btn,.lv-runhead{display:none}
   .lv-ch{--ch-pad:16px;margin-block:18px;padding:0 var(--ch-pad) 24px}
+  .lv-pc-corner,.lv-phase-chart tbody th{width:190px}
   .lv-ch-head{margin-bottom:22px;padding:14px var(--ch-pad) 16px}
   .lv-ch-title h2{font-size:31px}
   .lv-ch-folio{font-size:13.5px}

@@ -34,8 +34,8 @@ function ensureBoosterStyles(){
 function ensureRulesFeature(){
   if(rulesData.text)return Promise.resolve(rulesData);if(rulesFeaturePromise)return rulesFeaturePromise;
   rulesFeaturePromise=Promise.all([
-    loadStyleOnce('styles/tirage-regles.css?v=20260929-perf-1','rules','link[href*="tirage-vues.css"]'),
-    loadScriptOnce('data/rules-index.js?v=20260929-perf-1','rules-data')
+    loadStyleOnce('styles/tirage-regles.css?v=20261009-inner-desert-rules-1','rules','link[href*="tirage-vues.css"]'),
+    loadScriptOnce('data/rules-index.js?v=20261009-inner-desert-rules-1','rules-data')
   ]).then(()=>{rulesData=globalThis.DECKOMANTIK_RULES||rulesData;ruleTermsById=new Map((rulesData.terms||[]).map(term=>[term.id,term]));return rulesData}).catch(error=>{rulesFeaturePromise=null;throw error});return rulesFeaturePromise
 }
 const byId=new Map(cards.map(card=>[card.id,card]));
@@ -1206,6 +1206,16 @@ const ruleBlockGroups={
   'deck-rule':{wrap:html=>`<ul class="lv-deckrules">${html}</ul>`,item:(block,key,chapterId)=>`<li data-b="${key}">${icon('check')}<span>${renderRuleRichText(block.text,ruleBlockOptions(block,{chapterId}))}</span></li>`},
   'label-list':{wrap:html=>`<ul class="lv-labels">${html}</ul>`,item:(block,key,chapterId)=>`<li data-b="${key}">${ruleLabelItem(block,ruleBlockOptions(block,{chapterId}))}</li>`}
 };
+function renderRulePhaseChart(block,key,chapterId){
+  const phases=Array.isArray(block.phases)?block.phases:[],columns=phases.flatMap(phase=>(phase.subphases||[]).flatMap(subphase=>(subphase.steps||[]).map(step=>({...step,phaseId:phase.id}))));
+  if(!columns.length)return'';
+  const options=ruleBlockOptions(block,{chapterId}),allowedLabel=language==='fr'?'Autorisé':'Allowed',blockedLabel=language==='fr'?'Non autorisé':'Not allowed';
+  const phaseHeads=phases.map(phase=>{const count=(phase.subphases||[]).reduce((total,subphase)=>total+(subphase.steps||[]).length,0);return`<th class="lv-pc-${esc(phase.id)}" scope="colgroup" colspan="${count}">${renderRuleDecorations(phase.label,options)}</th>`}).join('');
+  const subHeads=phases.flatMap(phase=>(phase.subphases||[]).map(subphase=>`<th class="lv-pc-${esc(phase.id)}${subphase.label?'':' is-empty'}" scope="colgroup" colspan="${(subphase.steps||[]).length}">${subphase.label?renderRuleDecorations(subphase.label,options):`<span class="vh">${esc(phase.label)}</span>`}</th>`)).join('');
+  const stepHeads=columns.map(column=>`<th class="lv-pc-${esc(column.phaseId)} lv-pc-step" scope="col"><strong>${esc(column.label)}</strong><span>${renderRuleDecorations(column.text,options)}</span></th>`).join('');
+  const actions=(block.actions||[]).map(action=>{const allowed=new Set(action.steps||[]);return`<tr><th scope="row">${renderRuleDecorations(action.label,options)}</th>${columns.map(column=>{const active=allowed.has(column.id);return`<td class="lv-pc-${esc(column.phaseId)}${active?' is-allowed':''}">${active?'<span aria-hidden="true">✓</span>':''}<span class="vh">${esc(active?allowedLabel:blockedLabel)}</span></td>`}).join('')}</tr>`}).join('');
+  return`<figure class="lv-phase-chart" data-b="${esc(key)}"><figcaption>${renderRuleDecorations(block.caption||block.text,options)}</figcaption><div class="lv-phase-chart-scroll" tabindex="0"><table><caption class="vh">${esc(block.caption||block.text)}</caption><thead><tr><th class="lv-pc-corner" rowspan="3" scope="col">${esc(t('rulesReading'))}</th>${phaseHeads}</tr><tr>${subHeads}</tr><tr>${stepHeads}</tr></thead><tbody>${actions}</tbody></table></div></figure>`;
+}
 function renderRuleBlock(block,key,chapterId){
   const options=ruleBlockOptions(block,{chapterId}),richOptions=chapterId==='basics'&&block.type==='p'&&ruleStartsWithTemperament(block.text)?{...options,boldTemperamentLead:true,iconMode:'temperament'}:options,text=block.text;
   if(block.type==='h2')return `<h3 data-b="${key}">${renderRuleRichText(text,options)}</h3>`;
@@ -1214,6 +1224,7 @@ function renderRuleBlock(block,key,chapterId){
   if(block.type==='note'){const lead=String(text).match(/^(?:note|nota)\s*:\s*/i);return `<aside class="lv-note" data-b="${key}"><span class="lv-tag">${esc(t('ruleNoteTag'))}</span><p>${renderRuleRichText(lead?text.slice(lead[0].length):text,richOptions)}</p></aside>`}
   if(block.type==='callout')return block.variant==='end-condition'?`<aside class="lv-callout lv-callout--end" data-b="${key}"><span class="lv-tag">${icon('hourglass')}${esc(t('ruleEndTag'))}</span><p>${renderRuleRichText(text,richOptions)}</p></aside>`:`<aside class="lv-callout" data-b="${key}">${icon('spark')}<p>${renderRuleRichText(text,richOptions)}</p></aside>`;
   if(block.type==='starter-summary')return `<p class="lv-starter-sum" data-b="${key}">${renderRuleRichText(text,richOptions)}</p>`;
+  if(block.type==='phase-chart')return renderRulePhaseChart(block,key,chapterId);
   return `<p data-b="${key}">${renderRuleRichText(text,richOptions)}</p>`;
 }
 
