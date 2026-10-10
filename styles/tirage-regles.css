@@ -4,7 +4,7 @@
 
 /* ---------- Mise en page : sommaire | colonne de lecture | glossaire ---------- */
 /* deux marges de même largeur : la colonne de lecture tombe au milieu de l'écran ; elle est large (780 px), comme la version de base */
-.lv-page{--run-h:46px;--toc-w:280px;--gloss-w:280px;--gut:clamp(24px,3vw,44px);--read:17px;--measure:780px;--hl:color-mix(in srgb,var(--pink) 36%,transparent);--lv-ground:color-mix(in srgb,var(--ink) 3%,color-mix(in srgb,var(--plate) 9%,var(--sheet-2)));overflow-x:hidden}
+.lv-page{--run-h:46px;--toc-w:280px;--gloss-w:280px;--gut:clamp(24px,3vw,44px);--read:17px;--measure:780px;--hl:color-mix(in srgb,var(--pink) 36%,transparent);--lv-ground:color-mix(in srgb,var(--ink) 3%,color-mix(in srgb,var(--plate) 9%,var(--sheet-2)));overflow-x:clip}
 html[data-theme="dark"] .lv-page{--hl:color-mix(in srgb,var(--pink) 42%,transparent);--lv-ground:color-mix(in srgb,#000 32%,var(--paper))}
 .lv-bar{position:sticky;top:0;z-index:70;gap:12px;padding-right:20px}
 .lv-back{gap:8px;margin-right:auto}
