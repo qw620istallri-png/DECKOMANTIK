@@ -193,6 +193,7 @@ html[data-theme="dark"] .card-lightbox{background:rgb(0 0 0 / .66)}
 .shared-deck-group{margin-bottom:18px;padding:16px 18px 18px;border:1px solid var(--rule);background:var(--sheet)}
 .shared-deck-group h2{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin:0 0 14px;padding-bottom:9px;border-bottom:1px solid var(--ink);font:800 24px/1 var(--display);font-stretch:80%;letter-spacing:-.01em}
 .shared-deck-group h2 small{color:var(--muted);font:650 13px/1 var(--display);font-stretch:90%;letter-spacing:.06em;text-transform:uppercase}
+.shared-group-meta{display:flex;align-items:center;gap:7px 12px}.shared-group-meta small+small{padding-left:12px;border-left:1px solid var(--rule);color:var(--ink)}
 .shared-deck-group>div{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:14px 12px}
 .shared-deck-group article{display:grid;gap:7px;cursor:pointer;-webkit-touch-callout:none;user-select:none}
 .shared-deck-group img{width:100%;aspect-ratio:.715;object-fit:contain;border-radius:4.5%/3.2%;background:var(--ink);box-shadow:var(--shadow-card)}
