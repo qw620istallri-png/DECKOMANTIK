@@ -560,6 +560,8 @@ body.deck-manager-view .workspace{padding:0;background:var(--paper)}
 .dm-folder-button{display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:9px;width:100%;min-height:44px;padding:5px 8px;border:0;border-radius:0;background:transparent;color:var(--ink);text-align:left}
 .dm-folder-button:hover:not(:disabled){background:var(--paper);color:var(--ink)}
 .dm-folder-button.active{background:var(--pink-screen);box-shadow:inset 4px 0 0 var(--pink);color:var(--ink)}
+.dm-folder-button[data-deck-drop-folder]{transition:background-color .14s var(--ease),box-shadow .14s var(--ease),color .14s var(--ease),transform .14s var(--ease)}
+.dm-folder-button.is-drop-target{background:var(--pink);box-shadow:inset 4px 0 0 var(--ink),3px 3px 0 var(--ink);color:var(--on-pink);transform:translateX(3px)}
 .dm-folder-button>span:nth-child(2){overflow:hidden;font:700 14px/1.15 var(--display);font-stretch:88%;text-overflow:ellipsis;white-space:nowrap}
 .dm-folder-button>b{color:var(--muted);font-size:12.5px}
 .dm-folder-glyph{display:grid;place-items:center;width:31px;height:25px;border:1px solid var(--ink);background:var(--pink-wash);box-shadow:2px 2px 0 var(--plate);transform:rotate(-1deg)}
@@ -578,7 +580,10 @@ body.deck-manager-view .workspace{padding:0;background:var(--paper)}
 .deck-manager-summary{display:flex;justify-content:space-between;gap:18px;padding:12px 0;color:var(--muted);font:650 13.5px/1.35 var(--display);font-stretch:92%}
 .deck-manager-results{border-top:1px solid var(--ink)}
 .deck-manager-row{display:grid;grid-template-columns:104px minmax(240px,1fr) auto;align-items:center;gap:20px;min-height:112px;padding:14px 0;border-bottom:1px solid var(--rule);content-visibility:auto;contain-intrinsic-size:auto 140px;transition:background-color .16s var(--ease)}
+.deck-manager-row:has(.dm-row-menu:not([hidden])){position:relative;z-index:50;content-visibility:visible}
 .deck-manager-row:hover,.deck-manager-row:focus-within{background:var(--pink-screen)}
+.deck-manager-row[draggable="true"] .dm-fan{cursor:grab}.deck-manager-row[draggable="true"] .dm-fan:active{cursor:grabbing}.deck-manager-row.is-dragging{background:var(--pink-screen);opacity:.38}
+.deck-manager-row.dm-insert-before{box-shadow:inset 0 4px 0 var(--pink)}.deck-manager-row.dm-insert-after{box-shadow:inset 0 -4px 0 var(--pink)}
 .deck-manager-row.is-archived{color:var(--muted)}
 .dm-fan{position:relative;width:92px;height:76px;margin-left:8px}
 .dm-fan img{position:absolute;bottom:0;width:48px;aspect-ratio:.715;border-radius:3px;object-fit:cover;box-shadow:var(--shadow-card);transform-origin:50% 100%}
@@ -595,7 +600,7 @@ body.deck-manager-view .workspace{padding:0;background:var(--paper)}
 .dm-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px;max-width:420px}.dm-actions .btn.active{background:var(--pink);color:var(--on-pink)}.dm-actions .danger:hover{border-color:var(--bad);background:var(--bad);color:#fff}
 .dm-folder-select{position:relative;display:flex;align-items:center;gap:7px;min-width:160px;height:38px;padding:0 7px 0 9px;border:1px solid var(--rule);background:var(--sheet)}
 .dm-folder-select>.i:first-child{flex:none;width:18px;height:18px}.dm-folder-select select{min-width:0;width:100%;height:36px;padding:0 22px 0 0;border:0;background:transparent;font-size:13px;appearance:auto;-webkit-appearance:menulist}
-.dm-row-menu-wrap{position:relative;display:inline-flex}.dm-row-menu{top:calc(100% + 6px);right:0;left:auto;z-index:42;min-width:190px}.dm-row-menu button{display:flex;justify-content:flex-start;width:100%;gap:9px}.dm-row-menu button.danger{color:var(--bad)}
+.dm-row-menu-wrap{position:relative;display:inline-flex;overflow:visible}.dm-row-menu{top:calc(100% + 6px);right:0;left:auto;z-index:52;min-width:190px}.dm-row-menu button{display:flex;justify-content:flex-start;width:100%;gap:9px}.dm-row-menu button.danger{color:var(--bad)}
 .deck-manager-empty{display:grid;justify-items:center;gap:12px;padding:64px 20px;border-bottom:1px solid var(--ink);text-align:center}.deck-manager-empty>span .i{width:38px;height:38px}.deck-manager-empty p{margin:0;color:var(--ink-2)}
 .lower{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-top:1px solid var(--ink)}
 .lower>section{padding:40px 32px 48px}
