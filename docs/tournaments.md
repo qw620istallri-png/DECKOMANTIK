@@ -1,0 +1,144 @@
+# Tournois DeckomantiK
+
+Les nouvelles pages sont indépendantes du constructeur de decks. Aucun lien n’est ajouté à l’accueil.
+
+- `/tournamentorganisator/` : accueil de gestion avec cartes des tournois en cours, autres événements et archives ; création, réutilisation des paramètres, sauvegarde et archivage réversible.
+- `/tournamentorganisator/?event=<id>` : adresse propre à chaque événement pour sa préparation, ses inscriptions, decks, règles, résultats, rondes, tables, finales et statistiques.
+- `/tournament/` : consultation, choix local d’un participant et suivi de son parcours. Aucune saisie de résultat par les joueurs.
+
+Les répertoires possèdent leur propre `index.html` : les chemins fonctionnent avec l’hébergement GitHub Pages existant, y compris sous un préfixe de dépôt. L’accès sans barre finale est redirigé par l’hébergement statique vers le répertoire. Les pages comportent `noindex,nofollow`.
+
+## Utilisation
+
+1. Créer un événement nommé. Choisir les règles de base ou le préréglage Lucca 2026.
+2. Indiquer d’abord le nombre de participants prévu (8 par défaut, 16 pour Lucca). Les suggestions se mettent à jour immédiatement et utilisent le maximum entre cet effectif et les inscriptions actives. Régler les rondes suisses, le Top Cut, le Bo1/Bo3/Bo5, les temps d’étude et de jeu, la première table et la petite finale. Les suggestions de rondes et de Top Cut évoluent avec les inscriptions tant que l’événement est en préparation et les cases automatiques activées.
+3. Inscrire un participant avec son nom et un deck facultatif, puis « Ajouter le participant ». Pour une inscription groupée, séparer les noms par des virgules ou des points-virgules : le deck choisi est copié indépendamment pour chaque participant ajouté. Le fichier peut être un PDF exporté par DeckomantiK (ancien ou nouveau format), un JSON de deck ou un fichier contenant plusieurs decks : dans ce dernier cas, sélectionner celui à attribuer. Un lien partagé ou une liste de cartes en anglais, italien ou français peut aussi être collé. Une ligne `Sideboard` commence la réserve. Le même lecteur PDF est utilisé dans le constructeur habituel et dans les tournois. Le sélecteur de decks de départ propose Colérique, Capricieux, Mélancolique, Vitreux et Flegmatique ; ces cinq listes proviennent du chapitre de construction des decks des règles existantes et sont regroupées dans `data/starter-decks.js`. Elles sont disponibles à l’inscription et dans la fenêtre d’import d’un participant, puis contrôlées selon les règles de l’événement.
+4. Choisir les cartes bannies dans la liste des cartes, avec recherche multilingue. Ajouter autant de groupes de restriction que nécessaire (jusqu’à 40), chacun avec son nom, sa limite dans le deck principal et ses cartes choisies dans la bibliothèque. Les groupes peuvent se recouper et leurs limites sont vérifiées indépendamment. Contrôler les decks. La validation vérifie le nombre de cartes, les points, le sideboard, les cartes inconnues, le singleton entre deck et réserve, les bans dans les deux et la restriction dans le deck principal. Un organisateur peut accorder une dérogation motivée, notamment après vérification d’une liste papier.
+5. Valider et lancer. Les decks manquants ne bloquent pas le démarrage : un premier deck peut être joint plus tard, même après lancement. Les decks déjà déposés, les joueurs et les règles restent verrouillés ; remplacer un deck déjà présent demande une correction exceptionnelle. Un deck déjà déposé mais invalide nécessite toujours une correction ou une dérogation avant lancement. Les premiers appariements sont générés. Démarrer le chrono quand la ronde commence. Le chrono distingue étude et jeu ; il peut être mis en pause et repris.
+6. Les joueurs annoncent leur résultat, leurs points de partie et, facultativement, leur durée à l’oral. L’organisateur choisit « Gagné », « Perdu », « Nul » (en suisse) ou « Concédé » : le résultat adverse est mis à jour automatiquement. Concéder donne la victoire à l’autre joueur. Les points de tournoi (3/1/0) sont automatiques en suisse et ne sont pas attribués dans les finales à élimination directe. Les points de partie du Vase empathique restent distincts et facultatifs ; en Bo1, les deux valeurs saisies proposent automatiquement le résultat, avec priorité à une concession. En Bo3/Bo5, le détail des parties remportées reste éditable pour enregistrer par exemple 2–1. Le résultat peut aussi être choisi manuellement pour un départage arbitré. La durée se saisit uniquement dans les deux champs minutes + secondes. Laisser les deux vides conserve une durée absente plutôt que zéro ; il n’y a plus de boutons de raccourci ni de paragraphe explicatif dans les fiches de match. Les résultats déjà saisis demandent un déverrouillage pour être corrigés. Une égalité reste possible en suisse, jamais en phase finale.
+7. Une fois les résultats complets, valider la ronde. Les phases finales sont générées selon le Top Cut choisi ; une petite finale est proposée si activée. Valider la finale clôt le tournoi.
+8. Exporter le fichier joueur après chaque mise à jour et/ou ouvrir la vue joueur dans un autre onglet pour afficher ou projeter les tables et le classement.
+
+Le nom du tournoi et son état sont centrés dans la barre supérieure des deux vues. Le chrono organisateur est toujours disponible dans la colonne gauche, même avant son démarrage ; sur mobile, il reste dans la barre de commandes fixe du bas. La vue joueur présente son horloge dans l’espace du tournoi, sous la barre supérieure. La colonne gauche ne présente que l’événement courant et un lien vers l’accueil. Le nombre de participants, les rondes, le format et les durées sont résumés sous la barre supérieure. Pause/reprise, remise à zéro et activation/coupure du son sont disponibles près du chrono. La remise à zéro demande confirmation, remet le chrono à son état non démarré et conserve les résultats. La phase d’étude et le temps de jeu utilisent le même temps de référence entre onglets.
+
+La colonne de gestion reste visible pendant le défilement sur ordinateur. Elle regroupe l’explication du verrouillage, le déverrouillage et les validations disponibles : enregistrer les règles, lancer le tournoi ou valider la ronde complète. Sur mobile, les validations restent accessibles dans une barre en bas de l’écran. Les choix de résultat utilisent des boutons compacts et la durée reste dans les deux champs minutes et secondes.
+
+Les signaux sonores sont produits localement dans les onglets organisateur : départ, une minute avant la fin de l’étude (si elle dure plus d’une minute), puis toutes les dix minutes de jeu, à cinq minutes de la fin et à la fin. Pour le format 5 + 50 minutes : 0, 4, 15, 25, 35, 45, 50 et 55 minutes depuis le départ. Une alerte à cinq minutes remplace un signal de dix minutes qui tomberait au même instant. Les pauses décalent les alertes. Une ronde clôturée ne continue pas à sonner. Le navigateur est autorisé à jouer le son lors du clic de démarrage ; une icône permet de le couper. Les onglets d’une même origine se coordonnent pour ne jouer chaque signal qu’une fois. Une page ouverte tardivement ne rejoue pas tous les signaux passés ; après une longue suspension, seul le dernier signal franchi est joué.
+
+Les champs de « Règles et format » comportent des aides « ? » consultables au clic ou au clavier, avec de courtes explications. Les groupes restreints apparaissent repliés par défaut dans un encart plus sombre ; ouvrir un groupe montre ses cartes et sa limite. Un groupe nouvellement ajouté s’ouvre pour permettre sa saisie.
+
+## Corrections
+
+« Corriger », placé sous la validation dans la barre latérale, demande un motif et autorise temporairement les modifications dans cet onglet. Le motif accompagne les écritures dans l’historique. « Reverrouiller » rétablit la protection. Les confirmations des actions de gestion s’ouvrent dans des fenêtres intégrées au site, avec « Confirmer » et « Annuler » ; Échap annule. L’avertissement éventuel à la fermeture de la page reste géré par le navigateur.
+
+Le bouton « Modifier les tables / appariements » permet de changer les numéros de table et, avant tout résultat joué, d’échanger les places des participants. Les numéros de tables peuvent être ajustés individuellement ; ils doivent être uniques dans la ronde. Les participants peuvent être échangés entre places tant qu’aucun résultat joué n’est saisi. Chaque participant de la ronde doit rester présent exactement une fois. Un retrait conserve son historique et le retire des futurs appariements suisses ; il ne modifie pas le match déjà annoncé.
+
+« Régénérer les appariements » est réservé à la ronde suisse courante d’un tournoi en cours. Après déverrouillage, une confirmation puis une sauvegarde téléchargée précèdent la régénération. Elle recalcule les adversaires et tables depuis les rondes précédentes, efface les résultats et le chrono de la ronde courante, et conserve toutes les rondes antérieures. Les phases finales ne peuvent pas être régénérées par cette action.
+
+Pour corriger une ancienne ronde, sélectionner celle-ci puis « Revenir à cette ronde ». Après déverrouillage et confirmation, l’application télécharge une sauvegarde de sécurité et retire les rondes suivantes et leurs résultats. Cela évite de conserver des appariements devenus incohérents. Les règles de Bo et de timing sont conservées dans chaque ronde : leur correction ne réécrit pas rétroactivement les anciennes rondes.
+
+## Partage et confidentialité
+
+Le fichier joueur est un petit fichier **HTML**. En l’ouvrant, le navigateur accède à la page `/tournament/` de la même installation, avec l’instantané compressé dans le fragment de l’URL. Un lien cliquable reste disponible si la redirection automatique est bloquée. La connexion au site est nécessaire. Un JSON public est également disponible dans la fenêtre d’export pour import manuel sur la vue joueur. L’ouverture du fichier local puis sa redirection sont vérifiées dans un navigateur Chromium de bureau indépendant. Les aperçus de pièces jointes, navigateurs intégrés aux messageries et restrictions d’ouverture de fichiers sur mobile peuvent empêcher ce parcours ; utiliser alors le lien joueur dans un navigateur ou importer le JSON public. Le fichier reste un instantané et ne reçoit aucune mise à jour à distance.
+
+Le bouton de langue fait défiler FR → EN → IT à chaque clic, en conservant les formulaires en cours. Le thème se commande par une icône avec une étiquette accessible. Sur le navigateur de l’organisateur, la vue joueur affiche « Retour à l’organisation » ; les fichiers joueurs ne transmettent aucune autorisation d’édition.
+
+L’identité « Je suis… » est locale à chaque navigateur et chaque événement. Ce choix met en avant le match courant, la table, le classement et l’historique personnel. Il n’authentifie pas le joueur.
+
+Les fichiers publics ne contiennent ni historique des corrections ni dérogations. Les decks sont partagés par défaut pour les nouveaux événements et peuvent être consultés directement depuis les noms des adversaires dans les matchs. « Inclure les decklists dans le fichier joueur » permet de désactiver ce partage ; la préférence des anciens événements est conservée. La vue joueur ne comporte aucun bilan statistique ni page de gestion des decks, même lorsque les decks sont partagés. Une sauvegarde organisateur contient, elle, les données privées et ne doit pas être confondue avec le fichier public.
+
+Le site reste statique : **les appareils distincts ne se synchronisent pas à distance**. L’organisateur doit distribuer un nouvel export après une mise à jour. Les onglets du même navigateur et de la même origine se synchronisent par événements `storage`. Une modification en cours dans un deuxième onglet organisateur n’est pas écrasée : un bandeau impose de recharger avant toute nouvelle écriture. Les écritures sont sérialisées avec Web Locks lorsque disponible et vérifient la révision de l’événement.
+
+Une URL cachée et le verrouillage des formulaires protègent contre les modifications accidentelles ; ce n’est pas un système d’authentification ou de contrôle d’accès serveur. Aucun service réseau supplémentaire n’a été ajouté.
+
+## Sauvegardes et modèles
+
+L’accueil propose une carte de création dans la grille des tournois, avec le nom et le préréglage directement accessibles, puis sépare les tournois en cours, les autres événements et les archives. « Gérer » propose la réutilisation des paramètres, la sauvegarde, l’archivage/désarchivage et la suppression. L’archivage est réversible et ne supprime aucune inscription ni aucun résultat ; les sauvegardes totales incluent aussi les événements archivés. La suppression demande confirmation, télécharge une sauvegarde de l’événement puis retire ses données organisateur et son instantané joueur de ce navigateur. Les fichiers déjà distribués restent utilisables. Une restauration de la sauvegarde permet de récupérer l’événement. Le bouton « Tous les tournois » revient à cet accueil.
+
+- Sauvegarde JSON d’un événement ou de toute l’archive des tournois, indépendamment de la collection et des decks habituels.
+- Restauration après validation du format et confirmation. Une sauvegarde de sécurité de l’archive courante est téléchargée avant restauration ; les événements de même identifiant sont remplacés, les autres sont conservés.
+- « Réutiliser les paramètres » crée un nouvel événement avec les règles et le lieu de l’événement choisi, sans participants, decks ni résultats. Les événements précédents restent consultables.
+- Un échec d’écriture est affiché ; les données non enregistrées de l’événement restent exportables en sauvegarde.
+
+Clés de stockage : `deckomantik-tournament-v1:<id>` pour les données organisateur ; `deckomantik-tournament-public-v1:<id>` pour les instantanés joueurs. Les anciens événements et sauvegardes sont lus sans perte : leur groupe de restriction unique est converti en un premier groupe et leur effectif attendu est déduit des inscrits. Les clés de langue, thème et identité sont séparées. Le module ne modifie jamais `deckomantik-decks-v1`.
+
+Pour enregistrer un deck du tournoi dans la bibliothèque normale, « Ouvrir dans DeckomantiK » utilise le partage de deck existant. L’utilisateur peut l’inspecter puis choisir « Enregistrer une copie ». La simple importation d’un deck dans un tournoi ne crée aucun deck dans l’accueil.
+
+Les onglets « Arbre du tournoi » des deux vues montrent les rondes successives, les tables, les scores et le classement. Les liens suivent chaque participant en suisse, puis les finalistes en élimination directe (et la petite finale). Sélectionner un nom met son parcours en évidence ; le schéma se parcourt horizontalement sur mobile. Les rondes non encore générées sont indiquées comme à venir. La vue joueur utilise toute la largeur disponible pour cet arbre et n’affiche pas le bandeau de gestion du verrouillage. Les résultats sont distingués par leur libellé et une couleur associée à la victoire, la défaite, le nul ou la concession.
+
+## Classement et statistiques
+
+Victoire : 3 points ; nul : 1 point ; défaite : 0 point. Exemption : 3 points, sans adversaire ni partie comptée. Départages suisses affichés : points, Buchholz (somme des points des adversaires), différence de parties, puis tirage aléatoire initial. Ces départages sont un choix de l’outil ; l’article Lucca ne détaille pas de formule de départage suisse.
+
+Un match peut contenir une ou plusieurs parties : gagner un match Bo3 ou Bo5 rapporte toujours 3 points de tournoi, quel que soit le nombre de parties jouées. Les parties remportées servent au détail du score et à la différence de parties ; les points du Vase empathique sont une autre donnée, facultative. Cette distinction entre match et partie est aussi explicitée dans la [référence de tournoi Grand Archive sur le score suisse](https://trg.gatcg.com/tournament-proceedings/swiss-scoring-and-tie-breaks). Cette source explique le principe 3/1/0 ; DeckomantiK conserve les départages décrits ci-dessus et n’implémente pas l’ensemble des départages Grand Archive ou Omnidex.
+
+Chaque ronde suisse tire un ordre aléatoire entre les joueurs équivalents, puis cherche un appariement sans revanche. Une seconde recherche minimise la somme des écarts de points entre adversaires : les groupes de même score sont prioritaires, et les passages entre groupes servent à résoudre les groupes impairs ou les incompatibilités. Les recherches restent bornées pour conserver une interface réactive ; aucun prétendu respect intégral d’un système suisse d’échecs n’est revendiqué. Une nouvelle rencontre est signalée lorsqu’elle est nécessaire ou lorsque cette recherche bornée n’a pas trouvé de solution sans répétition. Les exemptions sont proposées aux joueurs moins bien classés sans exemption antérieure, puis équilibrées. Les appariements restent rectifiables par l’organisateur.
+
+Top 4 : 1–4 / 2–3. Top 8 : 1–8 / 4–5 / 2–7 / 3–6. Les gagnants avancent en élimination directe ; les perdants des demi-finales jouent la petite finale si activée. Les procédures d’arbitrage à la fin du temps restent conduites par l’arbitre : le chrono n’attribue jamais automatiquement une victoire.
+
+Le bilan inclut les matchs, nuls, durées et tours de jeu renseignés avec leur couverture, totaux et moyennes des points de partie par joueur avec couverture (n/m), points par tour pour les matchs disposant des deux données (avec un nombre de tours strictement positif), résultats de chaque joueur et de son deck, podium, deck gagnant et fréquence des cartes dans les decks principaux. Une durée absente n’est pas assimilée à zéro ; les exemptions sont exclues des statistiques de matchs et de durées.
+
+## Impression et PDF
+
+« Imprimer / PDF » permet de sélectionner les tables de la ronde consultée, les résultats et classements, le bilan statistique et les decklists (options réservées à l’organisateur) et, en vue joueur après sélection d’un nom, le parcours individuel. Dans la fenêtre d’impression du navigateur, choisir l’imprimante ou **Enregistrer au format PDF**. Les rapports sont en A4, sans contrôles d’interface, avec titres, version de l’instantané et en-têtes de tableaux répétés. La génération est entièrement locale, avec les polices du navigateur pour préserver les accents et les noms.
+
+Les noms des adversaires restent côte à côte, au-dessus de leurs résultats et points, sur ordinateur comme sur mobile. Les résultats et feuilles imprimables conservent les concessions, points de partie et durées renseignées.
+
+Les noms de cartes du bilan et des decklists affichent le visuel au survol ou au focus clavier ; sur écran tactile, toucher le nom ouvre l’aperçu. L’aperçu utilise la version italienne si disponible en italien, sinon le visuel anglais, et se ferme avec Échap ou un clic en dehors. Dans une fenêtre de deck, l’aperçu reste au-dessus de cette fenêtre. Les noms restent imprimés dans les PDF, sans les contrôles ni les aperçus.
+
+L’interface et les rapports sont traduits en français, anglais et italien.
+
+## Référence Lucca 2026
+
+[Règlement officiel publié le 10 octobre 2026](https://www.kartomantik.com/en/news/Official_Kartomantik_Tournament_%E2%80%94_Lucca_Comics_&_Games_2026), consulté le 26 octobre 2026 : 30 cartes, 500 points, réserve de 6, singleton ; Bo1 ; étude 5 minutes et jeu 50 minutes ; bans Ergorath / Freenya / Imitate ; au plus une carte parmi Ponder / Pray the Ether / Martyrize dans le principal. Ces restrictions sont présentées comme provisoires dans l’article. Le préréglage les copie dans chaque événement, où elles peuvent être modifiées sans affecter les autres événements.
+
+Suggestions : 4–8 joueurs → 3 rondes sans Top Cut ; 9–16 → 4 rondes / Top 4 ; 17–32 → 5 rondes / Top 8 ; 33–64 → 6 rondes / Top 8. Les suggestions pour 2–3 et au-delà de 64 joueurs prolongent cette logique et ne viennent pas du règlement Lucca.
+
+## Vérification et aperçu local
+
+```powershell
+npm test
+python -m http.server 8765 --bind 127.0.0.1
+# Ouvrir http://localhost:8765/tournamentorganisator/
+```
+
+Le test navigateur utilise Playwright comme outil de développement uniquement :
+
+```powershell
+npm install --no-save playwright
+npx playwright install chromium
+npm run test:browser
+# Ou définir PLAYWRIGHT_CHROMIUM_EXECUTABLE pour un Chrome installé.
+```
+
+Le scénario couvre un événement complet avec inscriptions individuelles, import de PDF réellement générés par DK, choix dans un PDF à plusieurs decks, import tardif, effectif/suggestions en direct, plusieurs groupes de restrictions, langue au clic, thème par icône, retour à l’organisation, arbre, imports, exemptions, Top Cut, petite finale, lecture seule, synchronisation et conflit d’onglets, ouverture du fichier HTML dans un navigateur neuf, trois langues, PDF, sauvegarde/restauration, réutilisation des règles et isolation du constructeur. Les captures et fichiers de contrôle sont placés dans `.impeccable/review/`, ignoré par Git.
+
+## Adresses des événements
+
+Les deux vues utilisent le même nom lisible : `/tournamentorganisator/?event=lucca-2026` et `/tournament/?event=lucca-2026`. Les accents et espaces sont normalisés ; si le nom est déjà utilisé dans les événements connus de ce navigateur (y compris les archives et instantanés importés), un suffixe `-2`, `-3`, etc. est attribué. Il n’existe pas de registre global entre appareils.
+
+Le nom d’adresse reste stable après renommage du tournoi. L’identifiant interne continue de porter les inscriptions, résultats et sauvegardes. Les anciennes adresses avec cet identifiant restent acceptées et s’ouvrent sur l’adresse lisible. À l’ouverture de l’organisateur, les anciens événements reçoivent ces noms sans modifier leurs participants, règles ni résultats ; la migration est répétable et annule ses écritures en cas d’échec. Les anciennes sauvegardes restent restaurables. Les exports joueurs transmettent aussi ce nom ; leur contenu reste un instantané local, comme auparavant.
+
+Sans participant inscrit, les commandes de lancement affichent « Entrer les participants » et ouvrent l’inscription. Dès la première inscription, elles retrouvent le libellé de validation et lancement ; les contrôles existants exigent toujours au moins deux participants actifs pour démarrer.
+
+Dans l’inspecteur de deck, le nom du joueur et du deck ainsi que les actions « Ouvrir dans DeckomantiK » et « Fermer » restent visibles pendant le défilement. Les deux actions sont regroupées sur la même ligne ; l’ouverture n’est proposée que lorsqu’un deck est déposé.
+
+Un clic dans le fond autour de l’inspecteur de deck, « Fermer » ou Échap enregistre les changements de deck et de dérogation ensemble, puis ferme la fenêtre. Sans changement, aucune écriture n’est faite. Un import en cours est attendu ; une saisie illisible, un deck non choisi dans un fichier multiple, un verrouillage ou un conflit d’onglets garde la fenêtre ouverte avec le message d’erreur et les saisies. « Fermer sans enregistrer », proposé en cas d’erreur, permet d’annuler uniquement les saisies de cette fenêtre. Les autres formulaires en cours du tournoi sont conservés. Les règles de conformité du deck restent vérifiées et affichées comme lors d’un enregistrement explicite.
+
+## Rythme des rondes et classement complémentaire
+
+« Rondes et tables » propose un onglet par ronde ou phase générée, navigable au clavier. « Valider tous les résultats » enregistre en une seule écriture les résultats saisis de la ronde actuelle, sans avancer à la ronde suivante. Un résultat manquant ou invalide empêche toute l’écriture ; les saisies restent présentes. Les résultats déjà enregistrés ne sont corrigés que si une correction est autorisée. Les commandes de modification des tables, de régénération et de retour à une ancienne ronde se trouvent dans la colonne gauche.
+
+Le nombre de tours de jeu est facultatif et porte sur le match (total de la série en Bo3/Bo5). Il n’ajoute aucun point au classement. Les anciens résultats sans cette information restent sans valeur, sans zéro fabriqué. Les fichiers joueurs, sauvegardes, progression individuelle et PDF conservent cette donnée. La moyenne générale des points de partie utilise les matchs où les deux valeurs sont renseignées ; les tableaux individuels utilisent les données connues de chaque joueur. Les exemptions ne comptent pas comme matchs ou tours joués.
+
+« Matchs de classement pour les perdants » est une option désactivée par défaut. En Top 8, les perdants des quarts jouent pour les places 5 à 8, puis les quatre dernières rencontres départagent 1–2, 3–4, 5–6 et 7–8. En Top 4, la petite finale départage 3–4. Les joueurs éliminés ne peuvent plus gagner le titre. La petite finale seule est également désactivée par défaut pour les nouveaux tournois ; les choix des événements existants sont conservés. Le classement suisse et ses points restent indépendants de ces matchs.
+
+L’arbre conserve des tables rapprochées, alignées en haut de chaque colonne. Son classement dispose de son propre défilement, séparé du schéma ; les liens représentent le parcours entre rondes. La vue joueur conserve uniquement son choix d’identité, sans le texte de version et de synchronisation à l’écran ; les rapports exportés gardent leur référence de version.
+
+Références consultées le 26 octobre 2026 : [principes suisses FIDE applicables depuis février 2026](https://doc.fide.com/docs/DOC/2025_3FC/CM3-202517.pdf) pour les groupes de score et la rotation des exemptions ; [règles de tournoi Magic 2026, section 10.4](https://media.wizards.com/ContentResources/WPN/MTG_MTR_2026_Feb27_EN.pdf) pour un Top Cut issu du classement suisse ; [exemptions Grand Archive](https://trg.gatcg.com/format-conventions/tournament-byes) pour l’absence d’adversaire donnant un gain de ronde. Ces références décrivent d’autres jeux et servent de principes ; les règles propres à l’événement restent celles enregistrées par l’organisateur. Avec un nombre impair, faire jouer tous les inscrits simultanément en 1 contre 1 exige un vrai participant supplémentaire ; une partie amicale avec l’organisateur ne remplace pas l’exemption dans le classement.
+
+La sélection de ronde est suivie de raccourcis de tables. Leur couleur distingue les résultats enregistrés des résultats encore en attente ; le statut est aussi décrit pour les lecteurs d’écran. Cliquer un raccourci rejoint la table sans effacer les saisies. Le numéro de table est aligné à gauche.
+
+L’horloge n’apparaît pas dans la barre du titre : elle reste dans la colonne de commandes organisateur et dans l’espace de la vue joueur. Sa teinte distingue la phase d’étude, chaque tranche de dix minutes de jeu, les cinq dernières minutes puis les deux dernières minutes. Les pauses et la clôture utilisent le même temps de référence que le compteur et les signaux sonores. Les libellés et le temps restent lisibles indépendamment de la couleur ; les sons existants sont conservés.
+
+En vue joueur, les commandes langue, thème et impression sont regroupées sur une ligne. « Je suis… » se trouve à droite de la navigation et propose un champ de recherche ; taper filtre les noms, et cliquer un participant confirme le choix local. Une mise à jour reçue de l’organisateur conserve la recherche en cours, son ouverture et sa position de saisie. Les aides « ? » utilisent des phrases et des retours naturels, sans sauts de ligne imposés.

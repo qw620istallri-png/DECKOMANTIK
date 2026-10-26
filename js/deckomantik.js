@@ -2234,43 +2234,7 @@ function pdfWrap(value,limit=78){const words=pdfAscii(value).split(/\s+/).filter
 function pdfDeckSections(deck){const sections=[];(deck.groups||[]).forEach(group=>{const kind=inferGroupKind(group),list=(group.cardIds||[]).map(id=>byId.get(id)).filter(Boolean);if(kind==='volontes'){const persistent=list.filter(card=>card.type==='persistent_will'),ephemeral=list.filter(card=>card.type==='ephemeral_will'),other=list.filter(card=>!['persistent_will','ephemeral_will'].includes(card.type));if(persistent.length)sections.push({title:`${group.name} - ${t('persistentWills')}`,cards:persistent});if(ephemeral.length)sections.push({title:`${group.name} - ${t('ephemeralWills')}`,cards:ephemeral});if(other.length)sections.push({title:group.name,cards:other});return}sections.push({title:group.name,cards:list})});return sections}
 function deckPdfPages(decks){const pages=[];let commands=[],y=0;const add=(value)=>commands.push(value),text=(value,x,size,font='F1')=>add(`BT /${font} ${size} Tf ${x} ${y} Td (${pdfEscape(value)}) Tj ET`),newPage=()=>{if(commands.length)pages.push(commands.join('\n'));commands=[];y=794},need=height=>{if(y-height<56){pages.push(commands.join('\n'));commands=[];y=794;return true}return false};decks.forEach((deck,deckIndex)=>{if(deckIndex&&commands.length){pages.push(commands.join('\n'));commands=[]}y=794;const info=deckValidation(deck);add('q 0.075 0.23 0.23 rg 42 811 511 7 re f Q');text('DeckomantiK',46,11,'F2');y-=31;text(deck.name||'Deck',46,23,'F2');y-=22;text(`${t('mainDeck')}: ${info.count}/30 ${t('cards')}  |  ${info.points}/500 ${t('points')}  |  ${t('sideboard')}: ${info.sideboardCount}/6`,46,10);y-=16;text(info.valid?t('validDeck'):`${t('invalidDeck')}: ${info.issues.join(' | ')}`,46,10,'F2');y-=18;add(`q .72 .72 .72 RG 46 ${y} m 549 ${y} l S Q`);y-=22;pdfDeckSections(deck).forEach(section=>{need(45);add(`q 0.75 0.25 0.31 rg 46 ${y-3} 4 16 re f Q`);text(`${section.title} (${section.cards.length})`,58,13,'F2');y-=19;if(!section.cards.length){text('-',64,9);y-=14;return}section.cards.forEach(card=>{const suffix=Number(card.points)>0?` - ${card.points} ${t('points')}`:'';pdfWrap(`${cardNumber(card)}  ${cardName(card)}${suffix}`,86).forEach(line=>{need(18);text(line,64,9);y-=13})});y-=8});if(!commands.length)newPage()});if(commands.length)pages.push(commands.join('\n'));return pages.map((content,index)=>`${content}\nBT /F1 8 Tf 46 30 Td (DeckomantiK - ${index+1}/${pages.length}) Tj ET`)}
 function createDeckPdf(decks){const pages=deckPdfPages(decks),objects=[],dataId=5+pages.length*2,payload=JSON.stringify({app:'DeckomantiK',type:'deck-bundle',formatVersion:1,decks}),hex=Array.from(new TextEncoder().encode(payload),byte=>byte.toString(16).padStart(2,'0')).join('');objects[1]=`<< /Type /Catalog /Pages 2 0 R /DeckomantikData ${dataId} 0 R >>`;objects[2]=`<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_,index)=>`${6+index*2} 0 R`).join(' ')}] >>`;objects[3]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>';objects[4]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>';pages.forEach((content,index)=>{const contentId=5+index*2,pageId=contentId+1;objects[contentId]=`<< /Length ${content.length} >>\nstream\n${content}\nendstream`;objects[pageId]=`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${contentId} 0 R >>`});objects[dataId]=`<< /Type /DeckomantikData /Length ${hex.length} >>\nstream\n${hex}\nendstream`;let pdf='%PDF-1.4\n',offsets=[0];for(let id=1;id<objects.length;id++){offsets[id]=pdf.length;pdf+=`${id} 0 obj\n${objects[id]}\nendobj\n`}const xref=pdf.length;pdf+=`xref\n0 ${objects.length}\n0000000000 65535 f \n`;for(let id=1;id<objects.length;id++)pdf+=`${String(offsets[id]).padStart(10,'0')} 00000 n \n`;pdf+=`trailer\n<< /Size ${objects.length} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;return new Blob([pdf],{type:'application/pdf'})}
-function pdfLiteralText(value){return value.replace(/\\(?:([0-7]{1,3})|\r\n|[\s\S])/g,(escape,octal)=>{if(octal)return String.fromCharCode(parseInt(octal,8));const char=escape.slice(1);return ({n:'\n',r:'\r',t:'\t',b:'\b',f:'\f','\n':'','\r':'','\r\n':''})[char]??char})}
-// Older DeckomantiK exports have no data stream: read their numbered decklist rows.
-function legacyPdfDecks(source){
-  const decks=[];let deck=null,group=null,expected=0,seen=new Set();
-  const willSuffixes=Object.values(ui).flatMap(labels=>[labels.persistentWills,labels.ephemeralWills]).filter(Boolean).map(pdfAscii);
-  const finishGroup=()=>{if(group&&group.cardIds.length!==expected)throw new Error('Incomplete PDF section')};
-  for(const match of source.matchAll(/BT \/F([12]) ([\d.]+) Tf ([\d.]+) [\d.]+ Td \(((?:\\[\s\S]|[^\\)])*)\) Tj ET/g)){
-    const [,font,size,x,literal]=match,text=pdfLiteralText(literal);
-    if(font==='2'&&Number(size)===23&&Number(x)===46){finishGroup();deck={version:5,name:text,groups:[]};decks.push(deck);group=null;seen=new Set();continue}
-    if(!deck)continue;
-    if(font==='2'&&Number(size)===13&&Number(x)===58){
-      finishGroup();const title=text.match(/^(.*) \((\d+)\)$/);if(!title)throw new Error('Invalid PDF section');
-      const suffix=willSuffixes.find(value=>title[1].endsWith(` - ${value}`)),name=suffix?title[1].slice(0,-suffix.length-3):title[1];
-      // Will sub-sections are reunited after reading so their original category returns.
-      group={name,kind:suffix?'volontes':inferGroupKind({name}),cardIds:[]};deck.groups.push(group);expected=Number(title[2]);continue
-    }
-    if(!group||font!=='1'||Number(size)!==9||Number(x)!==64)continue;
-    const code=text.match(/^((?:BETA|ID)-\d{3}|#\d{3})\s/);if(!code)continue;
-    const card=code[1][0]==='#'?cardByNumber.get(Number(code[1].slice(1))):cardByCollectorCode.get(code[1]);
-    const id=card?.id||(code[1].startsWith('ID-')?`inner-deserts-${code[1].slice(3)}`:'');
-    if(!storedCardId(id)||seen.has(id))throw new Error('Unknown or duplicate PDF card');
-    seen.add(id);group.cardIds.push(id);
-  }
-  finishGroup();if(!decks.length)throw new Error('No DeckomantiK decklist');
-  decks.forEach(item=>{item.groups=item.groups.reduce((groups,current)=>{const previous=groups.at(-1);if(current.kind==='volontes'&&previous?.kind==='volontes'&&previous.name===current.name)previous.cardIds.push(...current.cardIds);else groups.push(current);return groups},[])});
-  return {app:'DeckomantiK',type:'deck-bundle',decks};
-}
-async function readDeckPdf(file){
-  if(file.size>20*1024*1024)throw new Error('PDF too large');
-  const source=new TextDecoder('latin1').decode(await file.arrayBuffer());if(!source.startsWith('%PDF-'))throw new Error('Invalid PDF');
-  const embedded=source.match(/\/Type \/DeckomantikData \/Length \d+ >>\r?\nstream\r?\n([0-9a-f]+)\r?\nendstream/);
-  if(!embedded){if(source.includes('/Type /DeckomantikData'))throw new Error('Invalid PDF data');return legacyPdfDecks(source);}
-  if(embedded[1].length%2)throw new Error('Invalid PDF data');
-  const bytes=Uint8Array.from(embedded[1].match(/../g),hex=>parseInt(hex,16)),data=JSON.parse(new TextDecoder().decode(bytes));
-  if(data.app!=='DeckomantiK'||data.type!=='deck-bundle'||data.formatVersion!==1||!Array.isArray(data.decks)||!data.decks.length||data.decks.some(deck=>!Array.isArray(deck?.groups)||deck.groups.some(group=>!Array.isArray(group?.cardIds)||group.cardIds.some(id=>!storedCardId(id)))))throw new Error('Invalid PDF deck data');
-  return data;
-}
+function readDeckPdf(file){return globalThis.DKDeckPdf.read(file,{cards,cardIdAllowed:storedCardId,inferGroupKind,willSuffixes:Object.values(ui).flatMap(labels=>[labels.persistentWills,labels.ephemeralWills]).filter(Boolean)})}
 function safeExportName(value,fallback='deckomantik-deck'){return pdfAscii(value||fallback).replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase()||fallback}
 function exportDeckPdf(deck=state){if(!deck)return;downloadBlob(createDeckPdf([deck]),`${safeExportName(deck.name)}.pdf`);toast(t('pdfExported'))}
 function exportAllDecksPdf(){if(!store.decks.length)return;scheduleDeckSave.flush();downloadBlob(createDeckPdf(store.decks),'deckomantik-all-decks.pdf');toast(t('pdfExported'))}

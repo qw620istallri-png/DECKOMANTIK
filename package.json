@@ -1,0 +1,8 @@
+{
+  "name": "deckomantik",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.cjs",
+    "test:browser": "node scripts/tournament-browser-test.cjs"
+  }
+}
