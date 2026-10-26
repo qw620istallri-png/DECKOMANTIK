@@ -20,3 +20,20 @@ test('zero study and short rounds do not duplicate simultaneous sound cues',()=>
 test('clock colors follow study, distinct ten-minute intervals, five-minute and two-minute warnings',()=>{
  const r=round();assert.equal(Clock.appearance({...r,startedAt:null},start).stage,'not-started');assert.equal(Clock.appearance(r,start+4*60000).stage,'study');const hues=[5,15,25,35,45].map(min=>Clock.appearance(r,start+min*60000).hue);assert.equal(new Set(hues).size,5);assert.equal(Clock.appearance(r,start+50*60000).stage,'last-five');assert.equal(Clock.appearance(r,start+53*60000).stage,'last-two');assert.equal(Clock.appearance(r,start+55*60000).stage,'time-up');r.pausedAt=new Date(start+53*60000).toISOString();assert.equal(Clock.appearance(r,start+70*60000).stage,'last-two');r.endedAt=new Date(start+54*60000).toISOString();assert.equal(Clock.appearance(r,start+70*60000).stage,'closed');
 });
+
+
+test('overtime counts up from the official end and catches up without intermediate ticks',()=>{
+ const r=round(),s=Clock.state(r,start+72*60000+4500);assert.equal(s.phase,'overtime');assert.equal(s.remaining,0);assert.equal(s.overtime,17*60000+4500);
+ Clock.toggle(r,start+73*60000);assert.equal(Clock.state(r,start+99*60000).overtime,18*60000);Clock.toggle(r,start+99*60000);assert.equal(Clock.state(r,start+100*60000).overtime,19*60000);
+});
+test('seek switches phases, clears old pause/closure and preserves results',()=>{
+ const r={...round(),matches:[{result:{a:1,b:0}}]},matches=JSON.stringify(r.matches);r.endedAt=new Date(start+60000).toISOString();
+ Clock.seek(r,'play',start+10*60000);assert.equal(Clock.state(r,start+10*60000).phase,'play');assert.equal(Clock.state(r,start+10*60000).remaining,50*60000);assert.equal(r.endedAt,undefined);
+ Clock.seek(r,'overtime',start+20*60000);assert.equal(Clock.state(r,start+23*60000).overtime,3*60000);
+ Clock.seek(r,'study',start+30*60000);assert.equal(Clock.state(r,start+31*60000).remaining,4*60000);assert.equal(JSON.stringify(r.matches),matches);
+});
+test('a closed round can restart and reset without changing its match results',()=>{
+ const r={...round(),matches:[{result:{a:1,b:0}}],endedAt:new Date(start+60000).toISOString(),pausedAt:new Date(start+30000).toISOString(),pauseMs:1000};
+ Clock.toggle(r,start+90*60000);assert.equal(Clock.state(r,start+91*60000).remaining,4*60000);assert.equal(Clock.state(r,start+91*60000).ended,false);assert.equal(r.pauseMs,0);
+ Clock.reset(r);assert.equal(r.startedAt,null);assert.equal(r.pausedAt,null);assert.equal(r.matches[0].result.a,1);assert.equal(r.clockInitialized,true);
+});

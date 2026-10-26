@@ -328,5 +328,10 @@ globalThis.DKTournamentI18n=Object.fromEntries(['fr','en','it'].map((lang,index)
 ['audit_clock','Horloge modifiée','Clock updated','Cronometro modificato'],
 ['audit_pairings','Appariements / tables modifiés','Pairings / tables updated','Abbinamenti / tavoli modificati'],
 ['audit_rollback','Rondes suivantes supprimées','Later rounds removed','Turni successivi rimossi'],
+['saveBackup','Sauvegarder','Backup','Salva backup'],
+['eventAnalysis','Analyse du tournoi','Tournament analysis','Analisi del torneo'],
+['skipPhase','Passer à la phase suivante','Skip to next phase','Passa alla fase successiva'],
+['backStudy','Revenir à la phase de préparation','Return to study phase','Torna alla fase di studio'],
+['overtime','Overtime · temps additionnel','Overtime','Overtime · tempo supplementare'],
 ['audit_restore','Sauvegarde restaurée','Backup restored','Backup ripristinato']
 ].map(([key,...values])=>[key,values[index]]))]));
