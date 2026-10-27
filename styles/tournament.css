@@ -203,6 +203,8 @@
 .t-match .t-readonly-player{display:flex;flex-direction:column;align-items:center;gap:6px}.t-match .t-readonly-player p{margin:0}.tournament-app .t-table-hit-area{left:-16px;right:-16px;top:-20px;width:calc(100% + 32px);height:calc(100% + 20px)}
 @media(max-width:720px){.tournament-app .t-table-hit-area{left:-10px;right:-10px;width:calc(100% + 20px)}}
 
+.t-table-controls{display:flex;justify-content:flex-end;margin-bottom:12px}.t-table-controls .t-btn{font-size:12px;min-height:32px;padding:6px 9px}
+
 @media print{
   @page{size:A4;margin:15mm}
   html,body.tournament-app{background:white!important;color:#111!important;font:10pt/1.4 Arial,sans-serif!important;min-width:0}
