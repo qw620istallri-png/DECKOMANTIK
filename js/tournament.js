@@ -163,7 +163,7 @@
     const tree=app.querySelector('.t-tree-scroll'),ranks=app.querySelector('.t-tree-ranks-scroll');if(!tree||!ranks)return;
     const rows=[...tree.querySelectorAll('[data-tree-player]')].filter(row=>row.dataset.treePlayer===focus),rank=[...ranks.querySelectorAll('[data-tree-player]')].find(row=>row.dataset.treePlayer===focus);if(!rank||!rows.length)return;
     let row=source&&tree.contains(source)?source:rows.at(-1);
-    if(source&&ranks.contains(source)){const rect=row.getBoundingClientRect(),view=tree.getBoundingClientRect();tree.scrollLeft+=rect.left-view.left-(view.width-rect.width)/2;if(organizer)tree.scrollTop+=rect.top-view.top-(view.height-rect.height)/2;else row.scrollIntoView({block:'center',inline:'nearest'})}
+    if(source&&ranks.contains(source)){const rect=row.getBoundingClientRect(),view=tree.getBoundingClientRect();tree.scrollLeft+=rect.left-view.left-(view.width-rect.width)/2;row.scrollIntoView({block:'center',inline:'nearest'})}
     const rect=row.getBoundingClientRect(),view=ranks.getBoundingClientRect(),targetY=Math.max(view.top+rect.height/2,Math.min(rect.top+rect.height/2,view.bottom-rect.height/2)),rankRect=rank.getBoundingClientRect();
     ranks.scrollTop+=rankRect.top+rankRect.height/2-targetY;
   }
@@ -498,7 +498,7 @@
     try{historyIndex=Number.isInteger(targetIndex)?targetIndex:historyIndex;activeHistoryURL=location.href;const id=new URL(location.href).searchParams.get('event'),selected=id?(organizer?S.resolve(id):S.playerEvent(id)):null;if(selected){setSelection(selected);render()}else{current=null;reason='';roundId='';openGroups.clear();clearDrafts();refreshEvents();render()}}catch(error){fail(error)}
   });
   window.addEventListener('beforeunload',event=>{if(organizer&&(dirty||unsaved)){event.preventDefault();event.returnValue=''}});
-  setInterval(updateClock,1000);document.addEventListener('visibilitychange',updateClock);window.addEventListener('focus',updateClock);window.addEventListener('pageshow',updateClock);window.addEventListener('resize',drawTree);window.addEventListener('scroll',()=>{if(!organizer)requestAnimationFrame(drawTree)},{passive:true});app.addEventListener('scroll',event=>{if(event.target.matches('.t-tree-scroll,.t-tree-ranks-scroll'))drawTree()},true);document.fonts?.ready.then(drawTree);
+  setInterval(updateClock,1000);document.addEventListener('visibilitychange',updateClock);window.addEventListener('focus',updateClock);window.addEventListener('pageshow',updateClock);window.addEventListener('resize',drawTree);window.addEventListener('scroll',()=>{requestAnimationFrame(drawTree)},{passive:true});app.addEventListener('scroll',event=>{if(event.target.matches('.t-tree-scroll,.t-tree-ranks-scroll'))drawTree()},true);document.fonts?.ready.then(drawTree);
   document.documentElement.dataset.theme=localStorage.getItem('deckomantik-tournament-theme')||prefs.theme||'cream';document.documentElement.dataset.accent=prefs.accent||'teal';
   try{
     await S.migrateSlugs(organizer);
