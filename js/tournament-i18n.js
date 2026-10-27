@@ -327,6 +327,8 @@ globalThis.DKTournamentI18n=Object.fromEntries(['fr','en','it'].map((lang,index)
 ['audit_clock','Horloge modifiée','Clock updated','Cronometro modificato'],
 ['audit_pairings','Appariements / tables modifiés','Pairings / tables updated','Abbinamenti / tavoli modificati'],
 ['audit_rollback','Rondes suivantes supprimées','Later rounds removed','Turni successivi rimossi'],
+['enlargeClock','Agrandir le chrono','Enlarge clock','Ingrandisci il cronometro'],
+['reduceClock','Réduire le chrono','Reduce clock','Riduci il cronometro'],
 ['collapseTables','Tout replier','Collapse all','Comprimi tutto'],
 ['expandTables','Tout déplier','Expand all','Espandi tutto'],
 ['collapseTable','Replier','Collapse','Comprimi'],
