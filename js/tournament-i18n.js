@@ -329,8 +329,6 @@ globalThis.DKTournamentI18n=Object.fromEntries(['fr','en','it'].map((lang,index)
 ['audit_rollback','Rondes suivantes supprimées','Later rounds removed','Turni successivi rimossi'],
 ['collapseTable','Replier','Collapse','Comprimi'],
 ['expandTable','Déplier','Expand','Espandi'],
-['collapseTables','Tout replier','Collapse all','Comprimi tutto'],
-['expandTables','Tout déplier','Expand all','Espandi tutto'],
 ['saveBackup','Sauvegarder','Backup','Salva backup'],
 ['eventAnalysis','Analyse du tournoi','Tournament analysis','Analisi del torneo'],
 ['skipPhase','Passer à la phase suivante','Skip to next phase','Passa alla fase successiva'],
