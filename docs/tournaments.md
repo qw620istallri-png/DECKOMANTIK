@@ -1,6 +1,6 @@
 # Tournois DeckomantiK
 
-Les nouvelles pages sont indépendantes du constructeur de decks. Aucun lien n’est ajouté à l’accueil.
+Les pages de tournoi sont indépendantes du constructeur de decks. Le lien « Tournoi », en pied de l’accueil à côté de « Sauvegarde complète », ouvre la gestion des tournois.
 
 - `/tournamentorganisator/` : accueil de gestion avec cartes des tournois en cours, autres événements et archives ; création, réutilisation des paramètres, sauvegarde et archivage réversible.
 - `/tournamentorganisator/?event=<id>` : adresse propre à chaque événement pour sa préparation, ses inscriptions, decks, règles, résultats, rondes, tables, finales et statistiques.
