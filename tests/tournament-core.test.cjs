@@ -8,6 +8,18 @@ function event(n=8){const e=C.createEvent('Test event');e.players=Array.from({le
 function finish(e){const r=e.rounds.at(-1);for(const m of r.matches.filter(m=>m.b))C.setResult(e,r.id,m.id,{a:1,b:0,minutes:30});return r}
 const mockCards=new Map(Array.from({length:50},(_,i)=>['c'+i,{id:'c'+i,name:'Card '+i,points:5}]));
 const deck=()=>({name:'Test',groups:[{name:'Main',cardIds:Array.from({length:30},(_,i)=>'c'+i)},{name:'Sideboard',kind:'sideboard',cardIds:['c30','c31']}]});
+test('judge notes and strike history survive private backups and are excluded from every public player',()=>{
+  const e=event(2);e.players[0].notes='Private accessibility information';e.players[0].penalties=[{id:'strike-1',at:new Date().toISOString(),reason:'Late arrival',voidedAt:new Date().toISOString(),voidReason:'Organizer error'}];
+  const restored=C.validateEvent(e,{privateData:true});assert.deepEqual(restored.players[0].penalties,e.players[0].penalties);assert.equal(restored.players[0].notes,e.players[0].notes);
+  const publicCopy=C.publicEvent(e);assert.ok(!JSON.stringify(publicCopy).includes('Private accessibility'));assert.ok(!('penalties' in publicCopy.players[0]));
+  const contaminated=C.copy(publicCopy);contaminated.players[0].notes='secret';contaminated.players[0].penalties=e.players[0].penalties;assert.ok(!('notes' in C.validateEvent(contaminated).players[0]));
+  e.players[0].penalties[0].voidReason='';assert.throws(()=>C.validateEvent(e,{privateData:true}),/badFile/);
+});
+test('extra time round-trips through player exports and invalid extensions are rejected',()=>{
+  const e=event(2);C.start(e,cards);const r=e.rounds[0];r.extraMinutes=5;r.matches[0].extraMinutes=3;
+  const exported=C.validateEvent(C.publicEvent(e));assert.equal(exported.rounds[0].extraMinutes,5);assert.equal(exported.rounds[0].matches[0].extraMinutes,3);
+  for(const value of [-1,1.5,601,'5']){r.matches[0].extraMinutes=value;assert.throws(()=>C.validateEvent(e,{privateData:true}),/badFile/)}
+});
 test('official player-count recommendations and Lucca preset',()=>{
   for(const [n,rounds,cut] of [[2,1,0],[3,2,0],[4,3,0],[8,3,0],[9,4,4],[16,4,4],[17,5,8],[32,5,8],[64,6,8]])assert.deepEqual(C.recommended(n),{swissRounds:rounds,topCut:cut});
   const r=C.rules('lucca');assert.equal(r.banned.length,3);assert.equal(r.restrictionGroups[0].cardIds.length,3);assert.equal(r.studyMinutes+r.playMinutes,55);assert.ok([...r.banned,...r.restrictionGroups[0].cardIds].every(id=>cards.has(id)));

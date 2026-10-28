@@ -1,0 +1,46 @@
+/* A shared tabletop, with one end facing each player. */
+.duel-app{margin:0;min-width:320px;background:var(--paper);color:var(--ink);font:15px/1.4 var(--text);touch-action:manipulation}
+.duel-app *{box-sizing:border-box}.duel-app ::selection{background:var(--pink);color:var(--on-pink)}
+.duel-app :focus-visible{outline:3px solid var(--pink-ink);outline-offset:3px}
+.duel-app button,.duel-app input{font:inherit;color:inherit;caret-color:var(--pink-ink)}
+.duel-app button{cursor:pointer;touch-action:manipulation}.duel-app button:disabled{opacity:.4;cursor:default}
+.duel-app button:not(:disabled):hover{background:color-mix(in srgb,var(--ink) 7%,var(--paper));color:var(--ink)}
+.d-header{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid var(--rule);gap:12px}
+.d-header h1{font:700 19px var(--display);margin:0}.d-header a{color:var(--ink);display:flex;align-items:center;text-decoration:none}
+.d-header-tools{display:flex;gap:6px}.d-icon,.d-language{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:0;border-radius:4px;background:transparent;padding:8px}
+.duel-app svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.d-board{height:calc(100dvh - 48px);min-height:570px;max-width:1100px;margin:auto;display:grid;grid-template-rows:minmax(0,1fr) auto minmax(0,1fr)}
+.d-player{min-height:0;display:flex;flex-direction:column;align-items:center;padding:10px max(12px,env(safe-area-inset-right)) 14px;gap:8px;overflow:hidden}
+.d-player.is-opponent{transform:rotate(180deg);background:color-mix(in srgb,var(--ink) 3%,var(--paper))}
+.d-name{width:min(100%,380px);border:0;border-bottom:1px solid transparent;text-align:center;background:transparent;font-weight:650!important;padding:4px;min-height:32px;border-radius:0}
+.d-name:focus{border-bottom-color:var(--rule)}.d-name::placeholder{color:var(--muted);opacity:1}
+.d-score{display:flex;align-items:center;justify-content:center;gap:22px}
+.d-bonus{background:transparent;border:0;text-align:center;padding:0;min-width:130px;font:750 clamp(44px,8dvh,76px)/1 var(--display)!important;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.d-bonus small{display:block;font:500 12px/1.7 var(--text);letter-spacing:0;color:var(--muted)}
+.d-step{width:56px;height:48px;border:1px solid var(--rule);border-radius:6px;background:var(--sheet);font-weight:700!important;font-size:22px!important;padding:0}
+.d-essence-add{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));width:min(100%,490px);gap:5px}
+.d-add{position:relative;display:flex;align-items:center;justify-content:center;height:48px;border:1px solid var(--rule);border-radius:6px;background:var(--sheet);padding:4px}
+.d-add img{width:32px;height:32px;object-fit:contain}.d-add svg{position:absolute;bottom:1px;right:1px;width:14px;height:14px;background:var(--sheet);border-radius:50%}
+.d-pool{width:min(100%,700px);flex:1;min-height:44px;overflow:auto;display:flex;align-content:flex-start;justify-content:center;flex-wrap:wrap;gap:4px;padding:5px;scrollbar-color:var(--rule) transparent;scrollbar-width:thin;overscroll-behavior:contain}
+.d-token{display:grid;place-items:center;min-width:40px;width:40px;height:40px;padding:2px;border:0;background:transparent;border-radius:50%}.d-token img{width:34px;height:34px;object-fit:contain}
+.d-pool p{margin:auto;color:var(--muted);font-size:12px;text-align:center;max-width:32ch}
+.d-center{display:flex;align-items:center;justify-content:center;gap:8px;border-block:1px solid var(--rule);padding:6px 10px;background:var(--sheet);flex-wrap:wrap}
+.d-clock{border:0;background:transparent;font:700 27px/1 var(--display)!important;font-variant-numeric:tabular-nums;padding:6px;min-width:100px}.d-clock.is-overtime{color:var(--bad)}
+.d-die{display:flex;align-items:center;justify-content:center;gap:6px;min-width:66px;height:40px;background:transparent;border:1px solid var(--rule);border-radius:4px;padding:6px}.d-die output{font-weight:750;min-width:1ch}
+.d-wake.is-active{color:var(--ok)}.d-wake:not(.is-active){color:var(--muted)}
+.duel-app dialog{color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:12px;width:min(420px,calc(100vw - 24px))!important;max-height:calc(100dvh - 24px);padding:24px;box-shadow:0 12px 36px -18px #0008}
+.duel-app dialog::backdrop{background:#0008}.duel-app dialog h2{font:700 24px var(--display);margin:0 0 16px}.duel-app dialog p{color:var(--muted)}
+.duel-app dialog label{display:flex;flex-direction:column;gap:8px;margin:12px 0}.duel-app dialog input{min-height:44px;padding:8px;border:1px solid var(--rule);border-radius:4px;background:var(--sheet);width:100%}
+.d-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}.d-button{padding:9px 14px;min-height:44px;border:1px solid var(--rule);border-radius:4px;background:var(--sheet)}
+.d-button.is-primary{background:var(--ink);color:var(--paper)}
+#duelNotice{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;max-width:calc(100vw - 24px);border-radius:6px;z-index:100;font-size:13px}#duelNotice:empty{display:none}
+@media(max-height:700px){.d-board{min-height:520px}.d-player{gap:4px;padding-block:6px}.d-score{gap:16px}.d-add{height:44px}.d-bonus{font-size:44px!important}}
+@media(min-width:800px){.d-player{gap:12px}.d-score{gap:44px}.d-essence-add{gap:10px}.d-center{gap:16px}}
+@media(prefers-reduced-motion:no-preference){.d-token:active,.d-add:active,.d-step:active{transform:scale(.92);transition:transform 100ms var(--ease)}}
+
+.duel-app .d-name{background:transparent;border:0;border-bottom:1px solid transparent;box-shadow:none;color:var(--ink);font-size:15px;border-radius:0;min-height:32px;padding:4px}
+.duel-app .d-bonus{display:flex;flex-direction:column;align-items:center;justify-content:center;background:transparent;border:0;gap:0}
+.d-options{position:relative}.d-options summary{list-style:none;width:40px;height:40px;padding:9px;cursor:pointer;display:grid;place-items:center;border-radius:4px}.d-options summary::-webkit-details-marker{display:none}.d-options summary svg{stroke-width:4}
+.d-options[open] summary{background:color-mix(in srgb,var(--ink) 8%,var(--paper))}.d-options>div{position:absolute;right:0;top:46px;z-index:10;width:270px;padding:6px;background:var(--sheet);border:1px solid var(--rule);border-radius:6px;box-shadow:0 12px 28px -18px #0008}
+.duel-app .d-options button{width:100%;height:auto;min-height:44px;display:flex;justify-content:flex-start;gap:10px;text-align:left;font-size:13px}.d-options button span{flex:1}
+@media(max-width:360px){.d-header{gap:6px;padding-inline:8px}.d-header-tools{gap:0}.d-header h1{font-size:18px}}

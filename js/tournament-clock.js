@@ -1,7 +1,7 @@
 /* One timeline for the visible clocks and their sound cues. */
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.DKTournamentClock=api})(globalThis,()=>{
   function state(round,now=Date.now()){
-    const study=round.studyMinutes*60000,total=study+round.playMinutes*60000;
+    const study=round.studyMinutes*60000,total=study+(round.playMinutes+(round.extraMinutes||0))*60000;
     const end=round.pausedAt?Date.parse(round.pausedAt):round.endedAt?Date.parse(round.endedAt):now;
     const elapsed=round.startedAt?Math.max(0,end-Date.parse(round.startedAt)-(round.pauseMs||0)):0;
     const phase=elapsed>=total?'overtime':elapsed<study?'study':'play';
@@ -12,9 +12,9 @@
     if(clock.remaining<=120000)return {stage:'last-two',hue:5,bucket:0};if(clock.remaining<=300000)return {stage:'last-five',hue:38,bucket:0};const bucket=Math.floor((clock.elapsed-round.studyMinutes*60000)/600000);return {stage:'play',hue:(155+43*bucket)%360,bucket};
   }
   function cues(round){
-    const study=round.studyMinutes*60000,play=round.playMinutes*60000,items=[{id:'start',at:0}];
+    const study=round.studyMinutes*60000,play=(round.playMinutes+(round.extraMinutes||0))*60000,items=[{id:'start',at:0}];
     if(study>60000)items.push({id:'studyOneMinute',at:study-60000});
-    for(let min=10;min<round.playMinutes;min+=10)items.push({id:'play'+min,at:study+min*60000});
+    for(let min=10;min<round.playMinutes+(round.extraMinutes||0);min+=10)items.push({id:'play'+min,at:study+min*60000});
     if(play>=300000&&study+play-300000>0)items.push({id:'fiveMinutes',at:study+play-300000});
     items.push({id:'end',at:study+play});
     // A five-minute warning replaces a ten-minute cue when both occur together.
@@ -29,8 +29,9 @@
     else round.pausedAt=new Date(now).toISOString();
   }
   function seek(round,phase,now=Date.now()){
-    const elapsed=phase==='study'?0:phase==='play'?round.studyMinutes*60000:(round.studyMinutes+round.playMinutes)*60000;
+    const elapsed=phase==='study'?0:phase==='play'?round.studyMinutes*60000:(round.studyMinutes+round.playMinutes+(round.extraMinutes||0))*60000;
     reset(round);round.startedAt=new Date(now-elapsed).toISOString();
   }
-  return {state,appearance,cues,crossed,reset,toggle,seek};
+  function forMatch(round,match){return {...round,extraMinutes:(round.extraMinutes||0)+(match.extraMinutes||0)}}
+  return {forMatch,state,appearance,cues,crossed,reset,toggle,seek};
 });

@@ -1,5 +1,14 @@
 const test=require('node:test'),assert=require('node:assert/strict'),Clock=require('../js/tournament-clock.js');
 const start=Date.parse('2026-10-26T10:00:00Z'),round=()=>({studyMinutes:5,playMinutes:50,startedAt:new Date(start).toISOString(),pauseMs:0,pausedAt:null});
+test('round and table extensions add to play time, preserve preparation and shift overtime',()=>{
+  const r={...round(),extraMinutes:5},table=Clock.forMatch(r,{extraMinutes:3});
+  assert.equal(Clock.state(table,start+4*60000).remaining,60000);
+  assert.equal(Clock.state(r,start+55*60000).remaining,5*60000);
+  assert.equal(Clock.state(table,start+60*60000).remaining,3*60000);
+  assert.equal(Clock.state(table,start+64*60000).overtime,60000);
+  assert.equal(Clock.cues(r).at(-1).at,60*60000);assert.equal(Clock.cues(r).find(c=>c.id==='fiveMinutes').at,55*60000);
+  Clock.seek(r,'overtime',start);assert.equal(Clock.state(r,start).phase,'overtime');assert.equal(r.extraMinutes,5);
+});
 test('default cues follow study/play phases with the one-minute and final warnings',()=>{
   assert.deepEqual(Clock.cues(round()).map(c=>[c.id,c.at/60000]),[['start',0],['studyOneMinute',4],['play10',15],['play20',25],['play30',35],['play40',45],['fiveMinutes',50],['end',55]]);
 });

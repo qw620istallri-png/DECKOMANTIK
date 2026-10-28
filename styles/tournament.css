@@ -225,3 +225,8 @@
   #tournamentPrint .t-deck-list{columns:1}#tournamentPrint .t-stats{gap:12mm}#tournamentPrint .t-match{break-inside:avoid;grid-template-columns:20mm 1fr 35mm}
   #tournamentPrint .t-personal{background:white;border-color:#999}#tournamentPrint .t-table-wrap{overflow:visible}
 }
+
+/* Judge-only notes and per-table extensions. */
+.t-strikes{font-size:11px;color:var(--bad);white-space:nowrap}.t-note-mark{font-size:10px;color:var(--muted)}
+.t-penalty-list{list-style:none;padding:0}.t-penalty-list li{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--rule)}.t-penalty-list small{display:block;color:var(--muted)}
+.t-table-timing{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;font-size:12px;margin-top:8px}.t-table-timing:empty{display:none}.t-table-timing strong{font-variant-numeric:tabular-nums}.t-table-timing .t-btn{font-size:11px;min-height:30px;padding:4px 8px}
