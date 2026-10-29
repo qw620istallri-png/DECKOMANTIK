@@ -1,5 +1,5 @@
 /* A shared tabletop, with one end facing each player. */
-.duel-app{margin:0;min-width:320px;background:var(--paper);color:var(--ink);font:15px/1.4 var(--text);touch-action:manipulation}
+.duel-app{--d-player-one:color-mix(in srgb,#5696c5 20%,var(--paper));--d-player-two:color-mix(in srgb,#da9d53 18%,var(--paper));margin:0;min-width:320px;background:var(--paper);color:var(--ink);font:15px/1.4 var(--text);touch-action:manipulation}
 .duel-app *{box-sizing:border-box}.duel-app ::selection{background:var(--pink);color:var(--on-pink)}
 .duel-app :focus-visible{outline:3px solid var(--pink-ink);outline-offset:3px}
 .duel-app button,.duel-app input{font:inherit;color:inherit;caret-color:var(--pink-ink)}
@@ -11,7 +11,7 @@
 .duel-app svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .d-board{height:calc(100dvh - 48px);min-height:570px;max-width:1100px;margin:auto;display:grid;grid-template-rows:minmax(0,1fr) auto minmax(0,1fr)}
 .d-player{min-height:0;display:flex;flex-direction:column;align-items:center;padding:10px max(12px,env(safe-area-inset-right)) 14px;gap:8px;overflow:hidden}
-.d-player{background:color-mix(in srgb,#da9d53 18%,var(--paper))}.d-player.is-opponent{transform:rotate(180deg);background:color-mix(in srgb,#5696c5 20%,var(--paper))}
+.d-player{background:var(--d-player-two)}.d-player.is-opponent{transform:rotate(180deg);background:var(--d-player-one)}
 .d-name{width:min(100%,380px);border:0;border-bottom:1px solid transparent;text-align:center;background:transparent;font-weight:650!important;padding:4px;min-height:32px;border-radius:0}
 .d-name:focus{border-bottom-color:var(--rule)}.d-name::placeholder{color:var(--muted);opacity:1}
 .d-score{display:flex;align-items:center;justify-content:center;gap:22px}
@@ -58,3 +58,5 @@
 .d-history-group summary{display:block;list-style:none;cursor:pointer}.d-history-group summary::-webkit-details-marker{display:none}.d-history-group-label{display:flex;align-items:center;gap:6px;color:var(--pink-ink);font-size:12px;margin-top:10px}.d-history-group-label svg{width:16px;height:16px}.d-history-group[open] .d-history-group-label svg{transform:rotate(180deg)}.d-history-group .d-history-raw{margin-top:14px;padding-left:12px;border-left:1px solid var(--rule)}.d-history-raw .d-history-context{font-size:11px}
 
 .d-history-group summary .d-history-clock,.d-history-group summary .d-history-changes{display:block}.d-history-changes{padding:0;margin:10px 0 0}.d-history-change{display:flex;align-items:baseline;gap:4px 8px;flex-wrap:wrap;margin:6px 0;overflow-wrap:anywhere}
+
+.d-history-change[data-history-player]{padding:8px;border-radius:4px;color:var(--ink)}.d-history-change[data-history-player="0"]{background:var(--d-player-one)}.d-history-change[data-history-player="1"]{background:var(--d-player-two)}
