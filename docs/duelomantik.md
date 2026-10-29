@@ -15,3 +15,8 @@ La partie est enregistrée dans `deckomantik-duel-v1`, séparément des decks et
 Le maintien d’écran utilise [Screen Wake Lock](https://developer.mozilla.org/en-US/docs/Web/API/Screen_Wake_Lock_API) sur HTTPS, demandé automatiquement et repris au retour dans la page. Le système peut le refuser ou le libérer, notamment en économie d’énergie. L’état apparaît dans le menu et le bouton permet de le libérer ou de réessayer. Il est libéré en quittant la page.
 
 Vérification : `npm test`, puis `node scripts/duel-tournament-browser-test.cjs` avec Playwright et `PLAYWRIGHT_CHROMIUM_EXECUTABLE` si nécessaire.
+
+
+« Historique » dans le menu … affiche les modifications de points bonus et de tours, ainsi que leurs annulations. Chaque opération conserve la date et l’heure à la seconde, le numéro de partie et le tour au moment de l’action, le temps de jeu écoulé (hors pauses), le temps restant ou dépassé et l’état du chrono. Les points indiquent le joueur, le gain ou la perte et le total avant/après ; les tours indiquent leur valeur avant/après. Les noms sont ceux enregistrés lors de la modification.
+
+Les départs, pauses, reprises, remises à zéro et réglages du chrono sont également tracés pour expliquer les changements de référence temporelle. Une nouvelle partie est signalée et conserve le journal des précédentes parties ; elle réinitialise toujours les compteurs de jeu. Les 5 000 dernières opérations sont conservées localement et synchronisées entre onglets. L’historique reste consultable après rechargement ; les anciennes sauvegardes reçoivent un journal vide, sans reconstituer des actions antérieures.
