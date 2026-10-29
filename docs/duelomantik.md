@@ -2,11 +2,11 @@
 
 Compagnon pour les parties physiques, accessible depuis le premier lien en haut à gauche de la home ou directement à `duelomantik/`. Interface FR/EN/IT, papier et thème sombre de DK, mobile et ordinateur.
 
-L’écran est partagé entre deux joueurs face à face, la moitié supérieure étant tournée de 180°. Chaque joueur peut se nommer, ajouter les sept essences avec les symboles de puissance de DK et toucher chaque essence de sa réserve pour la dépenser. Les réserves sont indépendantes (0 à 99 de chaque essence).
+L’écran est partagé entre deux joueurs face à face, la moitié supérieure étant tournée de 180°. Chaque joueur peut se nommer, ajouter les sept essences avec les symboles de puissance de DK et toucher une essence de sa réserve pour en dépenser une unité. Chaque type est regroupé en une icône précédée de sa quantité. Les deux côtés utilisent des fonds bleu et ocre distincts. Les réserves sont indépendantes (0 à 99 de chaque essence).
 
 Les **points bonus** commencent à zéro et peuvent être négatifs. Les boutons ajoutent ou retirent cinq points ; toucher le total permet de le corriger à l’unité. Ce compteur ne représente pas la valeur des cartes ni les points de classement d’un tournoi.
 
-Le centre contient un chrono partagé, le lancer d’un dé six faces et l’annulation de la dernière action. Le dé utilise les valeurs aléatoires du navigateur avec rejet du reste pour éviter un biais. L’annulation porte sur les points, essences, noms et dé, en conservant le chrono en cours.
+Le centre contient un chrono partagé, le lancer d’un dé six faces et l’annulation de la dernière action et un compteur de tours partagé. Le compteur commence à 1, se règle par −/+ ou par saisie directe, et revient à 1 à la nouvelle partie. Le dé utilise les valeurs aléatoires du navigateur avec rejet du reste pour éviter un biais. L’annulation porte sur les points, essences, noms, dé et tours, en conservant le chrono en cours.
 
 Toucher le chrono règle sa durée (50 minutes initialement). Il gère départ, pause et overtime à partir d’horodatages ; revenir d’un onglet en arrière-plan rattrape le temps écoulé. Le menu en haut à droite propose la remise à zéro du chrono, une nouvelle partie avec confirmation, le plein écran lorsque disponible et le maintien de l’écran allumé.
 

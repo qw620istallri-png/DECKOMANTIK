@@ -1,4 +1,9 @@
 const test=require('node:test'),assert=require('node:assert/strict'),C=require('../js/duelomantik-core.js');
+test('turns start at one and older saves gain the counter without losing the game',()=>{
+  const s=C.fresh();assert.equal(s.turn,1);s.players[0].bonus=35;s.players[0].essences.hollow=9;delete s.turn;
+  const restored=C.validate(s);assert.equal(restored.turn,1);assert.equal(restored.players[0].bonus,35);assert.equal(restored.players[0].essences.hollow,9);assert.equal(s.turn,undefined);
+  restored.turn=23;assert.equal(C.validate(restored).turn,23);for(const turn of [0,-1,1.5,10000,'2'])assert.throws(()=>C.validate({...restored,turn}),/badSave/);
+});
 test('bonus points start at zero, allow losses and never alter the other player',()=>{
   const s=C.fresh();C.change(s,0,'bonus',null,-5);C.change(s,1,'bonus',null,10);assert.equal(s.players[0].bonus,-5);assert.equal(s.players[1].bonus,10);assert.deepEqual(C.validate(JSON.parse(JSON.stringify(s))),s);
 });
