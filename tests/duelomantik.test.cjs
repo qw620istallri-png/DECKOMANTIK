@@ -1,4 +1,15 @@
 const test=require('node:test'),assert=require('node:assert/strict'),C=require('../js/duelomantik-core.js');
+test('point bursts group for less than twenty seconds from the first action, without losing raw entries',()=>{
+  const state=C.fresh(),start=Date.now();let current=state;
+  for(const ms of [0,10000,19999,25000]){const next=C.validate(current);C.change(next,0,'bonus',null,5);C.record(current,next,'change',start+ms);current=next}
+  const saved=JSON.stringify(current.journal),groups=C.journalGroups(current.journal);assert.deepEqual(groups.map(g=>g.entries.length),[3,1]);assert.equal(groups[0].entries[0].changes[0].from,0);assert.equal(groups[0].entries.at(-1).changes[0].to,15);assert.equal(JSON.stringify(current.journal),saved);
+  const boundary=structuredClone(current.journal.slice(0,2));boundary[1].at=new Date(start+20000).toISOString();assert.equal(C.journalGroups(boundary).length,2);
+});
+test('different players, turns, clock changes, overtime and undo keep judge history separate',()=>{
+  const before=C.fresh(),start=Date.now(),next=C.validate(before);next.players[0].bonus=5;C.record(before,next,'change',start);const a=next.journal[0],b=structuredClone(a);b.at=new Date(start+1000).toISOString();b.changes[0].from=5;b.changes[0].to=10;
+  for(const edit of [e=>e.changes[0].player=1,e=>e.turn=2,e=>e.game=2,e=>e.clockState='paused',e=>e.action='undo',e=>e.elapsedMs=3000000,e=>e.changes[0].from=7]){const other=structuredClone(b);edit(other);assert.equal(C.journalGroups([a,other]).length,2)}
+  const cancel=structuredClone(b);cancel.changes[0].to=0;const grouped=C.journalGroups([a,cancel]);assert.equal(grouped.length,1);assert.equal(grouped[0].entries.length,2);assert.equal(grouped[0].entries.at(-1).changes[0].to,0);
+});
 test('journal records the wall time, turn and paused-adjusted game clock alongside point deltas',()=>{
   const now=Date.parse('2026-10-29T16:50:00Z'),before=C.fresh();before.players[1].name='Player 2';before.players[1].bonus=10;before.turn=2;before.clock.elapsed=120000;before.clock.startedAt=now-787000;
   const next=C.validate(before);C.change(next,1,'bonus',null,5);C.record(before,next,'change',now);

@@ -37,6 +37,16 @@
     if(changes.length)after.journal.push({at:new Date(now).toISOString(),game:before.game||1,turn:before.turn,elapsedMs:elapsed(before.clock,now),minutes:before.clock.minutes,clockState:clockState(before.clock),action,changes});
     after.journal=after.journal.slice(-5000);
   }
+  function journalGroups(entries){
+    const groups=[];
+    for(const entry of entries){
+      const group=groups.at(-1),first=group?.entries[0],last=group?.entries.at(-1),change=entry.changes[0],previous=last?.changes[0];
+      const span=first?Date.parse(entry.at)-Date.parse(first.at):0;
+      const combine=first&&entry.action==='change'&&last.action==='change'&&entry.changes.length===1&&last.changes.length===1&&change.type==='bonus'&&previous.type==='bonus'&&entry.game===first.game&&entry.turn===first.turn&&entry.clockState===first.clockState&&entry.minutes===first.minutes&&(entry.elapsedMs>=entry.minutes*60000)===(first.elapsedMs>=first.minutes*60000)&&change.player===previous.player&&change.name===previous.name&&change.from===previous.to&&span>=0&&span<20000;
+      if(combine)group.entries.push(entry);else groups.push({entries:[entry]});
+    }
+    return groups;
+  }
   function toggle(clock,now=Date.now()){if(clock.startedAt===null)clock.startedAt=now;else{clock.elapsed=elapsed(clock,now);clock.startedAt=null}}
   function change(state,player,kind,key,delta){
     const p=state.players[player];if(!p)throw Error('badSave');
@@ -45,5 +55,5 @@
     else throw Error('badSave');
   }
   function roll(random=()=>crypto.getRandomValues(new Uint32Array(1))[0]){let n;do{n=random()}while(n>=4294967292);return n%6+1}
-  return {essences,fresh,validate,elapsed,record,toggle,change,roll};
+  return {essences,fresh,validate,elapsed,record,journalGroups,toggle,change,roll};
 });
