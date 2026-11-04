@@ -18,7 +18,8 @@
     Object.entries(record(source.assemblies)).forEach(([key,entry])=>{
       if(!safeKey(key))return;
       const item=record(entry);
-      assemblies[key]={assembled:Boolean(item.assembled),includeSideboard:item.includeSideboard!==false};
+      const copies=count(item.copies||item.assembled);
+      assemblies[key]={assembled:copies>0,copies,includeSideboard:item.includeSideboard!==false};
     });
     return {version:1,sets,assemblies};
   }
@@ -56,27 +57,28 @@
 
   const requirement=(definition,includeSideboard=true)=>cardCounts([...definition.main,...(includeSideboard?definition.sideboard:[])]);
   const addCounts=(target,source)=>Object.entries(source).forEach(([id,amount])=>{target[id]=(target[id]||0)+amount});
+  const multiplyCounts=(source,multiplier)=>Object.fromEntries(Object.entries(source).map(([id,amount])=>[id,amount*multiplier]));
 
   function analyze({cards=[],cardSets=[],physical={},decks=[],starters=[]}={}){
     const normalized=normalize(physical),definitions=[...decks.map(personalDefinition),...starterDefinitions(starters,cards)],byKey=new Map(definitions.map(item=>[item.key,item])),owned={},reserved={},reservations={};
     cards.forEach(card=>{owned[card.id]=count(normalized.sets[card.setId||'beta'])});
     Object.entries(normalized.assemblies).forEach(([key,assembly])=>{
       const definition=byKey.get(key);if(!assembly.assembled||!definition)return;
-      const needed=requirement(definition,assembly.includeSideboard);addCounts(reserved,needed);
+      const copies=definition.kind==='starter'?assembly.copies:1,needed=multiplyCounts(requirement(definition,assembly.includeSideboard),copies);addCounts(reserved,needed);
       Object.entries(needed).forEach(([cardId,amount])=>{(reservations[cardId]||(reservations[cardId]=[])).push({key:definition.key,kind:definition.kind,id:definition.id,name:definition.name||'',names:definition.names||{},amount})});
     });
     const remaining={};Object.keys(owned).forEach(id=>{remaining[id]=Math.max(0,(owned[id]||0)-(reserved[id]||0))});
     const results={};
     definitions.forEach(definition=>{
-      const assembly=normalized.assemblies[definition.key]||{assembled:false,includeSideboard:true},needed=requirement(definition,assembly.includeSideboard),missing=[];
+      const assembly=normalized.assemblies[definition.key]||{assembled:false,copies:0,includeSideboard:true},copies=definition.kind==='starter'?assembly.copies:(assembly.assembled?1:0),baseNeeded=requirement(definition,assembly.includeSideboard),needed=copies?multiplyCounts(baseNeeded,copies):baseNeeded,missing=[];
       Object.entries(needed).forEach(([cardId,amount])=>{
         const short=assembly.assembled?Math.min(amount,Math.max(0,(reserved[cardId]||0)-(owned[cardId]||0))):Math.max(0,amount-(remaining[cardId]||0));
         if(short)missing.push({cardId,amount:short});
       });
-      results[definition.key]={status:assembly.assembled?(missing.length?'conflict':'assembled'):(missing.length?'missing':'ready'),missing,assembled:assembly.assembled,includeSideboard:assembly.includeSideboard,definition};
+      results[definition.key]={status:assembly.assembled?(missing.length?'conflict':'assembled'):(missing.length?'missing':'ready'),missing,assembled:assembly.assembled,copies,includeSideboard:assembly.includeSideboard,definition};
     });
     const setCopies=Object.values(normalized.sets).reduce((sum,amount)=>sum+amount,0),physicalCards=cardSets.reduce((sum,set)=>sum+count(normalized.sets[set.id])*Number(set.cardCount||cards.filter(card=>(card.setId||'beta')===set.id).length),0),values=Object.values(results);
-    return {physical:normalized,owned,reserved,reservations,remaining,results,definitions,summary:{setCopies,physicalCards,assembled:values.filter(item=>item.assembled).length,ready:values.filter(item=>item.status==='ready').length}};
+    return {physical:normalized,owned,reserved,reservations,remaining,results,definitions,summary:{setCopies,physicalCards,assembled:values.reduce((sum,item)=>sum+(item.copies||0),0),ready:values.filter(item=>item.status==='ready').length}};
   }
 
   return {normalize,deckKey,starterKey,personalDefinition,starterDefinitions,requirement,analyze};

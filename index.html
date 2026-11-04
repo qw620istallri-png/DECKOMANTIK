@@ -6,7 +6,7 @@
   <title>DeckomantiK</title>
   <script>try{var s=JSON.parse(localStorage.getItem('deckomantik-decks-v1')||'{}').settings||{};if(['cream','light','dark'].indexOf(s.theme)>-1)document.documentElement.dataset.theme=s.theme;if(['teal','pink','blue','green','sun','void','heritage'].indexOf(s.accent)>-1)document.documentElement.dataset.accent=s.accent;if(s.language)document.documentElement.lang=s.language}catch(e){}</script>
 <link rel="stylesheet" href="styles/tirage.css?v=20260928-board-share-1">
-<link rel="stylesheet" href="styles/tirage-deck.css?v=20261104-decks-physical-3">
+<link rel="stylesheet" href="styles/tirage-deck.css?v=20261104-decks-physical-4">
   <link rel="stylesheet" href="styles/raretes.css?v=20260928-silver-1">
 <link rel="stylesheet" href="styles/tirage-vues.css?v=20261021-folders-1">
   <link rel="icon" type="image/png" href="assets/deckomantik-favicon.png">
@@ -86,7 +86,7 @@
       <div class="advanced-search-panel" id="advancedSearchPanel">
         <div class="advanced-filters"><label class="select"><span class="vh" id="powerFilterLabel">Puissance</span><select id="powerFilter"></select><svg class="i" aria-hidden="true"><use href="#i-chev"/></svg></label><label class="select"><span class="vh" id="costFilterLabel">Coût</span><select id="costFilter"></select><svg class="i" aria-hidden="true"><use href="#i-chev"/></svg></label><label class="select"><span class="vh" id="pointsFilterLabel">Points</span><select id="pointsFilter"></select><svg class="i" aria-hidden="true"><use href="#i-chev"/></svg></label><button class="icon-btn" id="clearFilters" type="button" title="Réinitialiser"><svg class="i" aria-hidden="true"><use href="#i-reset"/></svg></button></div>
         <div class="temperament-filters" id="temperamentFilters"></div>
-        <div class="library-collection-actions" id="libraryCollectionActions"><button class="icon-btn" id="collectionExportBtn" type="button" title="Exporter la collection"><svg class="i" aria-hidden="true"><use href="#i-download"/></svg><b>Exporter la collection</b></button><button class="icon-btn" id="collectionImportBtn" type="button" title="Importer une collection"><svg class="i" aria-hidden="true"><use href="#i-upload"/></svg><b>Importer une collection</b></button><input id="collectionFileInput" type="file" accept="application/json" hidden><button class="icon-btn" id="effectsToggleBtn" type="button" title="Désactiver les effets de rareté" aria-pressed="false"><svg class="i" aria-hidden="true"><use href="#i-spark"/></svg><b>Effets de rareté</b></button><button class="icon-btn" id="physicalAvailabilityBtn" type="button" title="Afficher les cartes physiques indisponibles" aria-pressed="false"><svg class="i" aria-hidden="true"><use href="#i-cards"/></svg><b>Disponibilité physique</b></button></div>
+        <div class="library-collection-actions" id="libraryCollectionActions"><button class="icon-btn" id="collectionExportBtn" type="button" title="Exporter la collection"><svg class="i" aria-hidden="true"><use href="#i-download"/></svg><b>Exporter la collection</b></button><button class="icon-btn" id="collectionImportBtn" type="button" title="Importer une collection"><svg class="i" aria-hidden="true"><use href="#i-upload"/></svg><b>Importer une collection</b></button><input id="collectionFileInput" type="file" accept="application/json" hidden><button class="icon-btn" id="effectsToggleBtn" type="button" title="Désactiver les effets de rareté" aria-pressed="false"><svg class="i" aria-hidden="true"><use href="#i-spark"/></svg><b>Effets de rareté</b></button><button class="icon-btn" id="deckCardsDimBtn" type="button" title="Griser les cartes déjà dans ce deck" aria-pressed="false"><svg class="i" aria-hidden="true"><use href="#i-deck"/></svg><b>Cartes du deck</b></button><button class="icon-btn" id="physicalAvailabilityBtn" type="button" title="Afficher les cartes physiques indisponibles" aria-pressed="false"><svg class="i" aria-hidden="true"><use href="#i-cards"/></svg><b>Disponibilité physique</b></button></div>
       </div>
       <div class="library-drag-handle" id="libraryDragHandle" role="separator" aria-orientation="horizontal" aria-valuemin="150" aria-valuenow="0" tabindex="0"><span></span></div>
     </section>
@@ -105,7 +105,7 @@
   <script src="js/icones.js?v=20261021-folders-1" defer></script>
   <script src="js/reveal-fx.js?v=20260927-zen-craft-1" defer></script>
 <script src="js/deck-pdf.js?v=20261026-2" defer></script>
-<script src="js/physical-collection.js?v=20261104-physical-2" defer></script>
-<script src="js/deckomantik.js?v=20261104-decks-physical-4" defer></script>
+<script src="js/physical-collection.js?v=20261104-physical-3" defer></script>
+<script src="js/deckomantik.js?v=20261104-decks-physical-6" defer></script>
 </body>
 </html>

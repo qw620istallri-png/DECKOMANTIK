@@ -11,7 +11,7 @@ const sets=[{id:'beta',cardCount:2},{id:'inner-deserts',cardCount:1}];
 const deck=(id,main=['beta-1'],sideboard=[])=>({id,name:id,groups:[{id:'manifestations',cardIds:main},{id:'sideboard',kind:'sideboard',cardIds:sideboard},{id:'maybeboard',kind:'maybeboard',cardIds:['desert-1']}]});
 
 test('normalization keeps complete-set counts and deck preferences bounded',()=>{
-  assert.deepEqual(Physical.normalize({sets:{beta:2,bad:-3},assemblies:{'deck:a':{assembled:true,includeSideboard:false}}}),{version:1,sets:{beta:2},assemblies:{'deck:a':{assembled:true,includeSideboard:false}}});
+  assert.deepEqual(Physical.normalize({sets:{beta:2,bad:-3},assemblies:{'deck:a':{assembled:true,includeSideboard:false}}}),{version:1,sets:{beta:2},assemblies:{'deck:a':{assembled:true,copies:1,includeSideboard:false}}});
 });
 
 test('one set copy provides one copy of every card in that set',()=>{
@@ -37,6 +37,18 @@ test('official starter decks reserve cards without becoming personal decks',()=>
   assert.equal(result.results['starter:green'].status,'assembled');
   assert.equal(result.results['deck:custom'].status,'missing');
   assert.equal(result.reservations['beta-2'][0].names.fr,'Vert');
+});
+
+test('multiple copies of a starter reserve every card once per crafted copy',()=>{
+  const starters=[{essence:'green',names:{fr:'Vert'},numbers:[1,2]}];
+  const result=Physical.analyze({cards,cardSets:sets,physical:{sets:{beta:2},assemblies:{'starter:green':{copies:2}}},starters});
+  assert.equal(result.results['starter:green'].copies,2);
+  assert.equal(result.results['starter:green'].status,'assembled');
+  assert.equal(result.reserved['beta-1'],2);
+  assert.equal(result.reservations['beta-2'][0].amount,2);
+  const conflict=Physical.analyze({cards,cardSets:sets,physical:{sets:{beta:1},assemblies:{'starter:green':{copies:2}}},starters});
+  assert.equal(conflict.results['starter:green'].status,'conflict');
+  assert.deepEqual(conflict.results['starter:green'].missing,[{cardId:'beta-1',amount:1},{cardId:'beta-2',amount:1}]);
 });
 
 test('an edited assembled deck stays assembled and reports a conflict',()=>{

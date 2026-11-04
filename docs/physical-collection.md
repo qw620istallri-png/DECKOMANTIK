@@ -38,7 +38,7 @@ Le troisième onglet ouvre directement le gestionnaire de decks unifié :
 Cartes | Classeur | Mes decks
 ```
 
-« Mes decks » et « Tous les decks » mènent à la même surface. Le Classeur conserve son sens actuel de collection numérique et de raretés obtenues. Une action voisine de celle des effets de rareté permet d’afficher les cartes sans exemplaire physique libre en niveaux de gris. Leur aperçu indique les decks assemblés qui les réservent.
+« Mes decks » et « Tous les decks » mènent à la même surface. Le Classeur conserve son sens actuel de collection numérique et de raretés obtenues. Une action voisine de celle des effets de rareté permet d’afficher les cartes sans exemplaire physique libre en niveaux de gris. Leur aperçu indique les decks assemblés qui les réservent. Dans le constructeur uniquement, une seconde action permet aussi de griser les cartes déjà présentes dans le deck en cours.
 
 ### Accueil
 
@@ -68,9 +68,11 @@ Le gestionnaire conserve le langage des dossiers existants et ajoute un dossier 
 
 - « Decks de base ».
 
-« Tous les decks » affiche d’abord les decks personnels, puis les decks de base à la fin. Les mêmes filtres physiques s’appliquent aux deux groupes, notamment « Assemblés ».
+« Tous les decks » affiche d’abord les decks personnels, puis les decks de base à la fin. Les mêmes filtres physiques s’appliquent aux deux groupes, notamment « Assemblés ». Un deck de base accepte plusieurs exemplaires assemblés ; chaque exemplaire réserve une fois sa liste complète.
 
-Chaque ligne, qu’elle corresponde à un deck personnel ou à un deck de base, présente : nom, composition, sideboard éventuelle, case « Assemblé », statut de disponibilité et accès au détail des cartes manquantes. Le détail utilise l’identifiant `extension-numéro` ; le survol d’une carte affiche son visuel et le set manquant lorsque son compteur vaut zéro, sinon les decks assemblés qui la réservent. Les decks de base ne sont pas ajoutés à la collection personnelle.
+Chaque ligne, qu’elle corresponde à un deck personnel ou à un deck de base, présente : nom, composition, sideboard éventuelle, quantité ou case « Assemblé », statut de disponibilité et accès au détail des cartes manquantes. Le détail utilise l’identifiant `extension-numéro` ; le survol d’une carte affiche son visuel et le set manquant lorsque son compteur vaut zéro, sinon les decks assemblés qui la réservent.
+
+Un deck de base peut être ouvert dans le constructeur sans être ajouté aux decks personnels. Sa première modification crée une copie nommée `Nom - Modifié` ; une simple consultation ne sauvegarde rien. Depuis le constructeur, « Mes decks » revient directement au gestionnaire unifié.
 
 ## États
 
