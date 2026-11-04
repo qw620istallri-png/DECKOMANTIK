@@ -32,17 +32,17 @@ Un candidat est réalisable lorsque chaque carte de sa liste demande au plus la 
 
 ### Bibliothèque
 
-Ajouter un troisième onglet :
+Le troisième onglet ouvre directement le gestionnaire de decks unifié :
 
 ```text
-Cartes | Classeur | Ma collection
+Cartes | Classeur | Mes decks
 ```
 
-« Ma collection » est la surface de gestion physique. Le Classeur conserve son sens actuel de collection numérique et de raretés obtenues.
+« Mes decks » et « Tous les decks » mènent à la même surface. Le Classeur conserve son sens actuel de collection numérique et de raretés obtenues.
 
 ### Accueil
 
-Dans l’en-tête de « Mes decks », ajouter « Ma collection » à côté de « Tout exporter ».
+Dans l’en-tête de « Mes decks », renommer l’ancien accès « Ma collection » en « Mes decks », à côté de « Tout exporter ». Cet accès et la tuile « Tous les decks » ouvrent le même gestionnaire unifié.
 
 Fusionner les deux actions d’import de decks dans un bouton :
 
@@ -56,22 +56,19 @@ L’import de tableaux reste dans la section « Mes tableaux ».
 
 ## Structure de l’écran
 
-### Résumé
+### Collection physique
 
-Afficher le nombre de sets possédés, le total de cartes physiques théoriques, le nombre de decks assemblés et le nombre de decks encore réalisables.
+Sous le panneau « Dossiers », afficher un second panneau « Collection physique ». Une ligne par set connu associe son visuel officiel à un compteur direct `−  nombre  +`. La V1 contient au minimum Beta et Inner Deserts et accepte de futurs sets depuis les données existantes, sans liste codée en dur dans l’interface.
 
-### Mes produits
-
-Une ligne ou vignette par set connu, avec un compteur direct `−  nombre  +`. La V1 contient au minimum Beta et Inner Deserts et doit accepter de futurs sets depuis les données existantes, sans liste codée en dur dans l’interface.
+Le panneau contient également un bouton « Réalisables seulement ». Le tri général propose « Réalisables d’abord » et « Non réalisables d’abord ».
 
 ### Assemblage
 
-Deux vues voisines, dans le langage des dossiers existants :
+Le gestionnaire conserve le langage des dossiers existants et ajoute un dossier dédié :
 
-- « Mes decks » ;
 - « Decks de base ».
 
-Chaque ligne présente : nom, composition, sideboard éventuelle, case « Assemblé », statut de disponibilité et accès au détail des cartes manquantes.
+Chaque ligne, qu’elle corresponde à un deck personnel ou à un deck de base, présente : nom, composition, sideboard éventuelle, case « Assemblé », statut de disponibilité et accès au détail des cartes manquantes. Les decks de base ne sont pas ajoutés à la collection personnelle.
 
 ## États
 
@@ -103,7 +100,7 @@ Le statut ne doit pas reposer uniquement sur la couleur. Utiliser également une
 
 La fonction étend l’interface existante en mode opératoire : bordures franches, papier crème, trames, typographie et accents actuels. Les compteurs de sets peuvent évoquer des contrôles mécaniques et la liste d’assemblage reprend légèrement le vocabulaire de dossiers PC rétro déjà présent dans le gestionnaire de decks.
 
-Sur mobile, « Ma collection » devient une surface plein écran : résumé compact, produits empilés, sélecteur « Mes decks / Decks de base » pleine largeur et détails des manques en accordéon.
+Sur mobile, les panneaux « Dossiers » et « Collection physique » précèdent la liste. Les compteurs restent compacts et les détails des manques s’ouvrent en accordéon.
 
 ## Hors périmètre V1 / notes pour une prochaine version
 

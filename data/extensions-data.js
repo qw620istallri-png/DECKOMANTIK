@@ -4,8 +4,8 @@
   const missingImage = "assets/Desert/Missing_Card_Image.png";
 
   globalThis.DECKOMANTIK_CARD_SETS = Object.freeze([
-    Object.freeze({ id: 'beta', code: 'BETA', name: 'Beta', cardCount: 300 }),
-    Object.freeze({ id: 'inner-deserts', code: 'ID', name: 'Inner Deserts', cardCount: 150 })
+    Object.freeze({ id: 'beta', code: 'BETA', name: 'Beta', cardCount: 300, icon: 'assets/sets/beta.png' }),
+    Object.freeze({ id: 'inner-deserts', code: 'ID', name: 'Inner Deserts', cardCount: 150, icon: 'assets/sets/inner-deserts.png' })
   ]);
 
   globalThis.DECKOMANTIK_BOOSTERS = Object.freeze([
