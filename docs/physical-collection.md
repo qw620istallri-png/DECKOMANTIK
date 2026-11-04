@@ -70,7 +70,7 @@ Le gestionnaire conserve le langage des dossiers existants et ajoute un dossier 
 
 « Tous les decks » affiche d’abord les decks personnels, puis les decks de base à la fin. Les mêmes filtres physiques s’appliquent aux deux groupes, notamment « Assemblés ». Un deck de base accepte plusieurs exemplaires assemblés ; chaque exemplaire réserve une fois sa liste complète.
 
-Chaque ligne, qu’elle corresponde à un deck personnel ou à un deck de base, présente : nom, composition, sideboard éventuelle, quantité ou case « Assemblé », statut de disponibilité et accès au détail des cartes manquantes. Le détail utilise l’identifiant `extension-numéro` ; le survol d’une carte affiche son visuel et le set manquant lorsque son compteur vaut zéro, sinon les decks assemblés qui la réservent.
+Chaque ligne, qu’elle corresponde à un deck personnel ou à un deck de base, présente : nom, composition, sideboard éventuelle, quantité ou case « Assemblé », statut de disponibilité et accès au détail des cartes manquantes. Le contrôle indique le total de cartes manquantes ; le détail utilise l’identifiant `extension-numéro` et précise `×2`, `×3`, etc. lorsqu’un même identifiant manque plusieurs fois. Le survol d’une carte affiche son visuel et le set manquant lorsque son compteur vaut zéro, sinon les decks assemblés qui la réservent.
 
 Un deck de base peut être ouvert dans le constructeur sans être ajouté aux decks personnels. Sa première modification crée une copie nommée `Nom - Modifié` ; une simple consultation ne sauvegarde rien. Depuis le constructeur, « Mes decks » revient directement au gestionnaire unifié.
 
