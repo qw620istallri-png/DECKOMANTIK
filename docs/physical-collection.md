@@ -38,7 +38,7 @@ Le troisième onglet ouvre directement le gestionnaire de decks unifié :
 Cartes | Classeur | Mes decks
 ```
 
-« Mes decks » et « Tous les decks » mènent à la même surface. Le Classeur conserve son sens actuel de collection numérique et de raretés obtenues.
+« Mes decks » et « Tous les decks » mènent à la même surface. Le Classeur conserve son sens actuel de collection numérique et de raretés obtenues. Une action voisine de celle des effets de rareté permet d’afficher les cartes sans exemplaire physique libre en niveaux de gris. Leur aperçu indique les decks assemblés qui les réservent.
 
 ### Accueil
 
@@ -58,9 +58,9 @@ L’import de tableaux reste dans la section « Mes tableaux ».
 
 ### Collection physique
 
-Sous le panneau « Dossiers », afficher un second panneau « Collection physique ». Une ligne par set connu associe son visuel officiel à un compteur direct `−  nombre  +`. La V1 contient au minimum Beta et Inner Deserts et accepte de futurs sets depuis les données existantes, sans liste codée en dur dans l’interface.
+Sous le panneau « Dossiers », afficher un second panneau « Collection physique ». Une ligne par set connu associe son visuel officiel à un compteur direct `−  nombre  +` et au ratio `cartes prises / cartes possédées`. La V1 contient au minimum Beta et Inner Deserts et accepte de futurs sets depuis les données existantes, sans liste codée en dur dans l’interface.
 
-Le panneau contient également un bouton « Réalisables seulement ». Le tri général propose « Réalisables d’abord » et « Non réalisables d’abord ».
+Le panneau contient quatre filtres : « Tous », « Réalisables », « Assemblés » et « Non réalisables ». Le tri général propose « Réalisables d’abord » et « Non réalisables d’abord ».
 
 ### Assemblage
 
@@ -68,13 +68,13 @@ Le gestionnaire conserve le langage des dossiers existants et ajoute un dossier 
 
 - « Decks de base ».
 
-Chaque ligne, qu’elle corresponde à un deck personnel ou à un deck de base, présente : nom, composition, sideboard éventuelle, case « Assemblé », statut de disponibilité et accès au détail des cartes manquantes. Les decks de base ne sont pas ajoutés à la collection personnelle.
+Chaque ligne, qu’elle corresponde à un deck personnel ou à un deck de base, présente : nom, composition, sideboard éventuelle, case « Assemblé », statut de disponibilité et accès au détail des cartes manquantes. Le détail utilise l’identifiant `extension-numéro` ; le survol d’une carte affiche son visuel et les decks assemblés qui la réservent. Les decks de base ne sont pas ajoutés à la collection personnelle.
 
 ## États
 
 - **Assemblé** : le deck réserve effectivement ses cartes.
 - **Réalisable** : toutes les cartes nécessaires sont actuellement libres.
-- **Incomplet** : une ou plusieurs cartes manquent ; le détail donne les noms et quantités.
+- **Incomplet** : une ou plusieurs cartes manquent ; le détail donne leurs noms et identifiants `extension-numéro`.
 - **Conflit** : le deck est déclaré assemblé, mais l’inventaire renseigné ne couvre plus sa liste.
 
 Le statut ne doit pas reposer uniquement sur la couleur. Utiliser également une icône et un libellé explicite.

@@ -24,8 +24,10 @@ test('assembled decks reserve main cards and optionally their sideboard',()=>{
   const first=deck('a',['beta-1'],['beta-2']),second=deck('b',['beta-2']);
   const withSide=Physical.analyze({cards,cardSets:sets,physical:{sets:{beta:1},assemblies:{'deck:a':{assembled:true,includeSideboard:true}}},decks:[first,second]});
   assert.equal(withSide.results['deck:b'].status,'missing');
+  assert.deepEqual(withSide.reservations['beta-2'],[{key:'deck:a',kind:'deck',id:'a',name:'a',names:{},amount:1}]);
   const withoutSide=Physical.analyze({cards,cardSets:sets,physical:{sets:{beta:1},assemblies:{'deck:a':{assembled:true,includeSideboard:false}}},decks:[first,second]});
   assert.equal(withoutSide.results['deck:b'].status,'ready');
+  assert.equal(withoutSide.reservations['beta-2'],undefined);
 });
 
 test('official starter decks reserve cards without becoming personal decks',()=>{
@@ -34,6 +36,7 @@ test('official starter decks reserve cards without becoming personal decks',()=>
   assert.equal(result.definitions.filter(item=>item.kind==='starter').length,1);
   assert.equal(result.results['starter:green'].status,'assembled');
   assert.equal(result.results['deck:custom'].status,'missing');
+  assert.equal(result.reservations['beta-2'][0].names.fr,'Vert');
 });
 
 test('an edited assembled deck stays assembled and reports a conflict',()=>{
