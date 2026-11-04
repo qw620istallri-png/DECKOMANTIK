@@ -6,7 +6,7 @@
   <title>DeckomantiK</title>
   <script>try{var s=JSON.parse(localStorage.getItem('deckomantik-decks-v1')||'{}').settings||{};if(['cream','light','dark'].indexOf(s.theme)>-1)document.documentElement.dataset.theme=s.theme;if(['teal','pink','blue','green','sun','void','heritage'].indexOf(s.accent)>-1)document.documentElement.dataset.accent=s.accent;if(s.language)document.documentElement.lang=s.language}catch(e){}</script>
 <link rel="stylesheet" href="styles/tirage.css?v=20260928-board-share-1">
-<link rel="stylesheet" href="styles/tirage-deck.css?v=20261021-folders-dnd-2">
+<link rel="stylesheet" href="styles/tirage-deck.css?v=20261104-physical-1">
   <link rel="stylesheet" href="styles/raretes.css?v=20260928-silver-1">
 <link rel="stylesheet" href="styles/tirage-vues.css?v=20261021-folders-1">
   <link rel="icon" type="image/png" href="assets/deckomantik-favicon.png">
@@ -78,7 +78,7 @@
   </section>
   <div class="layout" id="layout"><main class="workspace" id="workspace" tabindex="-1"></main><aside class="library" id="library">
     <div class="library-resizer" id="libraryResizer" role="separator" aria-orientation="vertical" aria-valuemin="300" aria-valuemax="720" aria-valuenow="360" tabindex="0"></div>
-    <header class="library-head"><h2 id="libraryEyebrow">Bibliothèque</h2><div class="library-tabs" id="libraryTabs" role="tablist" hidden><button type="button" role="tab" id="libraryTabCards" aria-selected="true">Cartes</button><button type="button" role="tab" id="libraryTabBinder" aria-selected="false" tabindex="-1">Classeur</button></div><p class="result" id="result"></p><div class="library-head-actions"><button class="icon-btn library-controls-toggle" id="libraryControlsToggle" type="button" aria-expanded="true" aria-controls="libraryControls" title="Masquer la recherche"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg></button><button class="icon-btn" id="libraryWide" type="button" title="Agrandir"><svg class="i" aria-hidden="true"><use href="#i-expand"/></svg></button><button class="icon-btn" id="libraryClose" type="button" title="Fermer"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div></header>
+    <header class="library-head"><h2 id="libraryEyebrow">Bibliothèque</h2><div class="library-tabs" id="libraryTabs" role="tablist" hidden><button type="button" role="tab" id="libraryTabCards" aria-selected="true">Cartes</button><button type="button" role="tab" id="libraryTabBinder" aria-selected="false" tabindex="-1">Classeur</button><button type="button" role="tab" id="libraryTabPhysical" aria-selected="false" tabindex="-1">Ma collection</button></div><p class="result" id="result"></p><div class="library-head-actions"><button class="icon-btn library-controls-toggle" id="libraryControlsToggle" type="button" aria-expanded="true" aria-controls="libraryControls" title="Masquer la recherche"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg></button><button class="icon-btn" id="libraryWide" type="button" title="Agrandir"><svg class="i" aria-hidden="true"><use href="#i-expand"/></svg></button><button class="icon-btn" id="libraryClose" type="button" title="Fermer"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div></header>
     <section class="library-controls" id="libraryControls">
       <div class="library-searchline"><label class="search"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg><input id="search" type="search" placeholder="Nom, effet, tempérament…" autocomplete="off" spellcheck="false"><kbd aria-hidden="true">/</kbd></label><button class="advanced-filters-toggle" id="advancedFiltersToggle" type="button" aria-expanded="true" aria-controls="advancedSearchPanel"><span>Recherche avancée</span></button></div>
       <div class="library-target" id="libraryTarget" hidden></div>
@@ -99,11 +99,13 @@
   <script src="data/release-config.js?v=20261007-inner-deserts-1" defer></script>
   <script src="data/cards-data.js" defer></script>
   <script src="data/extensions-data.js?v=20261007-inner-deserts-1" defer></script>
+  <script src="data/starter-decks.js?v=20261104-physical-1" defer></script>
   <script src="data/rules-core.js?v=20261009-inner-desert-rules-1" defer></script>
   <script src="js/deckomantik-audio.js?v=20261007-inner-deserts-1" defer></script>
   <script src="js/icones.js?v=20261021-folders-1" defer></script>
   <script src="js/reveal-fx.js?v=20260927-zen-craft-1" defer></script>
 <script src="js/deck-pdf.js?v=20261026-2" defer></script>
-<script src="js/deckomantik.js?v=20261028-duel-1" defer></script>
+<script src="js/physical-collection.js?v=20261104-physical-1" defer></script>
+<script src="js/deckomantik.js?v=20261104-physical-1" defer></script>
 </body>
 </html>

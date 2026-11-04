@@ -1,0 +1,82 @@
+/* DeckomantiK — physical complete-set inventory and deck availability. */
+((root,factory)=>{
+  const api=factory();
+  if(typeof module==='object'&&module.exports)module.exports=api;
+  root.DeckomantikPhysical=api;
+})(typeof globalThis!=='undefined'?globalThis:this,()=>{
+  'use strict';
+
+  const safeKey=value=>typeof value==='string'&&value.length<=200&&/^[a-z0-9][a-z0-9:_-]*$/i.test(value);
+  const count=value=>Math.max(0,Math.min(99,Math.floor(Number(value)||0)));
+  const record=value=>value&&typeof value==='object'&&!Array.isArray(value)?value:{};
+  const deckKey=id=>`deck:${id}`;
+  const starterKey=id=>`starter:${id}`;
+
+  function normalize(value){
+    const source=record(value),sets={},assemblies={};
+    Object.entries(record(source.sets)).forEach(([id,amount])=>{if(safeKey(id)&&count(amount)>0)sets[id]=count(amount)});
+    Object.entries(record(source.assemblies)).forEach(([key,entry])=>{
+      if(!safeKey(key))return;
+      const item=record(entry);
+      assemblies[key]={assembled:Boolean(item.assembled),includeSideboard:item.includeSideboard!==false};
+    });
+    return {version:1,sets,assemblies};
+  }
+
+  const groupKind=group=>{
+    const explicit=String(group?.kind||group?.id||'').toLowerCase();
+    if(['sideboard','maybeboard'].includes(explicit))return explicit;
+    const name=String(group?.name||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'');
+    if(name==='sideboard'||name==='sidedeck')return'sideboard';
+    if(name==='maybeboard')return'maybeboard';
+    return'main';
+  };
+
+  const cardCounts=ids=>{
+    const result={};
+    (ids||[]).forEach(id=>{if(typeof id==='string')result[id]=(result[id]||0)+1});
+    return result;
+  };
+
+  function personalDefinition(deck){
+    const main=[],sideboard=[];
+    (deck?.groups||[]).forEach(group=>{
+      const kind=groupKind(group),target=kind==='sideboard'?sideboard:kind==='maybeboard'?null:main;
+      if(target)(group.cardIds||[]).forEach(id=>target.push(id));
+    });
+    return {key:deckKey(deck.id),kind:'deck',id:deck.id,name:deck.name||'',main,sideboard};
+  }
+
+  function starterDefinitions(starters,cards){
+    const byNumber=new Map((cards||[]).map(card=>[Number(card.collectionNumber),card.id]));
+    return (starters||[]).map((starter,index)=>({
+      key:starterKey(starter.essence||index),kind:'starter',id:starter.essence||String(index),names:starter.names||{},main:(starter.numbers||[]).map(number=>byNumber.get(Number(number))).filter(Boolean),sideboard:[]
+    }));
+  }
+
+  const requirement=(definition,includeSideboard=true)=>cardCounts([...definition.main,...(includeSideboard?definition.sideboard:[])]);
+  const addCounts=(target,source)=>Object.entries(source).forEach(([id,amount])=>{target[id]=(target[id]||0)+amount});
+
+  function analyze({cards=[],cardSets=[],physical={},decks=[],starters=[]}={}){
+    const normalized=normalize(physical),definitions=[...decks.map(personalDefinition),...starterDefinitions(starters,cards)],byKey=new Map(definitions.map(item=>[item.key,item])),owned={},reserved={};
+    cards.forEach(card=>{owned[card.id]=count(normalized.sets[card.setId||'beta'])});
+    Object.entries(normalized.assemblies).forEach(([key,assembly])=>{
+      const definition=byKey.get(key);if(!assembly.assembled||!definition)return;
+      addCounts(reserved,requirement(definition,assembly.includeSideboard));
+    });
+    const remaining={};Object.keys(owned).forEach(id=>{remaining[id]=Math.max(0,(owned[id]||0)-(reserved[id]||0))});
+    const results={};
+    definitions.forEach(definition=>{
+      const assembly=normalized.assemblies[definition.key]||{assembled:false,includeSideboard:true},needed=requirement(definition,assembly.includeSideboard),missing=[];
+      Object.entries(needed).forEach(([cardId,amount])=>{
+        const short=assembly.assembled?Math.min(amount,Math.max(0,(reserved[cardId]||0)-(owned[cardId]||0))):Math.max(0,amount-(remaining[cardId]||0));
+        if(short)missing.push({cardId,amount:short});
+      });
+      results[definition.key]={status:assembly.assembled?(missing.length?'conflict':'assembled'):(missing.length?'missing':'ready'),missing,assembled:assembly.assembled,includeSideboard:assembly.includeSideboard,definition};
+    });
+    const setCopies=Object.values(normalized.sets).reduce((sum,amount)=>sum+amount,0),physicalCards=cardSets.reduce((sum,set)=>sum+count(normalized.sets[set.id])*Number(set.cardCount||cards.filter(card=>(card.setId||'beta')===set.id).length),0),values=Object.values(results);
+    return {physical:normalized,owned,reserved,remaining,results,definitions,summary:{setCopies,physicalCards,assembled:values.filter(item=>item.assembled).length,ready:values.filter(item=>item.status==='ready').length}};
+  }
+
+  return {normalize,deckKey,starterKey,personalDefinition,starterDefinitions,requirement,analyze};
+});
