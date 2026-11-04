@@ -64,3 +64,14 @@ test('ready means each candidate is buildable from the same remaining pool',()=>
   assert.equal(result.results['deck:b'].status,'ready');
   assert.equal(result.summary.ready,2);
 });
+
+test('buildability scores prefer owned-set shortages before missing sets',()=>{
+  const holder=deck('holder',['beta-1']),ownedShortage=deck('owned-shortage',['beta-1']),missingSet=deck('missing-set',['desert-1']),mixed=deck('mixed',['beta-1','desert-1']);
+  const result=Physical.analyze({cards,cardSets:sets,physical:{sets:{beta:1},assemblies:{'deck:holder':{assembled:true}}},decks:[holder,ownedShortage,missingSet,mixed]});
+  assert.deepEqual([result.results['deck:owned-shortage'].missingOwned,result.results['deck:owned-shortage'].missingUnowned,result.results['deck:owned-shortage'].missingTotal],[1,0,1]);
+  assert.deepEqual([result.results['deck:missing-set'].missingOwned,result.results['deck:missing-set'].missingUnowned,result.results['deck:missing-set'].missingTotal],[0,1,1]);
+  assert.deepEqual([result.results['deck:mixed'].missingOwned,result.results['deck:mixed'].missingUnowned,result.results['deck:mixed'].missingTotal],[1,1,2]);
+  assert.deepEqual(Physical.buildabilityScore(result.results['deck:owned-shortage']),[1,1,1]);
+  assert.deepEqual(Physical.buildabilityScore(result.results['deck:missing-set']),[2,1,1]);
+  assert.deepEqual(Physical.buildabilityScore(result.results['deck:mixed']),[2,2,1]);
+});

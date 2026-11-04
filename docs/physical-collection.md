@@ -60,7 +60,7 @@ L’import de tableaux reste dans la section « Mes tableaux ».
 
 Sous le panneau « Dossiers », afficher un second panneau « Collection physique ». Une ligne par set connu associe son visuel officiel à un compteur direct `−  nombre  +` et au ratio `cartes prises / cartes possédées`. La V1 contient au minimum Beta et Inner Deserts et accepte de futurs sets depuis les données existantes, sans liste codée en dur dans l’interface.
 
-Le panneau contient quatre filtres : « Tous », « Réalisables », « Assemblés » et « Non réalisables ». Le tri général propose « Réalisables d’abord » et « Non réalisables d’abord ».
+Le panneau contient quatre filtres : « Tous », « Réalisables », « Assemblés » et « Non réalisables ». Le tri général propose « Réalisables d’abord » et « Non réalisables d’abord ». « Réalisables d’abord » place ensuite les decks les plus proches de l’assemblage : d’abord ceux dont toutes les extensions ont un compteur supérieur à zéro, par nombre de cartes manquantes, puis ceux qui nécessitent aussi une extension à zéro, par manque total.
 
 ### Assemblage
 

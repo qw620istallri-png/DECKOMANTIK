@@ -58,9 +58,10 @@
   const requirement=(definition,includeSideboard=true)=>cardCounts([...definition.main,...(includeSideboard?definition.sideboard:[])]);
   const addCounts=(target,source)=>Object.entries(source).forEach(([id,amount])=>{target[id]=(target[id]||0)+amount});
   const multiplyCounts=(source,multiplier)=>Object.fromEntries(Object.entries(source).map(([id,amount])=>[id,amount*multiplier]));
+  function buildabilityScore(result,status=result?.status){const owned=Math.max(0,Number(result?.missingOwned)||0),unowned=Math.max(0,Number(result?.missingUnowned)||0),total=Math.max(0,Number(result?.missingTotal)||owned+unowned);if(status==='ready')return[0,0,0];if(status==='missing')return unowned?[2,total,unowned]:[1,owned,total];if(status==='unfinished')return[3,total,unowned];if(status==='assembled')return[4,0,0];if(status==='conflict')return[5,total,unowned];return[6,total,unowned]}
 
   function analyze({cards=[],cardSets=[],physical={},decks=[],starters=[]}={}){
-    const normalized=normalize(physical),definitions=[...decks.map(personalDefinition),...starterDefinitions(starters,cards)],byKey=new Map(definitions.map(item=>[item.key,item])),owned={},reserved={},reservations={};
+    const normalized=normalize(physical),definitions=[...decks.map(personalDefinition),...starterDefinitions(starters,cards)],byKey=new Map(definitions.map(item=>[item.key,item])),cardsById=new Map(cards.map(card=>[card.id,card])),owned={},reserved={},reservations={};
     cards.forEach(card=>{owned[card.id]=count(normalized.sets[card.setId||'beta'])});
     Object.entries(normalized.assemblies).forEach(([key,assembly])=>{
       const definition=byKey.get(key);if(!assembly.assembled||!definition)return;
@@ -75,11 +76,12 @@
         const short=assembly.assembled?Math.min(amount,Math.max(0,(reserved[cardId]||0)-(owned[cardId]||0))):Math.max(0,amount-(remaining[cardId]||0));
         if(short)missing.push({cardId,amount:short});
       });
-      results[definition.key]={status:assembly.assembled?(missing.length?'conflict':'assembled'):(missing.length?'missing':'ready'),missing,assembled:assembly.assembled,copies,includeSideboard:assembly.includeSideboard,definition};
+      const missingOwned=missing.reduce((sum,item)=>sum+((normalized.sets[cardsById.get(item.cardId)?.setId||'beta']||0)>0?item.amount:0),0),missingTotal=missing.reduce((sum,item)=>sum+item.amount,0),missingUnowned=missingTotal-missingOwned;
+      results[definition.key]={status:assembly.assembled?(missing.length?'conflict':'assembled'):(missing.length?'missing':'ready'),missing,missingOwned,missingUnowned,missingTotal,assembled:assembly.assembled,copies,includeSideboard:assembly.includeSideboard,definition};
     });
     const setCopies=Object.values(normalized.sets).reduce((sum,amount)=>sum+amount,0),physicalCards=cardSets.reduce((sum,set)=>sum+count(normalized.sets[set.id])*Number(set.cardCount||cards.filter(card=>(card.setId||'beta')===set.id).length),0),values=Object.values(results);
     return {physical:normalized,owned,reserved,reservations,remaining,results,definitions,summary:{setCopies,physicalCards,assembled:values.reduce((sum,item)=>sum+(item.copies||0),0),ready:values.filter(item=>item.status==='ready').length}};
   }
 
-  return {normalize,deckKey,starterKey,personalDefinition,starterDefinitions,requirement,analyze};
+  return {normalize,deckKey,starterKey,personalDefinition,starterDefinitions,requirement,buildabilityScore,analyze};
 });
