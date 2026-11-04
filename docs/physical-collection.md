@@ -68,7 +68,9 @@ Le gestionnaire conserve le langage des dossiers existants et ajoute un dossier 
 
 - « Decks de base ».
 
-Chaque ligne, qu’elle corresponde à un deck personnel ou à un deck de base, présente : nom, composition, sideboard éventuelle, case « Assemblé », statut de disponibilité et accès au détail des cartes manquantes. Le détail utilise l’identifiant `extension-numéro` ; le survol d’une carte affiche son visuel et les decks assemblés qui la réservent. Les decks de base ne sont pas ajoutés à la collection personnelle.
+« Tous les decks » affiche d’abord les decks personnels, puis les decks de base à la fin. Les mêmes filtres physiques s’appliquent aux deux groupes, notamment « Assemblés ».
+
+Chaque ligne, qu’elle corresponde à un deck personnel ou à un deck de base, présente : nom, composition, sideboard éventuelle, case « Assemblé », statut de disponibilité et accès au détail des cartes manquantes. Le détail utilise l’identifiant `extension-numéro` ; le survol d’une carte affiche son visuel et le set manquant lorsque son compteur vaut zéro, sinon les decks assemblés qui la réservent. Les decks de base ne sont pas ajoutés à la collection personnelle.
 
 ## États
 
