@@ -2,6 +2,8 @@
 
 Les pages de tournoi sont indépendantes du constructeur de decks. Le lien « Tournoi », en pied de l’accueil à côté de « Sauvegarde complète », ouvre la gestion des tournois.
 
+La page « Règles » du constructeur comporte aussi un onglet « Ban list ». Il reprend la liste compétitive Lucca 2026 ci-dessous et signale les decks actifs, terminés et non archivés devenus illégaux. Une empreinte de cette liste est conservée localement : lorsqu’elle change, un avertissement revient jusqu’à validation. L’état physique « Incomplet » d’un deck n’intervient pas dans sa légalité.
+
 - `/tournamentorganisator/` : accueil de gestion avec cartes des tournois en cours, autres événements et archives ; création, réutilisation des paramètres, sauvegarde et archivage réversible.
 - `/tournamentorganisator/?event=<id>` : adresse propre à chaque événement pour sa préparation, ses inscriptions, decks, règles, résultats, rondes, tables, finales et statistiques.
 - `/tournament/` : consultation, choix local d’un participant et suivi de son parcours. Aucune saisie de résultat par les joueurs.

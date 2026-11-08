@@ -14,6 +14,7 @@ Permettre au joueur d’indiquer combien d’exemplaires de chaque set complet i
 4. La sideboard réserve ses cartes par défaut. Une option propre à chaque deck permet de ne pas la compter.
 5. Modifier un deck assemblé ne le désassemble pas. Si sa nouvelle liste n’est plus couverte par l’inventaire, il passe en état de conflit.
 6. La faisabilité d’un deck non assemblé est calculée individuellement à partir de l’inventaire restant. Plusieurs decks marqués « Réalisable » ne sont donc pas nécessairement réalisables simultanément.
+7. Un deck peut être assemblé de force uniquement si chaque carte manquante existe physiquement dans un autre deck assemblé. Le joueur choisit la provenance carte par carte ; les decks donneurs passent alors en état « Incomplet ».
 
 ## Modèle de calcul
 
@@ -80,6 +81,8 @@ Un deck de base peut être ouvert dans le constructeur sans être ajouté aux de
 - **Réalisable** : toutes les cartes nécessaires sont actuellement libres.
 - **Incomplet** : une ou plusieurs cartes manquent ; le détail donne leurs noms et identifiants `extension-numéro`.
 - **Conflit** : le deck est déclaré assemblé, mais l’inventaire renseigné ne couvre plus sa liste.
+
+Un deck incomplet propose « Compléter ». Si plusieurs decks assemblés peuvent fournir une carte, la fenêtre de réaffectation demande lequel utiliser pour chaque exemplaire. L’opération est atomique : elle ne modifie rien si une carte n’existe pas dans la collection physique, si un donneur n’est plus disponible ou si toutes les provenances n’ont pas été choisies.
 
 Le statut ne doit pas reposer uniquement sur la couleur. Utiliser également une icône et un libellé explicite.
 

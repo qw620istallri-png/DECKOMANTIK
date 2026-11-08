@@ -9,6 +9,7 @@ html[data-theme="dark"] .lv-page{--hl:color-mix(in srgb,var(--pink) 42%,transpar
 .lv-bar{position:sticky;top:0;z-index:70;gap:12px;padding-right:20px}
 .lv-back{gap:8px;margin-right:auto}
 .lv-back-short{display:none}
+.lv-primary-tabs{display:flex;justify-content:center;gap:1px;min-height:46px;padding:0 18px;border-bottom:1px solid var(--ink);background:var(--paper)}.lv-primary-tabs button{gap:7px;min-width:170px;min-height:45px;padding:0 18px;border:0;border-radius:0;background:transparent;color:var(--muted);font:750 14px/1 var(--display);font-stretch:88%}.lv-primary-tabs button:hover:not(:disabled){background:var(--pink-screen);color:var(--ink)}.lv-primary-tabs button[aria-selected="true"]{box-shadow:inset 0 -4px 0 var(--pink);color:var(--ink)}.lv-primary-tabs .i{width:18px;height:18px}
 .lv-strip{display:none}
 .lv-shell{display:grid;grid-template-columns:var(--toc-w) minmax(0,1fr) var(--gloss-w);align-items:start}
 .lv-panel-head{display:flex;align-items:baseline;gap:10px;padding:26px 20px 14px 24px}
@@ -324,6 +325,9 @@ html[data-theme="dark"] .lv-page{--hl:color-mix(in srgb,var(--pink) 42%,transpar
 .lv-backdrop{position:fixed;z-index:96;inset:0;background:rgb(22 21 27 / .5)}
 .lv-backdrop[hidden]{display:none}
 
+/* ---------- Ban list : même logique éditoriale, centrée sur les cartes et les decks affectés ---------- */
+.ban-list-page{min-height:100vh;background:var(--lv-ground)}.ban-list-main{width:min(1120px,100%);margin:0 auto;padding:clamp(28px,5vw,64px) clamp(18px,4vw,48px) 84px}.ban-list-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding-bottom:26px;border-bottom:1px solid var(--ink)}.ban-list-head h1{margin:0;font:800 clamp(46px,7vw,76px)/.92 var(--display);font-stretch:74%;letter-spacing:-.03em}.ban-list-head p{max-width:58ch;margin:12px 0 0;color:var(--ink-2);font-size:16px;line-height:1.5}.ban-list-section{display:grid;grid-template-columns:minmax(190px,260px) minmax(0,1fr);gap:clamp(24px,5vw,68px);padding:34px 0;border-bottom:1px solid var(--rule)}.ban-list-section>header h2{margin:0;font:800 31px/1 var(--display);font-stretch:78%;letter-spacing:-.015em}.ban-list-section>header p{margin:10px 0 0;color:var(--ink-2);line-height:1.5}.ban-list-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;border:1px solid var(--ink);background:var(--ink)}.ban-list-card{display:grid;grid-template-columns:58px minmax(0,1fr);align-items:center;gap:12px;min-height:98px;padding:10px;border:0;border-radius:0;background:var(--sheet);color:var(--ink);text-align:left}.ban-list-card:hover:not(:disabled),.ban-list-card:focus-visible{background:var(--pink-screen);color:var(--ink)}.ban-list-card img{width:58px;height:81px;border-radius:3px;object-fit:cover;box-shadow:var(--shadow-card)}.ban-list-card span{display:grid;gap:7px;min-width:0}.ban-list-card strong{font:750 15px/1.18 var(--display);font-stretch:88%}.ban-list-card small{color:var(--muted);font:700 12px/1 var(--display);font-variant-numeric:tabular-nums}.ban-list-affected{border-bottom:0}.ban-list-decks{display:grid;gap:1px;border:1px solid var(--ink);background:var(--ink)}.ban-list-deck{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:66px;padding:11px 14px;border:0;border-radius:0;background:var(--sheet);color:var(--ink);text-align:left}.ban-list-deck:hover:not(:disabled){background:var(--pink-screen);color:var(--ink)}.ban-list-deck span{display:grid;gap:5px}.ban-list-deck strong{font:750 17px/1.15 var(--display)}.ban-list-deck small{color:var(--bad);font:650 12px/1.35 var(--text)}.ban-list-deck .i{flex:none}.ban-list-empty{align-self:start;margin:0;padding:16px;border:1px solid var(--rule);background:var(--sheet);color:var(--ink-2)}
+
 /* ---------- Écrans moyens : le glossaire devient un tiroir ---------- */
 @media (max-width:1360px){
   .lv-page{--toc-w:264px;--gloss-w:264px}
@@ -346,6 +350,7 @@ html[data-theme="dark"] .lv-page{--hl:color-mix(in srgb,var(--pink) 42%,transpar
   .lv-back-long{display:none}
   .lv-back-short{display:inline}
   .lv-bar .prefs{display:flex;margin-left:0;padding-left:6px}
+  .lv-primary-tabs{justify-content:stretch;padding:0}.lv-primary-tabs button{flex:1;min-width:0;padding:0 8px}
   .lv-strip{position:sticky;top:var(--bar-h);z-index:50;display:flex;gap:6px;overflow-x:auto;padding:8px 12px;border-bottom:1px solid var(--rule);background:var(--paper);scrollbar-width:none;transition:transform .25s var(--ease)}
   .lv-strip::-webkit-scrollbar{display:none}
   .strip-up .lv-strip{transform:translateY(-110%)}
@@ -396,6 +401,7 @@ html[data-theme="dark"] .lv-page{--hl:color-mix(in srgb,var(--pink) 42%,transpar
   body.rules-view .toast{bottom:calc(var(--mobile-nav-height) + 16px + env(safe-area-inset-bottom))}
   .lv-zoom-bar{padding-left:16px}
   .lv-zoom-scroll{padding:12px 0}
+  .ban-list-main{padding:28px 16px 54px}.ban-list-head{align-items:stretch;flex-direction:column}.ban-list-head .btn{align-self:flex-start}.ban-list-section{grid-template-columns:1fr;gap:18px;padding:28px 0}.ban-list-grid{grid-template-columns:1fr}.ban-list-card{grid-template-columns:52px minmax(0,1fr);min-height:86px}.ban-list-card img{width:52px;height:73px}
 }
 @media (prefers-reduced-motion:reduce){
   .lv-hl{animation:none;background-size:100% 80%}

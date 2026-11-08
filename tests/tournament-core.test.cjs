@@ -23,6 +23,7 @@ test('extra time round-trips through player exports and invalid extensions are r
 test('official player-count recommendations and Lucca preset',()=>{
   for(const [n,rounds,cut] of [[2,1,0],[3,2,0],[4,3,0],[8,3,0],[9,4,4],[16,4,4],[17,5,8],[32,5,8],[64,6,8]])assert.deepEqual(C.recommended(n),{swissRounds:rounds,topCut:cut});
   const r=C.rules('lucca');assert.equal(r.banned.length,3);assert.equal(r.restrictionGroups[0].cardIds.length,3);assert.equal(r.studyMinutes+r.playMinutes,55);assert.ok([...r.banned,...r.restrictionGroups[0].cardIds].every(id=>cards.has(id)));
+  assert.equal(C.COMPETITIVE_FORMAT.name,'Lucca 2026');assert.match(C.competitiveFingerprint(),/banned/);
 });
 test('deck validity counts main, sideboard and excluded maybeboard separately',()=>{
   const d=deck();d.groups.push({name:'Maybeboard',kind:'maybeboard',cardIds:['unknown']});const v=C.validateDeck(d,C.rules(),mockCards);assert.equal(v.valid,true);assert.equal(v.count,30);assert.equal(v.sideCount,2);assert.equal(v.points,150);

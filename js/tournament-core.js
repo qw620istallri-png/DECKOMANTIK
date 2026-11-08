@@ -5,6 +5,8 @@
   const SOURCE='https://www.kartomantik.com/en/news/Official_Kartomantik_Tournament_%E2%80%94_Lucca_Comics_&_Games_2026';
   const BANNED=['e1zg2gsn0tfqo1y_en','b6ebpyb30urtas2_en','q6rha5kz42bkxle_en'];
   const RESTRICTED=['ryg8e3lgopl6z52_en','zni76s4aabicqag_en','3gqrmx5jegwz8kb_en'];
+  const COMPETITIVE_FORMAT={id:'lucca-2026',name:'Lucca 2026',source:SOURCE,banned:[...BANNED],restrictionGroups:[{name:'Lucca 2026',cardIds:[...RESTRICTED],limit:1}]};
+  const competitiveFingerprint=()=>JSON.stringify({banned:[...BANNED].sort(),restrictionGroups:COMPETITIVE_FORMAT.restrictionGroups.map(group=>({cardIds:[...group.cardIds].sort(),limit:group.limit}))});
   const copy=value=>JSON.parse(JSON.stringify(value));
   const uid=()=>globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const assert=(ok,code)=>{if(!ok)throw new Error(code)};
@@ -228,5 +230,5 @@
     if(privateData)assert(Array.isArray(e.audit)&&e.audit.length<=2000&&e.audit.every(a=>a&&str(a.at,40)&&str(a.action,120)&&str(a.reason,1000)),'badFile');
     return copy(e);
   }
-  return {VERSION,SOURCE,BANNED,RESTRICTED,copy,uid,assert,recommended,rules,restrictionGroups,eventSlug,createEvent,kind,deckIds,validateDeck,standings,pairSwiss,regenerateSwiss,complete,winner,isPlacement,nextRound,start,setResult,setResults,matchOutcome,tournamentPoints,applyOutcome,resultFromPoints,publicEvent,finalPlaces,statistics,validateEvent};
+  return {VERSION,SOURCE,BANNED,RESTRICTED,COMPETITIVE_FORMAT,competitiveFingerprint,copy,uid,assert,recommended,rules,restrictionGroups,eventSlug,createEvent,kind,deckIds,validateDeck,standings,pairSwiss,regenerateSwiss,complete,winner,isPlacement,nextRound,start,setResult,setResults,matchOutcome,tournamentPoints,applyOutcome,resultFromPoints,publicEvent,finalPlaces,statistics,validateEvent};
 });

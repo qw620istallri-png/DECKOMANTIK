@@ -11,7 +11,7 @@ const sets=[{id:'beta',cardCount:2},{id:'inner-deserts',cardCount:1}];
 const deck=(id,main=['beta-1'],sideboard=[])=>({id,name:id,groups:[{id:'manifestations',cardIds:main},{id:'sideboard',kind:'sideboard',cardIds:sideboard},{id:'maybeboard',kind:'maybeboard',cardIds:['desert-1']}]});
 
 test('normalization keeps complete-set counts and deck preferences bounded',()=>{
-  assert.deepEqual(Physical.normalize({sets:{beta:2,bad:-3},assemblies:{'deck:a':{assembled:true,includeSideboard:false}}}),{version:1,sets:{beta:2},assemblies:{'deck:a':{assembled:true,copies:1,includeSideboard:false}}});
+  assert.deepEqual(Physical.normalize({sets:{beta:2,bad:-3},assemblies:{'deck:a':{assembled:true,includeSideboard:false,withdrawn:{'beta-1':1,bad:-2}}}}),{version:2,sets:{beta:2},assemblies:{'deck:a':{assembled:true,copies:1,includeSideboard:false,withdrawn:{'beta-1':1}}}});
 });
 
 test('one set copy provides one copy of every card in that set',()=>{
@@ -74,4 +74,34 @@ test('buildability scores prefer owned-set shortages before missing sets',()=>{
   assert.deepEqual(Physical.buildabilityScore(result.results['deck:owned-shortage']),[1,1,1]);
   assert.deepEqual(Physical.buildabilityScore(result.results['deck:missing-set']),[2,1,1]);
   assert.deepEqual(Physical.buildabilityScore(result.results['deck:mixed']),[2,2,1]);
+});
+
+test('a physical card can move atomically from one assembled deck to another',()=>{
+  const donor=deck('donor',['beta-1']),target=deck('target',['beta-1']),before=Physical.analyze({cards,cardSets:sets,physical:{sets:{beta:1},assemblies:{'deck:donor':{assembled:true}}},decks:[donor,target]});
+  const plan=Physical.assemblyPlan(before,'deck:target',{copies:1});
+  assert.equal(plan.blocked,false);
+  assert.deepEqual(plan.items,[{cardId:'beta-1',amount:1,options:[{key:'deck:donor',amount:1,kind:'deck',id:'donor',name:'donor',names:{}}]}]);
+  const physical=Physical.applyAssemblyPlan(before.physical,plan,[{cardId:'beta-1',key:'deck:donor'}]),after=Physical.analyze({cards,cardSets:sets,physical,decks:[donor,target]});
+  assert.equal(after.results['deck:target'].status,'assembled');
+  assert.equal(after.results['deck:donor'].status,'incomplete');
+  assert.deepEqual(after.results['deck:donor'].missing,[{cardId:'beta-1',amount:1}]);
+  assert.equal(after.reservations['beta-1'][0].key,'deck:target');
+});
+
+test('forced assembly stays blocked when no physical copy exists',()=>{
+  const target=deck('target',['desert-1']),analysis=Physical.analyze({cards,cardSets:sets,physical:{sets:{beta:1}},decks:[target]}),plan=Physical.assemblyPlan(analysis,'deck:target',{copies:1});
+  assert.equal(plan.blocked,true);
+  assert.deepEqual(plan.items,[{cardId:'desert-1',amount:1,options:[]}]);
+  assert.throws(()=>Physical.applyAssemblyPlan(analysis.physical,plan,[]),/assemblyBlocked/);
+});
+
+test('every missing copy must select a donor with enough capacity',()=>{
+  const first=deck('first',['beta-1']),second=deck('second',['beta-1']),target=deck('target',['beta-1','beta-1']),analysis=Physical.analyze({cards,cardSets:sets,physical:{sets:{beta:2},assemblies:{'deck:first':{assembled:true},'deck:second':{assembled:true}}},decks:[first,second,target]}),plan=Physical.assemblyPlan(analysis,'deck:target',{copies:1});
+  assert.equal(plan.items[0].amount,2);
+  assert.throws(()=>Physical.applyAssemblyPlan(analysis.physical,plan,[{cardId:'beta-1',key:'deck:first'},{cardId:'beta-1',key:'deck:first'}]),/transferCapacity/);
+  const moved=Physical.applyAssemblyPlan(analysis.physical,plan,[{cardId:'beta-1',key:'deck:first'},{cardId:'beta-1',key:'deck:second'}]);
+  const after=Physical.analyze({cards,cardSets:sets,physical:moved,decks:[first,second,target]});
+  assert.equal(after.results['deck:target'].status,'assembled');
+  assert.equal(after.results['deck:first'].status,'incomplete');
+  assert.equal(after.results['deck:second'].status,'incomplete');
 });
