@@ -332,6 +332,8 @@
    ACCUEIL
    ========================================================== */
 .decks-page{max-width:1440px;margin:0 auto}
+html:has(body.cover-view){scrollbar-width:none}
+html:has(body.cover-view)::-webkit-scrollbar{display:none}
 body.cover-view .workspace{padding:0 0 12px}
 .home-bar{position:sticky;top:0;z-index:70;max-width:none;padding:0 28px}
 .home-bar .rank-badge{margin-left:10px}
