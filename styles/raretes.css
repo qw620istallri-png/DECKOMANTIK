@@ -46,3 +46,12 @@
 @keyframes rarity-void-glow{0%,100%{box-shadow:0 0 9px 3px rgba(255,255,255,.92),0 0 30px 10px rgba(216,247,255,.68),0 0 62px 21px rgba(170,116,255,.40),0 0 104px 38px rgba(73,223,255,.20)}50%{box-shadow:0 0 15px 5px #fff,0 0 44px 15px rgba(223,249,255,.94),0 0 82px 29px rgba(184,132,255,.64),0 0 128px 48px rgba(86,231,255,.34)}}
 @keyframes rarity-void-rift-sweep{from{background-position:var(--beam-travel,185%) 50%,var(--beam-travel,185%) 50%}to{background-position:calc(var(--beam-travel,185%)*-1) 50%,calc(var(--beam-travel,185%)*-1) 50%}}
 @media(prefers-reduced-motion:reduce){.rarity-foil::after,.rarity-silver::after,.rarity-gold::after,.rarity-galaxy::before,.rarity-galaxy::after{transform:none!important}.rarity-desert-surface{animation:none!important}.desert-storm-layer{animation:none!important}}
+/* Perf: in the grids (library, deck, souls, version swatches) many rarity cards are visible at once.
+   Their looping animations (galaxy spin and glow, void rift, desert sweep and storm) only run on the
+   hovered card; the others keep their look but stop repainting. Large cards (preview, boosters) are untouched. */
+:is(.thumb,.deck-card-art,.soul-card-art,.version-swatch)[class*="rarity-"]:not(:hover),
+:is(.thumb,.deck-card-art,.soul-card-art,.version-swatch)[class*="rarity-"]:not(:hover)::before,
+:is(.thumb,.deck-card-art,.soul-card-art,.version-swatch)[class*="rarity-"]:not(:hover)::after,
+:is(.thumb,.deck-card-art,.soul-card-art,.version-swatch)[class*="rarity-"]:not(:hover) *,
+:is(.thumb,.deck-card-art,.soul-card-art,.version-swatch)[class*="rarity-"]:not(:hover) *::before,
+:is(.thumb,.deck-card-art,.soul-card-art,.version-swatch)[class*="rarity-"]:not(:hover) *::after{animation-play-state:paused}
