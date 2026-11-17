@@ -76,6 +76,8 @@
 .collapsed-name strong{overflow:hidden;font:600 14px/1.2 var(--text);text-overflow:ellipsis;white-space:nowrap}
 .collapsed-name .num{font:600 11.5px/1 var(--display);font-stretch:90%;font-variant-numeric:tabular-nums}
 .collapsed-card .icon-btn{width:28px;min-width:28px;height:28px;min-height:28px}
+/* points de la Manifestation, avant la croix : sur mobile seulement, la liste repliée y sert de bibliothèque verticale */
+.collapsed-points{display:none}
 .card-title-with-temperaments{display:flex;align-items:center;gap:7px;min-width:0;font-weight:600}
 .card-title-with-temperaments>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .card-temperament-icons{display:inline-flex;flex:none;gap:2px}
@@ -708,6 +710,10 @@ body.deck-manager-view .workspace{padding:0;background:var(--paper)}
   .lane-head input{font-size:20px}
   .group-step .lane-add .lbl,.group-step [data-group-step]{display:none}
   .card-row.collapsed-mode{columns:1}
+  .collapsed-card:has(.collapsed-points){grid-template-columns:var(--sym-w,auto) minmax(0,1fr) auto 28px}
+  .collapsed-points{display:inline-flex;align-items:baseline;gap:3px;white-space:nowrap}
+  .collapsed-points b{font:700 14px/1 var(--display);font-variant-numeric:tabular-nums}
+  .collapsed-points i{color:var(--muted);font:600 11.5px/1 var(--display);font-style:normal;font-stretch:90%}
   .quick-remove{opacity:0;transform:scale(.85);pointer-events:none}
   .game-card:focus-within .quick-remove{opacity:1;transform:none;pointer-events:auto}
   .library-head{min-height:60px;padding:9px 12px}
